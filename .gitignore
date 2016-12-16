@@ -240,3 +240,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# ANGLE build directories
+Debug_Win32/
+Release_Win32/
