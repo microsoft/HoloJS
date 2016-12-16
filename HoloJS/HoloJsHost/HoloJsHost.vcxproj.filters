@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="HologramJS.cpp" />
+    <ClCompile Include="ObjectEvents.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="ScriptsLoader.cpp" />
+    <ClCompile Include="ImageElement.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoElement.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlHttpRequest.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowElement.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardInput.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseInput.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptHostUtilities.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptResourceTracker.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="WebGLObjects.cpp">
+      <Filter>WebGLRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="WebGLProjections.cpp">
+      <Filter>WebGLRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="WebGLRenderingContext.cpp">
+      <Filter>WebGLRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingContext2D.cpp">
+      <Filter>WebGLRenderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HologramJS.h" />
+    <ClInclude Include="ObjectEvents.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="ScriptsLoader.h" />
+    <ClInclude Include="ExternalObject.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageElement.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoElement.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="IRelease.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="XmlHttpRequest.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowElement.h">
+      <Filter>API</Filter>
+    </ClInclude>
+    <ClInclude Include="IBufferOnMemory.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardInput.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseInput.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptHostUtilities.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptResourceTracker.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="WebGLObjects.h">
+      <Filter>WebGLRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="WebGLProjections.h">
+      <Filter>WebGLRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="WebGLRenderingContext.h">
+      <Filter>WebGLRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingContext2D.h">
+      <Filter>WebGLRenderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="ScriptingFramework\framework.json" />
+    <None Include="ScriptingFramework\Canvas2D.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\DOM.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\FrameworkHelpers.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\Image.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\Video.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\WebGL.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\Window.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+    <None Include="ScriptingFramework\XmlHttpRequest.js">
+      <Filter>ScriptingFramework</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ScriptingFramework">
+      <UniqueIdentifier>{f96e322c-e22c-4eb9-9ed5-adff6ecffd1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebGLRenderer">
+      <UniqueIdentifier>{bf596f6d-a613-42c0-a055-a4899212936f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NativeFramework">
+      <UniqueIdentifier>{1882b52c-8128-4f39-a2b0-be06e72f40b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="API">
+      <UniqueIdentifier>{29f9bcec-9229-4ad7-9d4d-31ffc9c331e8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

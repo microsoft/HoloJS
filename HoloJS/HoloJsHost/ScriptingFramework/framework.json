@@ -1,0 +1,8 @@
+{ "scripts" : [ "FrameworkHelpers.js",
+"XmlHttpRequest.js",
+"Image.js",
+"video.js",
+"window.js",
+"DOM.js",
+"WebGL.js",
+"canvas2d.js" ] }
