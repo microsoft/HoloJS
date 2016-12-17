@@ -14,7 +14,12 @@ and there is no loading indicator.
 The sample works on Windows Holographic by getting a holographic view matrix from the HoloJS
 host layer. This is done in JavaScript by calling window.getViewMatrix():
 
-    var myViewMatrix = window.getViewMatrix();
+    // Draw the cube.
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
+    gl.uniformMatrix4fv(pUniform, false, new Float32Array(identity));
+    gl.uniformMatrix4fv(mUniform, false, new Float32Array(model));
+    gl.uniformMatrix4fv(vUniform, false, window.getViewMatrix());
+    gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
 This view matrix represents view from the middle point between left and right views of the 
 holographic stereo camera. The app should not set a projection matrix in this case, or it should 
