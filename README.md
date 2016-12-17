@@ -1,6 +1,6 @@
 # HoloJS
 
-HoloJS is a framework for creating holographic applications using JavaScript and WebGL. 
+HoloJS is a framework for creating UWP applications using JavaScript and WebGL. 
 
 HoloJS is a C++ library that hosts Chakra to run JavaScript code, and also hosts ANGLE to
 handle OpenGL ES graphics calls. OpenGL ES calls are translated from WebGL calls by the
