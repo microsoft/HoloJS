@@ -1,4 +1,1 @@
-{ "scripts" : [ "cannon.js",
-"oimo.js",
-"babylon.js",
-"app.js" ] }
+{ "scripts" : [ "sylvester.js", "glutils.js", "app.js" ] }

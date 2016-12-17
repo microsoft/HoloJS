@@ -63,24 +63,21 @@
     <None Include="..\Debug_Win32\libGLESv2.dll">
       <Filter>ANGLE</Filter>
     </None>
-    <None Include="Scripts\babylon.js">
-      <Filter>Scripts</Filter>
-    </None>
-    <None Include="Scripts\cannon.js">
-      <Filter>Scripts</Filter>
-    </None>
-    <None Include="Scripts\oimo.js">
-      <Filter>Scripts</Filter>
-    </None>
     <None Include="Scripts\app.json">
       <Filter>Scripts</Filter>
     </None>
     <None Include="Scripts\app.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\glutils.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\sylvester.js">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Scripts\town360high.jpg">
+    <Image Include="Scripts\texture.png">
       <Filter>Scripts</Filter>
     </Image>
   </ItemGroup>

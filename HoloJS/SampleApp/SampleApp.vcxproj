@@ -189,7 +189,7 @@
     <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Image Include="Scripts\town360high.jpg" />
+    <Image Include="Scripts\texture.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -211,19 +211,16 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="SampleApp_TemporaryKey.pfx" />
-    <None Include="Scripts\babylon.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\cannon.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\oimo.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\app.json">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scripts\glutils.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scripts\sylvester.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>
