@@ -2,13 +2,14 @@
 
 HoloJS is a framework for creating holographic applications using JavaScript and WebGL. 
 
-HoloJS is a C++ library that uses Chakra to run JavaScript code, together with ANGLE to
-handle OpenGL ES graphics calls. When running on a Microsoft HoloLens, HoloJS does support
-holographic rendering.
+HoloJS is a C++ library that hosts Chakra to run JavaScript code, and also hosts ANGLE to
+handle OpenGL ES graphics calls. OpenGL ES calls are translated from WebGL calls by the
+JavaScript app. When running on a Microsoft HoloLens, HoloJS supports holographic rendering.
 
 ## Code sample
 
-A sample project is included for a 360-degree photo viewer.
+A sample project is included for a 360-degree photo viewer. The sample takes a few moments to 
+load the image and there is no loading indicator.
 
 ## Additional remarks
 
