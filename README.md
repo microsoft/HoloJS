@@ -11,6 +11,18 @@ JavaScript app. When running on a Microsoft HoloLens, HoloJS supports holographi
 A sample project is included for a 360-degree photo viewer. The sample takes a few moments to 
 load the image and there is no loading indicator.
 
+The sample works on Windows Holographic by getting a holographic view matrix from the HoloJS
+host layer. This is done in JavaScript by calling window.getViewMatrix():
+
+    var myViewMatrix = window.getViewMatrix();
+
+This view matrix represents view from the middle point between left and right views of the 
+holographic stereo camera. The app should not set a projection matrix in this case, or it should 
+set a projection matrix that is the identity matrix. ANGLE for Windows Holographic will apply 
+the correct projection matrices for the holographic device to each vertex automatically, after 
+splitting the output into left and right views.
+
+
 ## Additional remarks
 
 **Note** This library requires Visual Studio 2015 Update 3 to build, and supports Windows Universal 
