@@ -129,7 +129,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>mfuuid.lib;..\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\$(Configuration)_$(Platform)\lib\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\$(Configuration)_$(Platform)\lib\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib;mfuuid.lib;</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
