@@ -79,4 +79,9 @@
       <Filter>Scripts</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Scripts\town360high.jpg">
+      <Filter>Scripts</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

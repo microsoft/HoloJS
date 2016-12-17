@@ -27,7 +27,7 @@ var setupPhotoSphere = function () {
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 32, 18, global.scene);
 
     // load material
-    var texture = new BABYLON.Texture("http://crispet.azurewebsites.net/pan360/town360high.jpg", global.scene);
+    var texture = new BABYLON.Texture("town360high.jpg", global.scene);
 
     // rotate texture
     texture.wAng = Math.PI;
