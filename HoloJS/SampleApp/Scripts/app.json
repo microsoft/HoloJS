@@ -1,1 +1,1 @@
-{ "scripts" : [ "sylvester.js", "glutils.js", "app.js" ] }
+{ "scripts" : [ "app.js" ] }

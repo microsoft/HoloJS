@@ -8,8 +8,8 @@ JavaScript app. When running on a Microsoft HoloLens, HoloJS supports holographi
 
 ## Code sample
 
-A sample project is included for a 360-degree photo viewer. The sample takes a few moments to 
-load the image and there is no loading indicator.
+A sample project is included for Windows Holographic. The sample takes a few moments to load 
+and there is no loading indicator.
 
 The sample works on Windows Holographic by getting a holographic view matrix from the HoloJS
 host layer. This is done in JavaScript by calling window.getViewMatrix():

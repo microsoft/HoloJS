@@ -217,12 +217,6 @@
     <None Include="Scripts\app.json">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Scripts\glutils.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\sylvester.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HoloJsHost\HoloJsHost.vcxproj">

@@ -5,20 +5,17 @@ var cubeVerticesBuffer;
 var cubeVerticesTextureCoordBuffer;
 var cubeVerticesIndexBuffer;
 var cubeVerticesIndexBuffer;
-var cubeRotation = 0.0;
-var lastCubeUpdateTime = 0;
 
 var cubeImage;
 var cubeTexture;
 
-var mvMatrix;
 var shaderProgram;
 var vertexPositionAttribute;
 var textureCoordAttribute;
-var perspectiveMatrix;
 
 var pUniform;
-var mvUniform;
+var mUniform;
+var vUniform;
 var samplerUniform;
 
 //
@@ -153,30 +150,30 @@ function initBuffers() {
 
     var textureCoordinates = [
       // Front
-      0.0, 0.0,
-      1.0, 0.0,
       1.0, 1.0,
       0.0, 1.0,
+      0.0, 0.0,
+      1.0, 0.0,
       // Back
       0.0, 0.0,
       1.0, 0.0,
       1.0, 1.0,
       0.0, 1.0,
       // Top
+      0.0, 1.0,
       0.0, 0.0,
       1.0, 0.0,
       1.0, 1.0,
-      0.0, 1.0,
       // Bottom
       0.0, 0.0,
       1.0, 0.0,
       1.0, 1.0,
       0.0, 1.0,
       // Right
-      0.0, 0.0,
-      1.0, 0.0,
       1.0, 1.0,
       0.0, 1.0,
+      0.0, 0.0,
+      1.0, 0.0,
       // Left
       0.0, 0.0,
       1.0, 0.0,
@@ -198,9 +195,9 @@ function initBuffers() {
     // position.
 
     var cubeVertexIndices = [
-      0, 1, 2, 0, 2, 3,    // front
-      4, 5, 6, 4, 6, 7,    // back
-      8, 9, 10, 8, 10, 11,   // top
+      0,   1,  2,  0,  2,  3,   // front
+      4,   5,  6,  4,  6,  7,   // back
+      8,   9, 10,  8, 10, 11,   // top
       12, 13, 14, 12, 14, 15,   // bottom
       16, 17, 18, 16, 18, 19,   // right
       20, 21, 22, 20, 22, 23    // left
@@ -243,70 +240,46 @@ function handleTextureLoaded(image, texture) {
 //
 function drawScene() {
     // Clear the canvas before we start drawing on it.
-
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    // Identity perspective transform.
+    var identity = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ]
 
-    // Establish the perspective with which we want to view the
-    // scene. Our field of view is 45 degrees, with a width/height
-    // ratio of 640:480, and we only want to see objects between 0.1 units
-    // and 100 units away from the camera.
-
-    //perspectiveMatrix = makePerspective(70, window.innerWidth / window.innerHeight, 0.1, 100.0);
-    perspectiveMatrix = Matrix.I(4);
-
-    // Set the drawing position to the "identity" point, which is
-    // the center of the scene.
-
-    loadIdentity();
-
-    // Now move the drawing position a bit to where we want to start
-    // drawing the cube.
-
-    mvTranslate([-0.0, 0.0, -15.0]);
-
-    // Save the current matrix, then rotate before we draw.
-
-    mvPushMatrix();
-    mvRotate(cubeRotation, [1, 0, 1]);
+    // Set up a simple translation transform.
+    var model = [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+       -0.0, 0.0,-1.5, 1.0
+       ]
 
     // Draw the cube by binding the array buffer to the cube's vertices
     // array, setting attributes, and pushing it to GL.
-
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
     gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
 
     // Set the texture coordinates attribute for the vertices.
-
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesTextureCoordBuffer);
     gl.vertexAttribPointer(textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
     // Specify the texture to map onto the faces.
-
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, cubeTexture);
     gl.uniform1i(samplerUniform, 0);
 
     // Draw the cube.
-
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
-    setMatrixUniforms();
+    gl.uniformMatrix4fv(pUniform, false, new Float32Array(identity));
+    gl.uniformMatrix4fv(mUniform, false, new Float32Array(model));
+    gl.uniformMatrix4fv(vUniform, false, window.getViewMatrix());
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
-    // Restore the original matrix
-
-    mvPopMatrix();
-
-    // Update the rotation for the next draw, if it's time to do so.
-
-    var currentTime = (new Date).getTime();
-    if (lastCubeUpdateTime) {
-        var delta = currentTime - lastCubeUpdateTime;
-
-        cubeRotation += (30 * delta) / 1000.0;
-    }
-
-    lastCubeUpdateTime = currentTime;
-
+    // Present the frame.
     window.requestAnimationFrame(drawScene);
 }
 
@@ -341,7 +314,8 @@ function initShaders() {
     gl.enableVertexAttribArray(textureCoordAttribute);
 
     pUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    mUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
+    vUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
     samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
 }
 
@@ -354,11 +328,12 @@ function initShaders() {
 function getShader(gl, id) {
     var vs = "attribute vec3 aVertexPosition;\
     attribute vec2 aTextureCoord;\
-    uniform mat4 uMVMatrix;\
+    uniform mat4 uMMatrix;\
+    uniform mat4 uVMatrix;\
     uniform mat4 uPMatrix;\
     varying highp vec2 vTextureCoord;\
     void main(void) {\
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\
+        gl_Position = uPMatrix * uVMatrix * uMMatrix * vec4(aVertexPosition, 1.0);\
         vTextureCoord = aTextureCoord;\
     }";
 
@@ -398,51 +373,4 @@ function getShader(gl, id) {
     }
 
     return shader;
-}
-
-//
-// Matrix utility functions
-//
-
-function loadIdentity() {
-    mvMatrix = Matrix.I(4);
-}
-
-function multMatrix(m) {
-    mvMatrix = mvMatrix.x(m);
-}
-
-function mvTranslate(v) {
-    multMatrix(Matrix.Translation($V([v[0], v[1], v[2]])).ensure4x4());
-}
-
-function setMatrixUniforms() {
-    gl.uniformMatrix4fv(pUniform, false, new Float32Array(perspectiveMatrix.flatten()));
-    gl.uniformMatrix4fv(mvUniform, false, window.getViewMatrix());
-}
-
-var mvMatrixStack = [];
-
-function mvPushMatrix(m) {
-    if (m) {
-        mvMatrixStack.push(m.dup());
-        mvMatrix = m.dup();
-    } else {
-        mvMatrixStack.push(mvMatrix.dup());
-    }
-}
-
-function mvPopMatrix() {
-    if (!mvMatrixStack.length) {
-        throw ("Can't pop from an empty matrix stack.");
-    }
-
-    mvMatrix = mvMatrixStack.pop();
-    return mvMatrix;
-}
-
-function mvRotate(angle, v) {
-    var inRadians = angle * Math.PI / 180.0;
-    var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
-    multMatrix(m);
 }

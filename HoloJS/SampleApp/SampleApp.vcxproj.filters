@@ -57,24 +57,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="SampleApp_TemporaryKey.pfx" />
-    <None Include="..\Debug_Win32\libEGL.dll">
-      <Filter>ANGLE</Filter>
-    </None>
-    <None Include="..\Debug_Win32\libGLESv2.dll">
-      <Filter>ANGLE</Filter>
-    </None>
     <None Include="Scripts\app.json">
       <Filter>Scripts</Filter>
     </None>
     <None Include="Scripts\app.js">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="Scripts\glutils.js">
-      <Filter>Scripts</Filter>
-    </None>
-    <None Include="Scripts\sylvester.js">
-      <Filter>Scripts</Filter>
-    </None>
+    <None Include="..\Release_Win32\libGLESv2.dll" />
+    <None Include="..\Release_Win32\libEGL.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
