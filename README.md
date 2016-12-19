@@ -21,11 +21,11 @@ host layer. This is done in JavaScript by calling window.getViewMatrix():
     gl.uniformMatrix4fv(vUniform, false, window.getViewMatrix());
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
-This view matrix represents view from the middle point between left and right views of the 
+This view matrix represents a view from the middle point between left and right views of the 
 holographic stereo camera. The app should not set a projection matrix in this case, or it should 
 set a projection matrix that is the identity matrix. ANGLE for Windows Holographic will apply 
 the correct projection matrices for the holographic device to each vertex automatically, after 
-splitting the output into left and right views.
+splitting the output into left and right views by using a geometry shader.
 
 
 ## Additional remarks
@@ -47,7 +47,7 @@ The following Windows Universal APIs are used to demonstrate spatial locations, 
 rendering in this code sample:
 
 * [Chakra official site](https://github.com/microsoft/ChakraCore)
-* [Chackra samples repo](https://github.com/Microsoft/Chakra-Samples)
+* [Chakra samples repo](https://github.com/Microsoft/Chakra-Samples)
 * [ANGLE Experimental for Windows Holographic](https://github.com/Microsoft/angle/tree/ms-holographic-experimental)
 
 ## System requirements
