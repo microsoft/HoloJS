@@ -41,8 +41,6 @@ HologramScriptHost::Shutdown()
 	}
 }
 
-CHAKRA_API JsStartDebugging();
-
 bool
 HologramScriptHost::Initialize()
 {
@@ -51,7 +49,7 @@ HologramScriptHost::Initialize()
 
 	RETURN_IF_JS_ERROR(JsSetCurrentContext(m_jsContext));
 
-	RETURN_IF_JS_ERROR(JsStartDebugging());
+	JsStartDebugging();
 
 	RETURN_IF_FALSE(m_scriptEventsManager.Initialize());
 
