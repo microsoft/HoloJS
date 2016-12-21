@@ -307,6 +307,15 @@
         this.uniformMatrix4fv = function (location, transpose, value) {
             return nativeInterface.webgl.uniformMatrix4fv(this.glContext, location.external, transpose, value);
         }
+        this.stencilFunc = function (func, ref, mask) {
+            return nativeInterface.webgl.stencilFunc(this.glContext, func, ref, mask);
+        }
+        this.stencilMask = function (mask) {
+            return nativeInterface.webgl.stencilMask(this.glContext, mask);
+        }
+        this.stencilOp = function (fail, zfail, zpass) {
+            return nativeInterface.webgl.stencilOp(this.glContext, fail, zfail, zpass);
+        }
 
         this.DEPTH_BUFFER_BIT = 0x00000100;
         this.STENCIL_BUFFER_BIT = 0x00000400;
