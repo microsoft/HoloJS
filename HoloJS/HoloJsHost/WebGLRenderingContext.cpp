@@ -674,11 +674,13 @@ WebGLRenderingContext::stencilFunc(GLenum func, GLint ref, GLuint mask)
 {
     glStencilFunc(func, ref, mask);
 }
+
 void
 WebGLRenderingContext::stencilMask(GLuint mask)
 {
     glStencilMask(mask);
 }
+
 void
 WebGLRenderingContext::stencilOp(GLenum fail, GLenum zfail, GLenum zpass)
 {
