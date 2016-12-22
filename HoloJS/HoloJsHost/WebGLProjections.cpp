@@ -104,6 +104,9 @@ WebGLProjections::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"uniformMatrix2fv", L"webgl", uniformMatrix2fv));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"uniformMatrix3fv", L"webgl", uniformMatrix3fv));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"uniformMatrix4fv", L"webgl", uniformMatrix4fv));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilFunc", L"webgl", stencilFunc));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilMask", L"webgl", stencilMask));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilOp", L"webgl", stencilOp));
 
 	// Canvas 2D context projections
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage1", L"canvas2d", drawImage1));
@@ -2314,4 +2317,72 @@ WebGLProjections::getImageData(
 	}
 
 	return jsArray;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::stencilFunc(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLenum func = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLint ref = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
+    GLuint mask = ScriptHostUtilities::GLuintFromJsRef(arguments[4]);
+
+    context->stencilFunc(func, ref, mask);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::stencilMask(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLuint mask = ScriptHostUtilities::GLuintFromJsRef(arguments[2]);
+    context->stencilMask(mask);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::stencilOp(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLenum  fail = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLenum  zfail = ScriptHostUtilities::GLenumFromJsRef(arguments[3]);
+    GLenum  zpass = ScriptHostUtilities::GLenumFromJsRef(arguments[4]);
+    context->stencilOp(fail, zfail, zpass);
+
+    return JS_INVALID_REFERENCE;
 }

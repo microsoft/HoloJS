@@ -6,65 +6,63 @@
 
         this.getError = function () {
             return 0;
-        }
+        };
 
         this.getShaderPrecisionFormat = function (shadertype, precisiontype) {
             return nativeInterface.webgl.getShaderPrecisionFormat(this.glContext, shadertype, precisiontype);
-        }
+        };
         this.getExtension = function (name) {
             return nativeInterface.webgl.getExtension(this.glContext, name);
-        }
+        };
         this.getParameter = function (pname) {
             return nativeInterface.webgl.getParameter(this.glContext, pname);
-        }
+        };
         this.createRenderbuffer = function () {
             return nativeInterface.webgl.createRenderbuffer(this.glContext);
-        }
+        };
         this.bindRenderbuffer = function (target, renderbuffer) {
             if (renderbuffer) {
                 return nativeInterface.webgl.bindRenderbuffer(this.glContext, target, renderbuffer.external);
             } else {
                 return nativeInterface.webgl.bindRenderbuffer(this.glContext, target, null);
             }
-        }
+        };
         this.renderbufferStorage = function (target, internalformat, width, height) {
             return nativeInterface.webgl.renderbufferStorage(this.glContext, target, internalformat, width, height);
-        }
+        };
         this.createFramebuffer = function () {
             return nativeInterface.webgl.createFramebuffer(this.glContext);
-        }
+        };
         this.bindFramebuffer = function (target, framebuffer) {
             if (framebuffer) {
                 return nativeInterface.webgl.bindFramebuffer(this.glContext, target, framebuffer.external);
             } else {
                 return nativeInterface.webgl.bindFramebuffer(this.glContext, target, null);
             }
-            
-        }
+        };
         this.framebufferRenderbuffer = function (target, attachment, renderbuffertarget, renderbuffer) {
             return nativeInterface.webgl.framebufferRenderbuffer(this.glContext, target, attachment, renderbuffertarget, renderbuffer.external);
-        }
+        };
         this.framebufferTexture2D = function (target, attachment, textarget, texture, level) {
             return nativeInterface.webgl.framebufferTexture2D(this.glContext, target, attachment, textarget, texture.external, level);
-        }
+        };
         this.createTexture = function () {
             return nativeInterface.webgl.createTexture(this.glContext);
-        }
+        };
         this.bindTexture = function (target, texture) {
             if (texture) {
                 return nativeInterface.webgl.bindTexture(this.glContext, target, texture.external);
             } else {
                 return nativeInterface.webgl.bindTexture(this.glContext, target, null);
             }
-            
-        }
+        };
         this.texParameteri = function (target, pname, param) {
             return nativeInterface.webgl.texParameteri(this.glContext, target, pname, param);
-        }
+        };
 
         this.texImage2D = function (target, level, internalformat, width, height, border, format, type, pixels) {
             return nativeInterface.webgl.texImage2D(this.glContext, target, level, internalformat, width, height, border, format, type, pixels.external);
-        }
+        };
 
         this.texImage2D = function () {
             if (arguments.length === 9) {
@@ -89,78 +87,77 @@
 
         this.activeTexture = function (texture) {
             return nativeInterface.webgl.activeTexture(this.glContext, texture);
-        }
+        };
         this.generateMipmap = function (target) {
             return nativeInterface.webgl.generateMipmap(this.glContext, target);
-        }
+        };
         this.pixelStorei = function (pname, param) {
             return nativeInterface.webgl.pixelStorei(this.glContext, pname, param);
-        }
+        };
         this.clearDepth = function (depth) {
             return nativeInterface.webgl.clearDepth(this.glContext, depth);
-        }
+        };
         this.clearStencil = function (s) {
             return nativeInterface.webgl.clearStencil(this.glContext, s);
-        }
+        };
         this.enable = function (cap) {
             return nativeInterface.webgl.enable(this.glContext, cap);
-        }
+        };
         this.disable = function (cap) {
             return nativeInterface.webgl.disable(this.glContext, cap);
-        }
+        };
         this.depthFunc = function (func) {
             return nativeInterface.webgl.depthFunc(this.glContext, func);
-        }
+        };
         this.depthMask = function (flag) {
             return nativeInterface.webgl.depthMask(this.glContext, flag);
-        }
+        };
         this.depthRange = function (zNear, zFar) {
             return nativeInterface.webgl.depthRange(this.glContext, zNear, zFar);
-        }
+        };
         this.frontFace = function (mode) {
             return nativeInterface.webgl.frontFace(this.glContext, mode);
-        }
+        };
         this.cullFace = function (mode) {
             return nativeInterface.webgl.cullFace(this.glContext, mode);
-        }
+        };
         this.blendColor = function (red, green, blue, alpha) {
             return nativeInterface.webgl.blendColor(this.glContext, red, green, blue, alpha);
-        }
+        };
         this.blendEquation = function (mode) {
             return nativeInterface.webgl.blendEquation(this.glContext, mode);
-        }
+        };
         this.blendEquationSeparate = function (modeRGB, modeAlpha) {
             return nativeInterface.webgl.blendEquationSeparate(this.glContext, modeRGB, modeAlpha);
-        }
+        };
         this.blendFunc = function (sfactor, dfactor) {
             return nativeInterface.webgl.blendFunc(this.glContext, sfactor, dfactor);
-        }
+        };
         this.blendFuncSeparate = function (srcRGB, dstRGB, srcAlpha, dstAlpha) {
             return nativeInterface.webgl.blendFuncSeparate(this.glContext, srcRGB, dstRGB, srcAlpha, dstAlpha);
-        }
+        };
         this.scissor = function (x, y, width, height) {
             return nativeInterface.webgl.scissor(this.glContext, x, y, width, height);
-        }
+        };
         this.viewport = function (x, y, width, height) {
             return nativeInterface.webgl.viewport(this.glContext, x, y, width, height);
-        }
+        };
         this.clearColor = function (red, green, blue, alpha) {
             return nativeInterface.webgl.clearColor(this.glContext, red, green, blue, alpha);
-        }
+        };
         this.clear = function (mask) {
             return nativeInterface.webgl.clear(this.glContext, mask);
-        }
+        };
         this.createBuffer = function () {
             return nativeInterface.webgl.createBuffer(this.glContext);
-        }
+        };
         this.bindBuffer = function (target, buffer) {
             if (buffer) {
                 return nativeInterface.webgl.bindBuffer(this.glContext, target, buffer.external);
             } else {
                 return nativeInterface.webgl.bindBuffer(this.glContext, target, null);
             }
-            
-        }
+        };
 
         this.bufferData = function (target, size, usage) {
             if (typeof size === "number") {
@@ -189,124 +186,133 @@
         };
         this.disableVertexAttribArray = function (index) {
             return nativeInterface.webgl.disableVertexAttribArray(this.glContext, index);
-        }
+        };
         this.vertexAttribPointer = function (indx, size, type, normalized, stride, offset) {
             return nativeInterface.webgl.vertexAttribPointer(this.glContext, indx, size, type, normalized, stride, offset);
-        }
+        };
         this.createProgram = function () {
             return nativeInterface.webgl.createProgram(this.glContext);
-        }
+        };
         this.useProgram = function (program) {
             return nativeInterface.webgl.useProgram(this.glContext, program.external);
-        }
+        };
         this.validateProgram = function (program) {
             return nativeInterface.webgl.validateProgram(this.glContext, program.external);
-        }
+        };
         this.linkProgram = function (program) {
             return nativeInterface.webgl.linkProgram(this.glContext, program.external);
-        }
+        };
         this.getProgramParameter = function (program, pname) {
             return nativeInterface.webgl.getProgramParameter(this.glContext, program.external, pname);
-        }
+        };
         this.getProgramInfoLog = function (program) {
             return nativeInterface.webgl.getProgramInfoLog(this.glContext, program.external);
-        }
+        };
         this.deleteProgram = function (program) {
             return nativeInterface.webgl.deleteProgram(this.glContext, program.external);
-        }
+        };
         this.bindAttribLocation = function (program, index, name) {
             return nativeInterface.webgl.bindAttribLocation(this.glContext, program.external, index, name);
-        }
+        };
         this.getActiveUniform = function (program, index) {
             return nativeInterface.webgl.getActiveUniform(this.glContext, program.external, index);
-        }
+        };
         this.getActiveAttrib = function (program, index) {
             return nativeInterface.webgl.getActiveAttrib(this.glContext, program.external, index);
-        }
+        };
         this.getAttribLocation = function (program, name) {
             return nativeInterface.webgl.getAttribLocation(this.glContext, program.external, name);
-        }
+        };
         this.createShader = function (type) {
             return nativeInterface.webgl.createShader(this.glContext, type);
-        }
+        };
         this.shaderSource = function (shader, source) {
             return nativeInterface.webgl.shaderSource(this.glContext, shader.external, source);
-        }
+        };
         this.compileShader = function (shader) {
             return nativeInterface.webgl.compileShader(this.glContext, shader.external);
-        }
+        };
         this.getShaderParameter = function (shader, pname) {
             return nativeInterface.webgl.getShaderParameter(this.glContext, shader.external, pname);
-        }
+        };
         this.getShaderInfoLog = function (shader) {
             return nativeInterface.webgl.getShaderInfoLog(this.glContext, shader.external);
-        }
+        };
         this.attachShader = function (program, shader) {
             return nativeInterface.webgl.attachShader(this.glContext, program.external, shader.external);
-        }
+        };
         this.deleteShader = function (shader) {
             return nativeInterface.webgl.deleteShader(this.glContext, shader.external);
-        }
+        };
         this.getUniformLocation = function (program, name) {
             return nativeInterface.webgl.getUniformLocation(this.glContext, program.external, name);
-        }
+        };
         this.uniform1f = function (location, x) {
             return nativeInterface.webgl.uniform1f(this.glContext, location.external, x);
-        }
+        };
         this.uniform1fv = function (location, v) {
             return nativeInterface.webgl.uniform1fv(this.glContext, location.external, v);
-        }
+        };
         this.uniform1i = function (location, x) {
             return nativeInterface.webgl.uniform1i(this.glContext, location.external, x);
-        }
+        };
         this.uniform1iv = function (location, v) {
             return nativeInterface.webgl.uniform1iv(this.glContext, location.external, v);
-        }
+        };
         this.uniform2f = function (location, x, y) {
             return nativeInterface.webgl.uniform2f(this.glContext, location.external, x, y);
-        }
+        };
         this.uniform2fv = function (location, v) {
             return nativeInterface.webgl.uniform2fv(this.glContext, location.external, v);
-        }
+        };
         this.uniform2i = function (location, x, y) {
             return nativeInterface.webgl.uniform2i(this.glContext, location.external, x, y);
-        }
+        };
         this.uniform2iv = function (location, v) {
             return nativeInterface.webgl.uniform2iv(this.glContext, location.external, v);
-        }
+        };
         this.uniform3f = function (location, x, y, z) {
             return nativeInterface.webgl.uniform3f(this.glContext, location.external, x, y, z);
-        }
+        };
         this.uniform3fv = function (location, v) {
             return nativeInterface.webgl.uniform3fv(this.glContext, location.external, v);
-        }
+        };
         this.uniform3i = function (location, x, y, z) {
             return nativeInterface.webgl.uniform3i(this.glContext, location.external, x, y, z);
-        }
+        };
         this.uniform3iv = function (location, v) {
             return nativeInterface.webgl.uniform3iv(this.glContext, location.external, v);
-        }
+        };
         this.uniform4f = function (location, x, y, z, w) {
             return nativeInterface.webgl.uniform4f(this.glContext, location.external, x, y, z, w);
-        }
+        };
         this.uniform4fv = function (location, v) {
             return nativeInterface.webgl.uniform4fv(this.glContext, location.external, v);
-        }
+        };
         this.uniform4i = function (location, x, y, z, w) {
             return nativeInterface.webgl.uniform4i(this.glContext, location.external, x, y, z, w);
-        }
+        };
         this.uniform4iv = function (location, v) {
             return nativeInterface.webgl.uniform4iv(this.glContext, location.external, v);
-        }
+        };
         this.uniformMatrix2fv = function (location, transpose, value) {
             return nativeInterface.webgl.uniformMatrix2fv(this.glContext, location.external, transpose, value);
-        }
+        };
         this.uniformMatrix3fv = function (location, transpose, value) {
             return nativeInterface.webgl.uniformMatrix3fv(this.glContext, location.external, transpose, value);
-        }
+        };
         this.uniformMatrix4fv = function (location, transpose, value) {
             return nativeInterface.webgl.uniformMatrix4fv(this.glContext, location.external, transpose, value);
-        }
+        };
+        this.stencilFunc = function (func, ref, mask) {
+            return nativeInterface.webgl.stencilFunc(this.glContext, func, ref, mask);
+        };
+        this.stencilMask = function (mask) {
+            return nativeInterface.webgl.stencilMask(this.glContext, mask);
+        };
+        this.stencilOp = function (fail, zfail, zpass) {
+            return nativeInterface.webgl.stencilOp(this.glContext, fail, zfail, zpass);
+        };
 
         this.DEPTH_BUFFER_BIT = 0x00000100;
         this.STENCIL_BUFFER_BIT = 0x00000400;

@@ -98,6 +98,10 @@ namespace HologramJS
 
 			void vertexAttribPointer(GLuint indx, GLint size, GLenum type, GLboolean normalized, GLsizei stride, GLint offset);
 
+			void stencilFunc(GLenum func, GLint ref, GLuint mask);
+			void stencilMask(GLuint mask);
+			void stencilOp(GLenum fail, GLenum zfail, GLenum zpass);
+
 #pragma region Program
 			WebGLProgram* createProgram();
 			void useProgram(WebGLProgram* program);

@@ -668,3 +668,21 @@ WebGLRenderingContext::getShaderPrecisionFormat(GLenum shadertype, GLenum precis
     glGetShaderPrecisionFormat(shadertype, precisiontype, range, &precision);
     return new WebGLShaderPrecisionFormat(range[0], range[1], precision);
 }
+
+void
+WebGLRenderingContext::stencilFunc(GLenum func, GLint ref, GLuint mask)
+{
+    glStencilFunc(func, ref, mask);
+}
+
+void
+WebGLRenderingContext::stencilMask(GLuint mask)
+{
+    glStencilMask(mask);
+}
+
+void
+WebGLRenderingContext::stencilOp(GLenum fail, GLenum zfail, GLenum zpass)
+{
+    glStencilOp(fail, zfail, zpass);
+}

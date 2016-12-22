@@ -765,6 +765,30 @@ namespace HologramJS
 				unsigned short argumentCount,
 				PVOID callbackData
 			);
+
+			static JsValueRef CHAKRA_CALLBACK stencilFunc(
+				JsValueRef callee,
+				bool isConstructCall,
+				JsValueRef* arguments,
+				unsigned short argumentCount,
+				PVOID callbackData
+			);
+
+			static JsValueRef CHAKRA_CALLBACK stencilMask(
+				JsValueRef callee,
+				bool isConstructCall,
+				JsValueRef* arguments,
+				unsigned short argumentCount,
+				PVOID callbackData
+			);
+
+			static JsValueRef CHAKRA_CALLBACK stencilOp(
+				JsValueRef callee,
+				bool isConstructCall,
+				JsValueRef* arguments,
+				unsigned short argumentCount,
+				PVOID callbackData
+			);
 		};
 	}
 }
