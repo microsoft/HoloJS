@@ -84,4 +84,8 @@
     window.getViewMatrix = function () {
         return nativeInterface.window.holographicViewMatrix;
     };
+
+    window.getCameraPositionVector = function () {
+        return nativeInterface.window.holographicCameraPosition;
+    };
 })();

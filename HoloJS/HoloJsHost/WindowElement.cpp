@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WindowElement.h"
 
+#include <WindowsNumerics.h>
+
 using namespace HologramJS::API;
 using namespace HologramJS::Utilities;
 
@@ -129,6 +131,18 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 			CopyMemory(m_viewMatrixStoragePointer, &viewMatrix.m11, 16 * sizeof(float));
 		}
 
+		if (m_cameraPositionStoragePointer != nullptr)
+		{
+			// Inverse the view matrix in order to find back the translation equivalent to the position
+			// in the last column.
+			bool success = invert(viewMatrix, &m_inverseViewMatrix);
+			if (success)
+			{
+				// Update the camera Position inside the JSVM
+				CopyMemory(m_cameraPositionStoragePointer, &m_inverseViewMatrix.m41, 4 * sizeof(float));
+			}
+		}
+
 		std::vector<JsValueRef> parameters(1);
 		parameters[0] = m_callbackFunction;
 		JsValueRef result;
@@ -142,6 +156,7 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 	if (m_viewMatrixScriptProjection == JS_INVALID_REFERENCE)
 	{
 		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionScriptProjection));
 
 		JsValueRef globalObject;
 		RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
@@ -156,6 +171,10 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrix", &viewMatrixId));
 		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixScriptProjection, true));
 
+		JsPropertyIdRef cameraPositionId;
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPosition", &cameraPositionId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionScriptProjection, true));
+
 		unsigned int bufferLength;
 		JsTypedArrayType type;
 		int elementSize;
@@ -163,6 +182,10 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 			JsGetTypedArrayStorage(
 				m_viewMatrixScriptProjection,
 				(ChakraBytePtr*)&m_viewMatrixStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_cameraPositionScriptProjection,
+				(ChakraBytePtr*)&m_cameraPositionStoragePointer, &bufferLength, &type, &elementSize));
 	}
 
 	return true;

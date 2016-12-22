@@ -106,6 +106,10 @@ namespace HologramJS
 			float* m_viewMatrixStoragePointer = nullptr;
 			JsValueRef m_viewMatrixScriptProjection = JS_INVALID_REFERENCE;
 
+			Windows::Foundation::Numerics::float4x4 m_inverseViewMatrix;
+			float* m_cameraPositionStoragePointer = nullptr;
+			JsValueRef m_cameraPositionScriptProjection = JS_INVALID_REFERENCE;
+
 			bool CreateViewMatrixStorageAndScriptProjection();
 		};
 
