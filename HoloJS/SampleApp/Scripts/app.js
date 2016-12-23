@@ -4,7 +4,6 @@ var gl;
 var cubeVerticesBuffer;
 var cubeVerticesTextureCoordBuffer;
 var cubeVerticesIndexBuffer;
-var cubeVerticesIndexBuffer;
 
 var cubeImage;
 var cubeTexture;
