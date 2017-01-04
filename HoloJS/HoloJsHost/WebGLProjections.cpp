@@ -1482,7 +1482,7 @@ WebGLProjections::getActiveUniform(
 	auto returnObject = ScriptResourceTracker::ObjectToExternal(activeUniform);
 
 	JsValueRef namePropertyValue;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(activeUniform->name.c_str(), activeUniform->name.length(), &namePropertyValue));
+	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(activeUniform->name.c_str(), wcslen(activeUniform->name.data()), &namePropertyValue));
 
 	JsValueRef sizePropertyValue;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeUniform->size, &sizePropertyValue));
@@ -1517,8 +1517,26 @@ WebGLProjections::getActiveAttrib(
 	RETURN_INVALID_REF_IF_NULL(program);
 
 	GLuint index = ScriptHostUtilities::GLuintFromJsRef(arguments[3]);
-	auto returnObject = context->getActiveAttrib(program, index);
-	return ScriptResourceTracker::ObjectToExternal(returnObject);
+	auto activeAttribute = context->getActiveAttrib(program, index);
+
+	// Project object to script; note that the projected object is opaque to the script
+	auto returnObject = ScriptResourceTracker::ObjectToExternal(activeAttribute);
+
+	JsValueRef namePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(activeAttribute->name.c_str(), wcslen(activeAttribute->name.data()), &namePropertyValue));
+
+	JsValueRef sizePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeAttribute->size, &sizePropertyValue));
+
+	JsValueRef typePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeAttribute->type, &typePropertyValue));
+
+	// Add properties for WebGLActiveInfo as required by spec
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"name", namePropertyValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"size", sizePropertyValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"type", typePropertyValue));
+	
+	return returnObject;
 }
 
 JsValueRef
