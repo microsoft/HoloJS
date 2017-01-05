@@ -96,6 +96,12 @@ WebGLRenderingContext::generateMipmap(GLenum target)
 void
 WebGLRenderingContext::pixelStorei(GLenum pname, GLint param)
 {
+	glPixelStorei(pname, param);
+}
+
+void
+WebGLRenderingContext::pixelStorei(GLenum pname, GLboolean param)
+{
 	if (pname == UNPACK_FLIP_Y_WEBGL)
 	{
 		FlipYEnabled = (param == 0 ? false : true);

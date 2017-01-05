@@ -651,8 +651,14 @@ WebGLProjections::pixelStorei(
 	RETURN_INVALID_REF_IF_NULL(context);
 
 	GLenum pname = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
-	GLint param = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-	context->pixelStorei(pname, param);
+	if (pname == UNPACK_FLIP_Y_WEBGL || pname == UNPACK_PREMULTIPLY_ALPHA_WEBGL) {
+		GLboolean param = ScriptHostUtilities::GLbooleanFromJsRef(arguments[3]);
+		context->pixelStorei(pname, param);
+	}
+	else {
+		GLint param = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
+		context->pixelStorei(pname, param);
+	}
 	return JS_INVALID_REFERENCE;
 }
 

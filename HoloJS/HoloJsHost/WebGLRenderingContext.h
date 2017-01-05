@@ -44,6 +44,7 @@ namespace HologramJS
 			void activeTexture(GLenum texture);
 			void generateMipmap(GLenum target);
 			void pixelStorei(GLenum pname, GLint param);
+			void pixelStorei(GLenum pname, GLboolean param);
 #pragma endregion
 
 			void clearDepth(GLclampf depth);
