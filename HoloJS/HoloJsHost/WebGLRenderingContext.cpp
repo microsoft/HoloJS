@@ -645,13 +645,9 @@ WebGLRenderingContext::getParameter(GLenum pname)
     }
 	else if (pname == GL_VERSION)
 	{
-		auto asciiVersionBuffer = glGetString(pname);
-		string asciiVersion;
-		asciiVersion.assign(reinterpret_cast<const char*>(asciiVersionBuffer));
-		wstring unicodeVersion(asciiVersion.begin(), asciiVersion.end());
-
+		wstring versionString = L"WebGL 1.0";
 		JsValueRef retJsValue;
-		JsPointerToString(unicodeVersion.c_str(), unicodeVersion.length(), &retJsValue);
+		JsPointerToString(versionString.c_str(), versionString.length(), &retJsValue);
 		return retJsValue;
 	}
     else
