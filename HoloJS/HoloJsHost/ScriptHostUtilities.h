@@ -29,6 +29,8 @@ namespace HologramJS
 
 			static bool GetJsProperty(JsValueRef& parentObject, const std::wstring& name, JsValueRef* createdProperty);
 
+			static bool SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, JsValueRef& propertyValue);
+
 			static bool GetString(JsValueRef value, std::wstring& outString);
 
 			static GLclampf GLclampfFromJsRef(JsValueRef value);

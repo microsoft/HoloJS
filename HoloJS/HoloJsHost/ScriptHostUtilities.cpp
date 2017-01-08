@@ -5,6 +5,20 @@ using namespace HologramJS::Utilities;
 using namespace std;
 
 bool
+ScriptHostUtilities::SetJsProperty(
+	JsValueRef& parentObject,
+	const std::wstring& propertyName,
+	JsValueRef& propertyValue
+)
+{
+	JsPropertyIdRef propertyId;
+	RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(propertyName.c_str(), &propertyId));
+	RETURN_IF_JS_ERROR(JsSetProperty(parentObject, propertyId, propertyValue, true));
+
+	return true;
+}
+
+bool
 ScriptHostUtilities::GetJsProperty(
 	JsValueRef& parentObject,
 	const std::wstring& name,

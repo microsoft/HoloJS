@@ -160,8 +160,24 @@ WebGLProjections::getShaderPrecisionFormat(
 
 	GLenum shadertype = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
 	GLenum precisiontype = ScriptHostUtilities::GLenumFromJsRef(arguments[3]);
-	auto returnObject = context->getShaderPrecisionFormat(shadertype, precisiontype);
-	return ScriptResourceTracker::ObjectToExternal(returnObject);
+	auto precisionFormat = context->getShaderPrecisionFormat(shadertype, precisiontype);
+
+	JsValueRef rangeMinValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(precisionFormat->rangeMin, &rangeMinValue));
+
+	JsValueRef rangeMaxValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(precisionFormat->rangeMax, &rangeMaxValue));
+
+	JsValueRef precisionValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(precisionFormat->precision, &precisionValue));
+
+	auto returnObject = ScriptResourceTracker::ObjectToExternal(precisionFormat);
+
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"rangeMin", rangeMinValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"rangeMax", rangeMaxValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"precision", precisionValue));
+
+	return returnObject;
 }
 
 JsValueRef
@@ -1458,8 +1474,25 @@ WebGLProjections::getActiveUniform(
 	RETURN_INVALID_REF_IF_NULL(program);
 
 	GLuint index = ScriptHostUtilities::GLuintFromJsRef(arguments[3]);
-	auto returnObject = context->getActiveUniform(program, index);
-	return ScriptResourceTracker::ObjectToExternal(returnObject);
+	auto activeUniform = context->getActiveUniform(program, index);
+
+
+	auto returnObject = ScriptResourceTracker::ObjectToExternal(activeUniform);
+
+	JsValueRef namePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(activeUniform->name.c_str(), activeUniform->name.length(), &namePropertyValue));
+
+	JsValueRef sizePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeUniform->size, &sizePropertyValue));
+
+	JsValueRef typePropertyValue;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeUniform->type, &typePropertyValue));
+
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"name", namePropertyValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"size", sizePropertyValue));
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"type", typePropertyValue));
+	
+	return returnObject;
 }
 
 JsValueRef
