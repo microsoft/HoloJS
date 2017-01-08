@@ -45,7 +45,11 @@ function Anchor() {
             this.messages.push(entry);
         }.bind(this);
 
-        this.warn = function () {
+        this.warn = function (entry) {
+            this.messages.push(entry);
+        }
+
+        this.error = function (entry) {
             this.messages.push(entry);
         }
     }
