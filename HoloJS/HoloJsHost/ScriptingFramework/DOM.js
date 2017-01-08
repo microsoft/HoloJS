@@ -42,15 +42,15 @@ function Anchor() {
     function makeConsole() {
         this.messages = [];
         this.log = function (entry) {
-            this.messages.push(entry);
+            this.messages.push("info" + entry);
         }.bind(this);
 
         this.warn = function (entry) {
-            this.messages.push(entry);
+            this.messages.push("warning: " + entry);
         }
 
         this.error = function (entry) {
-            this.messages.push(entry);
+            this.messages.push("error" + entry);
         }
     }
 
