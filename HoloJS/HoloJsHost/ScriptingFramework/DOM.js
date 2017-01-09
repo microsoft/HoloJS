@@ -40,13 +40,19 @@ function Anchor() {
 (function () {
 
     function makeConsole() {
-        this.messages = [];
+        this.logEntries = [];
+        this.warningEntries = [];
+        this.errorEntries = [];
         this.log = function (entry) {
-            this.messages.push(entry);
+            this.logEntries.push("info: " + entry);
         }.bind(this);
 
-        this.warn = function () {
-            this.messages.push(entry);
+        this.warn = function (entry) {
+            this.warningEntries.push("warning: " + entry);
+        }
+
+        this.error = function (entry) {
+            this.errorEntries.push("error: " + entry);
         }
     }
 
