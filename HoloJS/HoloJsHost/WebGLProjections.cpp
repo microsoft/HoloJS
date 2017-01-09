@@ -162,6 +162,9 @@ WebGLProjections::getShaderPrecisionFormat(
 	GLenum precisiontype = ScriptHostUtilities::GLenumFromJsRef(arguments[3]);
 	auto precisionFormat = context->getShaderPrecisionFormat(shadertype, precisiontype);
 
+	// Project object to script; note that the projected object is opaque to the script
+	auto returnObject = ScriptResourceTracker::ObjectToExternal(precisionFormat);
+
 	JsValueRef rangeMinValue;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(precisionFormat->rangeMin, &rangeMinValue));
 
@@ -171,8 +174,7 @@ WebGLProjections::getShaderPrecisionFormat(
 	JsValueRef precisionValue;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(precisionFormat->precision, &precisionValue));
 
-	auto returnObject = ScriptResourceTracker::ObjectToExternal(precisionFormat);
-
+	// Add properties as required for WebGLShaderPrecisionFormat
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"rangeMin", rangeMinValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"rangeMax", rangeMaxValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"precision", precisionValue));
@@ -1476,7 +1478,7 @@ WebGLProjections::getActiveUniform(
 	GLuint index = ScriptHostUtilities::GLuintFromJsRef(arguments[3]);
 	auto activeUniform = context->getActiveUniform(program, index);
 
-
+	// Project object to script; note that the projected object is opaque to the script
 	auto returnObject = ScriptResourceTracker::ObjectToExternal(activeUniform);
 
 	JsValueRef namePropertyValue;
@@ -1488,6 +1490,7 @@ WebGLProjections::getActiveUniform(
 	JsValueRef typePropertyValue;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(activeUniform->type, &typePropertyValue));
 
+	// Add properties for WebGLActiveInfo as required by spec
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"name", namePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"size", sizePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"type", typePropertyValue));
