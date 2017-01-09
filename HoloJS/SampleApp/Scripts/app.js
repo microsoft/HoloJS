@@ -17,6 +17,32 @@ var mUniform;
 var vUniform;
 var samplerUniform;
 
+function makePerspectiveMatrixForNonHolographic(fieldOfViewInRadians, aspectRatio, near, far) {
+
+    var f = 1.0 / Math.tan(fieldOfViewInRadians / 2);
+    var rangeInv = 1 / (near - far);
+
+    return [
+      f / aspectRatio, 0, 0, 0,
+      0, f, 0, 0,
+      0, 0, (near + far) * rangeInv, -1,
+      0, 0, near * far * rangeInv * 2, 0
+    ];
+}
+
+function identityMatrix() {
+    return [
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    ];
+}
+
+var projectionMatrix;
+var viewMatrix;
+var modelMatrix;
+
 //
 // start
 //
@@ -35,6 +61,17 @@ function start() {
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
+        if (window.experimentalHolographic === true) {
+            // When running in Holographic mode (HoloLens), use an identity projection matrix
+            // The correct projection matrix will be automatically swaped by the JavaScript host
+            projectionMatrix = new Float32Array(identityMatrix());
+        } else {
+            // When running non-holographic (desktop etc.), use a proper projection matrix
+            projectionMatrix = new Float32Array(
+                makePerspectiveMatrixForNonHolographic(40, window.innerWidth / window.innerHeight, 1, 10));
+            viewMatrix = new Float32Array(identityMatrix());
+        }
+
         // Initialize the shaders; this is where all the lighting for the
         // vertices and so forth is established.
 
@@ -48,6 +85,14 @@ function start() {
         // Next, load and set up the textures we'll be using.
 
         initTextures();
+
+        // Set up a simple translation transform for the cube
+        modelMatrix = new Float32Array([
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+           -0.0, 0.0, -1.5, 1.0
+        ]);
 
         // Set up to draw the scene periodically.
 
@@ -240,22 +285,6 @@ function handleTextureLoaded(image, texture) {
 function drawScene() {
     // Clear the canvas before we start drawing on it.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    
-    // Identity perspective transform.
-    var identity = [
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    ]
-
-    // Set up a simple translation transform.
-    var model = [
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-       -0.0, 0.0,-1.5, 1.0
-       ]
 
     // Draw the cube by binding the array buffer to the cube's vertices
     // array, setting attributes, and pushing it to GL.
@@ -273,9 +302,11 @@ function drawScene() {
 
     // Draw the cube.
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
-    gl.uniformMatrix4fv(pUniform, false, new Float32Array(identity));
-    gl.uniformMatrix4fv(mUniform, false, new Float32Array(model));
-    gl.uniformMatrix4fv(vUniform, false, window.getViewMatrix());
+    gl.uniformMatrix4fv(pUniform, false, projectionMatrix);
+    gl.uniformMatrix4fv(mUniform, false, new Float32Array(modelMatrix));
+    // When running holographic, use the host provided projection matrix which ensures rendering is world locked;
+    // When running non-holographic, use the app (script) provided view matrix
+    gl.uniformMatrix4fv(vUniform, false, (window.experimentalHolographic === true ? window.getViewMatrix() : viewMatrix));
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
     // Present the frame.
