@@ -1800,7 +1800,7 @@ WebGLProjections::uniform1fv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform1fv(location, vLength, reinterpret_cast<const GLfloat*>(v));
+	context->uniform1fv(location, vLength / arrayElementSize / 1, reinterpret_cast<const GLfloat*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -1847,7 +1847,7 @@ WebGLProjections::uniform1iv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform1iv(location, vLength, reinterpret_cast<const GLint*>(v));
+	context->uniform1iv(location, vLength / arrayElementSize / 1, reinterpret_cast<const GLint*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -1895,7 +1895,7 @@ WebGLProjections::uniform2fv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform2fv(location, vLength, reinterpret_cast<const GLfloat*>(v));
+	context->uniform2fv(location, vLength / arrayElementSize / 2, reinterpret_cast<const GLfloat*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -1943,7 +1943,7 @@ WebGLProjections::uniform2iv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform2iv(location, vLength, reinterpret_cast<const GLint*>(v));
+	context->uniform2iv(location, vLength / arrayElementSize / 2, reinterpret_cast<const GLint*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -1992,7 +1992,7 @@ WebGLProjections::uniform3fv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform3fv(location, vLength, reinterpret_cast<const GLfloat*>(v));
+	context->uniform3fv(location, vLength / arrayElementSize / 3, reinterpret_cast<const GLfloat*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2041,7 +2041,7 @@ WebGLProjections::uniform3iv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform3iv(location, vLength, reinterpret_cast<const GLint*>(v));
+	context->uniform3iv(location, vLength / arrayElementSize / 3, reinterpret_cast<const GLint*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2091,7 +2091,7 @@ WebGLProjections::uniform4fv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform4fv(location, vLength, reinterpret_cast<const GLfloat*>(v));
+	context->uniform4fv(location, vLength / arrayElementSize / 4, reinterpret_cast<const GLfloat*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2141,7 +2141,7 @@ WebGLProjections::uniform4iv(
 
 	ChakraBytePtr v; unsigned int vLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &v, &vLength, &arrayType, &arrayElementSize);
-	context->uniform4iv(location, vLength, reinterpret_cast<const GLint*>(v));
+	context->uniform4iv(location, vLength / arrayElementSize / 4, reinterpret_cast<const GLint*>(v));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2166,7 +2166,7 @@ WebGLProjections::uniformMatrix2fv(
 	GLboolean transpose = ScriptHostUtilities::GLbooleanFromJsRef(arguments[3]);
 	ChakraBytePtr value; unsigned int valueLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[4], &value, &valueLength, &arrayType, &arrayElementSize);
-	context->uniformMatrix2fv(location, transpose, valueLength, reinterpret_cast<const GLfloat*>(value));
+	context->uniformMatrix2fv(location, transpose, valueLength / arrayElementSize / 4, reinterpret_cast<const GLfloat*>(value));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2191,7 +2191,7 @@ WebGLProjections::uniformMatrix3fv(
 	GLboolean transpose = ScriptHostUtilities::GLbooleanFromJsRef(arguments[3]);
 	ChakraBytePtr value; unsigned int valueLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[4], &value, &valueLength, &arrayType, &arrayElementSize);
-	context->uniformMatrix3fv(location, transpose, valueLength, reinterpret_cast<const GLfloat*>(value));
+	context->uniformMatrix3fv(location, transpose, valueLength / arrayElementSize / 9, reinterpret_cast<const GLfloat*>(value));
 	return JS_INVALID_REFERENCE;
 }
 
@@ -2216,7 +2216,7 @@ WebGLProjections::uniformMatrix4fv(
 	GLboolean transpose = ScriptHostUtilities::GLbooleanFromJsRef(arguments[3]);
 	ChakraBytePtr value; unsigned int valueLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[4], &value, &valueLength, &arrayType, &arrayElementSize);
-	context->uniformMatrix4fv(location, transpose, valueLength, reinterpret_cast<const GLfloat*>(value));
+	context->uniformMatrix4fv(location, transpose, valueLength / arrayElementSize / 16, reinterpret_cast<const GLfloat*>(value));
 	return JS_INVALID_REFERENCE;
 }
 
