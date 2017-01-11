@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>b00cf32c-ee8d-4598-8f87-e0c92783f38c</UniqueIdentifier>
+      <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square150x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Filter Include="Native">
+      <UniqueIdentifier>{d8ed9e64-2c5e-4b23-bf57-63b0f89d250e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{4032f6ad-0015-46dc-81b3-37e690823ecb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>Native</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Native</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="App.h">
+      <Filter>Native</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Native</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Release_Win32\libGLESv2.dll" />
+    <None Include="..\Release_Win32\libEGL.dll" />
+    <None Include="Scripts\app.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\app.json">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\three.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\three-patches.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\polyfills.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="ThreeJSApp_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Scripts\texture.png">
+      <Filter>Scripts</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
