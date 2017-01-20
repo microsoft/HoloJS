@@ -196,7 +196,7 @@ WebGLProgram::GetActiveAttrib(GLuint index)
 		GLsizei nameLengthActual = 0;
 		GLint size;
 		GLenum type;
-		glGetActiveUniform(id, index, nameLength, &nameLengthActual, &size, &type, nameBufferAscii.data());
+		glGetActiveAttrib(id, index, nameLength, &nameLengthActual, &size, &type, nameBufferAscii.data());
 
 		wstring nameUnicode(nameBufferAscii.begin(), nameBufferAscii.end());
 		retValue->name = std::move(nameUnicode);

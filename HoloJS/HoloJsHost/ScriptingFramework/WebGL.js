@@ -263,46 +263,46 @@
             return nativeInterface.webgl.uniform2f(this.glContext, location.external, x, y);
         };
         this.uniform2fv = function (location, v) {
-            return nativeInterface.webgl.uniform2fv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform2fv(this.glContext, location.external, Float32Array.from(v));
         };
         this.uniform2i = function (location, x, y) {
             return nativeInterface.webgl.uniform2i(this.glContext, location.external, x, y);
         };
         this.uniform2iv = function (location, v) {
-            return nativeInterface.webgl.uniform2iv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform2iv(this.glContext, location.external, Int32Array.from(v));
         };
         this.uniform3f = function (location, x, y, z) {
             return nativeInterface.webgl.uniform3f(this.glContext, location.external, x, y, z);
         };
         this.uniform3fv = function (location, v) {
-            return nativeInterface.webgl.uniform3fv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform3fv(this.glContext, location.external, Float32Array.from(v));
         };
         this.uniform3i = function (location, x, y, z) {
             return nativeInterface.webgl.uniform3i(this.glContext, location.external, x, y, z);
         };
         this.uniform3iv = function (location, v) {
-            return nativeInterface.webgl.uniform3iv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform3iv(this.glContext, location.external, Int32Array.from(v));
         };
         this.uniform4f = function (location, x, y, z, w) {
             return nativeInterface.webgl.uniform4f(this.glContext, location.external, x, y, z, w);
         };
         this.uniform4fv = function (location, v) {
-            return nativeInterface.webgl.uniform4fv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform4fv(this.glContext, location.external, Float32Array.from(v));
         };
         this.uniform4i = function (location, x, y, z, w) {
             return nativeInterface.webgl.uniform4i(this.glContext, location.external, x, y, z, w);
         };
         this.uniform4iv = function (location, v) {
-            return nativeInterface.webgl.uniform4iv(this.glContext, location.external, v);
+            return nativeInterface.webgl.uniform4iv(this.glContext, location.external, Int32Array.from(v));
         };
         this.uniformMatrix2fv = function (location, transpose, value) {
-            return nativeInterface.webgl.uniformMatrix2fv(this.glContext, location.external, transpose, value);
+            return nativeInterface.webgl.uniformMatrix2fv(this.glContext, location.external, transpose, Float32Array.from(value));
         };
         this.uniformMatrix3fv = function (location, transpose, value) {
-            return nativeInterface.webgl.uniformMatrix3fv(this.glContext, location.external, transpose, value);
+            return nativeInterface.webgl.uniformMatrix3fv(this.glContext, location.external, transpose, Float32Array.from(value));
         };
         this.uniformMatrix4fv = function (location, transpose, value) {
-            return nativeInterface.webgl.uniformMatrix4fv(this.glContext, location.external, transpose, value);
+            return nativeInterface.webgl.uniformMatrix4fv(this.glContext, location.external, transpose, Float32Array.from(value));
         };
         this.stencilFunc = function (func, ref, mask) {
             return nativeInterface.webgl.stencilFunc(this.glContext, func, ref, mask);
