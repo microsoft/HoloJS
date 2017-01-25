@@ -20,8 +20,25 @@ bool
 System::Initialize()
 {
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setTimeout", L"system", setTimeoutStatic, this, &m_setTimeoutFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"log", L"system", logStatic, this, &m_logFunction));
 
 	return true;
+}
+
+JsValueRef
+System::log(
+	JsValueRef callee,
+	JsValueRef* arguments,
+	unsigned short argumentCount
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+	const wchar_t* logString;
+	size_t logStringLength;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsStringToPointer(arguments[1], &logString, &logStringLength));
+
+	OutputDebugString(logString);
 }
 
 JsValueRef

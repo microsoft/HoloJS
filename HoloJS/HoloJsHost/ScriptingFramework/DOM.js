@@ -44,15 +44,15 @@ function Anchor() {
         this.warningEntries = [];
         this.errorEntries = [];
         this.log = function (entry) {
-            this.logEntries.push("info: " + entry);
+            nativeInterface.system.log("log: " + entry + "\r\n");
         }.bind(this);
 
         this.warn = function (entry) {
-            this.warningEntries.push("warning: " + entry);
+            nativeInterface.system.log("warn " + entry + "\r\n");
         }
 
         this.error = function (entry) {
-            this.errorEntries.push("error: " + entry);
+            nativeInterface.system.log("error: " + entry + "\r\n");
         }
     }
 
@@ -144,5 +144,4 @@ function Anchor() {
     document = new makeDocument();
     console = new makeConsole();
     navigator = new makeNavigator();
-    console = new makeConsole();
 })();
