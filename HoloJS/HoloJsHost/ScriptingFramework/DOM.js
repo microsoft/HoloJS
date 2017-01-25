@@ -48,7 +48,7 @@ function Anchor() {
         }.bind(this);
 
         this.warn = function (entry) {
-            nativeInterface.system.log("warn " + entry + "\r\n");
+            nativeInterface.system.log("warn: " + entry + "\r\n");
         }
 
         this.error = function (entry) {

@@ -39,6 +39,8 @@ System::log(
 	RETURN_INVALID_REF_IF_JS_ERROR(JsStringToPointer(arguments[1], &logString, &logStringLength));
 
 	OutputDebugString(logString);
+
+	return JS_INVALID_REFERENCE;
 }
 
 JsValueRef
