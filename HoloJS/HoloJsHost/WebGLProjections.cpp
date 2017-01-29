@@ -16,7 +16,6 @@ WebGLProjections::Initialize()
 	// WebGL context projections
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext", L"webgl", createContext));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext2D", L"canvas2d", createContext2D));
-	
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getShaderPrecisionFormat", L"webgl", getShaderPrecisionFormat));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getExtension", L"webgl", getExtension));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getParameter", L"webgl", getParameter));
@@ -107,7 +106,6 @@ WebGLProjections::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilFunc", L"webgl", stencilFunc));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilMask", L"webgl", stencilMask));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilOp", L"webgl", stencilOp));
-
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"lineWidth", L"webgl", lineWidth));
 
 	// Canvas 2D context projections
@@ -115,6 +113,11 @@ WebGLProjections::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage2", L"canvas2d", drawImage2));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage3", L"canvas2d", drawImage3));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getImageData", L"canvas2d", getImageData));
+
+	// ANGLE_instanced_arrays extension projections
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawArraysInstancedANGLE", L"angle_instanced_arrays", drawArraysInstancedANGLE));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawElementsInstancedANGLE", L"angle_instanced_arrays", drawElementsInstancedANGLE));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"vertexAttribDivisorANGLE", L"angle_instanced_arrays", vertexAttribDivisorANGLE));
 
 	return true;
 }
@@ -201,7 +204,8 @@ WebGLProjections::getExtension(
 
 	std::wstring name;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], name));
-	return JS_INVALID_REFERENCE;
+
+	return context->getExtension(&name);
 }
 
 JsValueRef
@@ -478,7 +482,7 @@ WebGLProjections::texImage2D1(
 	{
 		context->texImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
 	}
-	
+
 	return JS_INVALID_REFERENCE;
 }
 
@@ -514,7 +518,7 @@ WebGLProjections::texImage2D2(
 	WICInProcPointer imageMemory = nullptr;
 	unsigned int stride;
 	RETURN_INVALID_REF_IF_FALSE(imageElement->GetPixelsPointer(&imageMemory, &imageBufferSize, &stride));
-	
+
 	context->texImage2D(target, level, internalformat, width, height, 0, format, type, imageMemory);
 	return JS_INVALID_REFERENCE;
 }
@@ -1143,7 +1147,7 @@ WebGLProjections::bufferData2(
 	RETURN_INVALID_REF_IF_NULL(context);
 
 	GLenum target = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
-	
+
 	ChakraBytePtr data; unsigned int dataLength; int arrayElementSize; JsTypedArrayType arrayType;
 	JsGetTypedArrayStorage(arguments[3], &data, &dataLength, &arrayType, &arrayElementSize);
 	GLenum usage = ScriptHostUtilities::GLenumFromJsRef(arguments[4]);
@@ -1502,7 +1506,7 @@ WebGLProjections::getActiveUniform(
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"name", namePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"size", sizePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"type", typePropertyValue));
-	
+
 	return returnObject;
 }
 
@@ -1543,7 +1547,7 @@ WebGLProjections::getActiveAttrib(
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"name", namePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"size", sizePropertyValue));
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::SetJsProperty(returnObject, L"type", typePropertyValue));
-	
+
 	return returnObject;
 }
 
@@ -2320,7 +2324,7 @@ WebGLProjections::drawImage3(
 	int dWidth = ScriptHostUtilities::GLintFromJsRef(arguments[13]);
 	int dHeight = ScriptHostUtilities::GLintFromJsRef(arguments[14]);
 
-    
+
 	context->drawImage3(imageElement, imageWidth, imageHeight, sx, sy, sWidth, sHeight, dx, dx, dWidth, dHeight);
 	return JS_INVALID_REFERENCE;
 }
@@ -2338,7 +2342,7 @@ WebGLProjections::getImageData(
 	RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
 
 	RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
-	
+
 	RETURN_INVALID_REF_IF_NULL(context);
 
 	int sx = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
@@ -2466,6 +2470,80 @@ WebGLProjections::lineWidth(
 
 	GLfloat width = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
 	context->lineWidth(width);
+
+	return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::drawArraysInstancedANGLE(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef* arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
+
+	ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(extension);
+
+	GLenum mode = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+	GLint first = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
+	GLsizei count = ScriptHostUtilities::GLsizeiFromJsRef(arguments[4]);
+	GLsizei primcount = ScriptHostUtilities::GLsizeiFromJsRef(arguments[5]);
+
+	extension->drawArraysInstancedANGLE(mode, first, count, primcount);
+
+	return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::drawElementsInstancedANGLE(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef* arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 7);
+
+	ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(extension);
+
+	GLenum mode = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+	GLsizei count = ScriptHostUtilities::GLsizeiFromJsRef(arguments[3]);
+	GLenum type = ScriptHostUtilities::GLenumFromJsRef(arguments[4]);
+	GLintptr offset = ScriptHostUtilities::GLsizeiptrFromJsRef(arguments[5]);
+	GLsizei primcount = ScriptHostUtilities::GLsizeiFromJsRef(arguments[6]);
+
+	extension->drawElementsInstancedANGLE(mode, count, type, offset, primcount);
+
+	return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::vertexAttribDivisorANGLE(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef* arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
+
+	ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(extension);
+
+	GLuint index = ScriptHostUtilities::GLuintFromJsRef(arguments[2]);
+	GLuint divisor = ScriptHostUtilities::GLuintFromJsRef(arguments[3]);
+
+	extension->vertexAttribDivisorANGLE(index, divisor);
 
 	return JS_INVALID_REFERENCE;
 }

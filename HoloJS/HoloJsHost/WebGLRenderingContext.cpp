@@ -60,7 +60,7 @@ WebGLRenderingContext::texImage2D(GLenum target, GLint level, GLenum internalfor
 		{
 			glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 		}
-        
+
     }
     else
     {
@@ -208,7 +208,7 @@ WebGLRenderingContext::clearColor(GLclampf red, GLclampf green, GLclampf blue, G
 WebGLBuffer*
 WebGLRenderingContext::createBuffer()
 {
-	return new WebGLBuffer();	
+	return new WebGLBuffer();
 }
 
 void
@@ -588,6 +588,15 @@ WebGLRenderingContext::framebufferTexture2D(GLenum target, GLenum attachment, GL
 	{
         texture->framebufferTexture2D(target, attachment, textarget, level);
 	}
+}
+
+JsValueRef
+WebGLRenderingContext::getExtension(std::wstring *pname)
+{
+	if (pname->compare(L"ANGLE_instanced_arrays") == 0) {
+		return Utilities::ScriptResourceTracker::ObjectToDirectExternal(&angle_instanced_arrays);
+	}
+	else return JS_INVALID_REFERENCE;
 }
 
 JsValueRef

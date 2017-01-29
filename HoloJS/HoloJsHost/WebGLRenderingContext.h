@@ -7,13 +7,13 @@ namespace HologramJS
 		class WebGLRenderingContext : public HologramJS::Utilities::IRelease
 		{
 		public:
-			WebGLRenderingContext() {}
+			WebGLRenderingContext() : angle_instanced_arrays() {}
 
 			void Release() {}
 
 			WebGLShaderPrecisionFormat* getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
 
-			//Object^ getExtension(Platform::String^ name);
+			JsValueRef getExtension(std::wstring *pname);
 			JsValueRef getParameter(GLenum pname);
 
 #pragma region Frame and render buffers
@@ -125,7 +125,7 @@ namespace HologramJS
 			std::wstring getShaderInfoLog(WebGLShader* shader);
 			void attachShader(WebGLProgram* program, WebGLShader* shader);
 			void deleteShader(WebGLShader* shader);
-#pragma endregion 
+#pragma endregion
 
 #pragma region Uniforms
 
@@ -181,6 +181,8 @@ namespace HologramJS
 			const GLenum UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
 
 			bool FlipYEnabled = false;
+
+			ANGLE_instanced_arrays angle_instanced_arrays;
 		};
 	}
 }
