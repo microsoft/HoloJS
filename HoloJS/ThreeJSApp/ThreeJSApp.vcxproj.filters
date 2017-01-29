@@ -59,6 +59,12 @@
     <None Include="Scripts\app.json">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\holographic-camera.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\holographic-effect.js">
+      <Filter>Scripts</Filter>
+    </None>
     <None Include="Scripts\three.js">
       <Filter>Scripts</Filter>
     </None>
@@ -66,11 +72,11 @@
       <Filter>Scripts</Filter>
     </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
-    <None Include="..\prebuilt\angle\win32\release\libGLESv2.dll" />
-    <None Include="..\prebuilt\angle\win32\release\libEGL.dll" />
     <None Include="Scripts\OrbitControls.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="..\prebuilt\angle\win32\debug\libEGL.dll" />
+    <None Include="..\prebuilt\angle\win32\debug\libGLESv2.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">

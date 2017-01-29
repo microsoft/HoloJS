@@ -5,45 +5,52 @@ if (!window.getViewMatrix) {
     canvas.style.width = canvas.style.height = "100%";
 }
 
-class HolographicCamera extends THREE.Camera {
-
-    constructor () {
-        super();
-        this._holographicViewMatrix = new THREE.Matrix4();
-        this._holographicTransformMatrix = new THREE.Matrix4();
-        this._flipMatrix = new THREE.Matrix4().makeScale(-1, 1, 1);
-    }
-
-    update () {
-        this._holographicViewMatrix.elements.set(window.getViewMatrix());
-        this._holographicViewMatrix.multiply(this._flipMatrix);
-        this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
-        this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
-    }
-}
-
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+let holoEffect = new THREE.HolographicEffect(renderer);
+holoEffect.enabled = !!window.getViewMatrix;
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
 
-let ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+let ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5);
 let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.5);
 let pointLight = new THREE.PointLight(0xFFFFFF, 0.5);
 
-let cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), material.clone());
-let sphere = new THREE.Mesh(initColors(new THREE.SphereBufferGeometry(0.1, 20, 20)), material.clone());
-let cone = new THREE.Mesh(initColors(new THREE.ConeBufferGeometry(0.1, 0.2, 20, 20)), material.clone());
-let torus = new THREE.Mesh(initColors(new THREE.TorusKnotBufferGeometry(0.2, 0.02, 100, 100)), material.clone());
+let cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), new THREE.MeshLambertMaterial({ vertexColors: THREE.VertexColors }));
+let sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.1, 20, 20), new THREE.MeshPhongMaterial({ color: 0xff0000, shininess: 200 }));
+let cone = new THREE.Mesh(new THREE.ConeBufferGeometry(0.1, 0.2, 20, 20), new THREE.MeshNormalMaterial());
+let torus = new THREE.Mesh(new THREE.TorusKnotBufferGeometry(0.2, 0.02, 100, 100), new THREE.MeshPhysicalMaterial({ color: 0x00ff00, roughness: 0.5, metalness: 1.0 }));
+let dodecahedron = new THREE.Mesh(new THREE.DodecahedronGeometry(0.05), new THREE.ShaderMaterial({
+    vertexShader: `void main () { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+    fragmentShader: `uniform vec3 color; void main () { gl_FragColor = vec4(color, 1.0); }`,
+    uniforms: { color: { value: new THREE.Color(0x00ffff) } }
+}));
+let cylinder = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.1, 20), new THREE.RawShaderMaterial({
+    vertexShader: `
+        attribute vec3 position;
+        uniform mediump mat4 projectionMatrix;
+        uniform mat4 modelViewMatrix;
+        void main () {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform highp vec3 color;
+        uniform highp vec3 cameraPosition;
+        void main () {
+            gl_FragColor = vec4(color, 1.0);
+        }
+    `,
+    uniforms: { color: { value: new THREE.Color(0x0000ff) } }
+}));
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 loader.setCrossOrigin('anonymous');
 material.map.needsUpdate = true;
 
 directionalLight.position.set(0, 2, 0);
-
 cube.position.set(0, 0, -1.5);
 cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from([
     1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, // right - red
@@ -53,56 +60,30 @@ cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from(
     0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, // back - cyan
     1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, // front - purple
 ]), 3));
-loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
-
 sphere.position.set(0.4, 0, -1.5);
-sphere.material.color.set(0xff0000);
-sphere.material.roughness = 0.3;
-sphere.material.metalness = 0.2;
-
 cone.position.set(-0.4, 0, -1.5);
-cone.material.color.set(0x0000ff);
-cone.material.roughness = 0.5;
-
 torus.scale.set(1.5, 1.5, 1.5);
-torus.material.color.set(0x00ff00);
-torus.material.roughness = 0.5;
-torus.material.metalness = 1.0;
+torus.position.set(0, 0, -2.0);
+cylinder.position.set(-0.2, 0.3, -1.2);
+dodecahedron.position.set(0.2, 0.3, -1.2);
 
-scene.add(ambientLight);
-scene.add(directionalLight);
-scene.add(pointLight);
-
-scene.add(cube);
-scene.add(sphere);
-scene.add(cone);
-scene.add(torus);
-scene.add(camera);
-
-cube.frustumCulled = false;
-sphere.frustumCulled = false;
-cone.frustumCulled = false;
-torus.frustumCulled = false;
+scene.add(ambientLight, directionalLight, pointLight, cube, sphere, cone, torus, cylinder, dodecahedron, camera);
 
 var controls;
 
 if (window.experimentalHolographic !== true) {
-    camera.position.set(0, 0, 1);
+    camera.position.set(0, 0, 0.001);
     controls = new THREE.OrbitControls(camera, canvas);
 }
 
-function initColors (geometry) {
-    return geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.array.length).fill(1.0), 3));
-}
+loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
 
 function update (delta, elapsed) {
     window.requestAnimationFrame(() => update(clock.getDelta(), clock.getElapsedTime()));
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
 
-    if (camera.update) camera.update();
-
-    renderer.render(scene, camera);
+    holoEffect.render(scene, camera);
 }
 
 function start () {

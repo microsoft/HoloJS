@@ -213,6 +213,12 @@
     <None Include="Scripts\OrbitControls.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\holographic-effect.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scripts\holographic-camera.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>

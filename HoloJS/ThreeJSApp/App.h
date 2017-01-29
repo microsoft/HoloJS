@@ -5,6 +5,7 @@
 
 namespace ThreeJSApp
 {
+
 	ref class App sealed : public Windows::ApplicationModel::Core::IFrameworkView
 	{
 	public:
