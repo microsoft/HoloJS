@@ -65,9 +65,6 @@
     <None Include="Scripts\three-patches.js">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="Scripts\polyfills.js">
-      <Filter>Scripts</Filter>
-    </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="..\prebuilt\angle\win32\release\libGLESv2.dll" />
     <None Include="..\prebuilt\angle\win32\release\libEGL.dll" />
