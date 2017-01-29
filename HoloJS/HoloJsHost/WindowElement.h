@@ -7,8 +7,12 @@
 
 namespace HologramJS
 {
+
 	namespace API
 	{
+
+		using float4x4 = Windows::Foundation::Numerics::float4x4;
+
 		class WindowElement
 		{
 		public:
@@ -21,7 +25,7 @@ namespace HologramJS
 			bool Initialize();
 
 			void Resize(int width, int height);
-			void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix);
+			void VSync(float4x4 midViewMatrix, float4x4 midProjectionMatrix, float4x4 leftViewMatrix, float4x4 leftProjectionMatrix, float4x4 rightViewMatrix, float4x4 rightProjectionMatrix);
 
 			Input::KeyboardInput& KeyboardRouter() { return m_keyboardInput; }
 			Input::MouseInput& MouseRouter() { return m_mouseInput; }
@@ -133,12 +137,30 @@ namespace HologramJS
 				unsigned short argumentCount
 			);
 
-			float* m_viewMatrixStoragePointer = nullptr;
-			JsValueRef m_viewMatrixScriptProjection = JS_INVALID_REFERENCE;
+			float* m_viewMatrixMidStoragePointer = nullptr;
+			JsValueRef m_viewMatrixMidScriptProjection = JS_INVALID_REFERENCE;
+			float* m_viewMatrixLeftStoragePointer = nullptr;
+			JsValueRef m_viewMatrixLeftScriptProjection = JS_INVALID_REFERENCE;
+			float* m_viewMatrixRightStoragePointer = nullptr;
+			JsValueRef m_viewMatrixRightScriptProjection = JS_INVALID_REFERENCE;
 
-			Windows::Foundation::Numerics::float4x4 m_inverseViewMatrix;
-			float* m_cameraPositionStoragePointer = nullptr;
-			JsValueRef m_cameraPositionScriptProjection = JS_INVALID_REFERENCE;
+			float* m_projectionMatrixMidStoragePointer = nullptr;
+			JsValueRef m_projectionMatrixMidScriptProjection = JS_INVALID_REFERENCE;
+			float* m_projectionMatrixLeftStoragePointer = nullptr;
+			JsValueRef m_projectionMatrixLeftScriptProjection = JS_INVALID_REFERENCE;
+			float* m_projectionMatrixRightStoragePointer = nullptr;
+			JsValueRef m_projectionMatrixRightScriptProjection = JS_INVALID_REFERENCE;
+
+			Windows::Foundation::Numerics::float4x4 m_inverseMidViewMatrix;
+			Windows::Foundation::Numerics::float4x4 m_inverseLeftViewMatrix;
+			Windows::Foundation::Numerics::float4x4 m_inverseRightViewMatrix;
+
+			float* m_cameraPositionMidStoragePointer = nullptr;
+			JsValueRef m_cameraPositionMidScriptProjection = JS_INVALID_REFERENCE;
+			float* m_cameraPositionLeftStoragePointer = nullptr;
+			JsValueRef m_cameraPositionLeftScriptProjection = JS_INVALID_REFERENCE;
+			float* m_cameraPositionRightStoragePointer = nullptr;
+			JsValueRef m_cameraPositionRightScriptProjection = JS_INVALID_REFERENCE;
 
 			bool CreateViewMatrixStorageAndScriptProjection();
 		};

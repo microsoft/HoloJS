@@ -2,6 +2,8 @@
 
 namespace HologramJS
 {
+	using float4x4 = Windows::Foundation::Numerics::float4x4;
+
 	[Windows::Foundation::Metadata::WebHostHidden]
 	public ref class HologramScriptHost sealed
 	{
@@ -19,7 +21,8 @@ namespace HologramJS
 		Windows::Foundation::IAsyncOperation<bool>^ RunWebScriptAppAsync(Platform::String^ jsonUri);
 
 		void ResizeWindow(int width, int height) { m_window.Resize(width, height); }
-		void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix) { m_window.VSync(viewMatrix); }
+		void VSync(float4x4 viewMatrix) { m_window.VSync(viewMatrix, *new float4x4(), *new float4x4(), *new float4x4(), *new float4x4(), *new float4x4()); } // backwards compatibility
+		void VSync(float4x4 midViewMatrix, float4x4 midProjectionMatrix, float4x4 leftViewMatrix, float4x4 leftProjectionMatrix, float4x4 rightViewMatrix, float4x4 rightProjectionMatrix) { m_window.VSync(midViewMatrix, midProjectionMatrix, leftViewMatrix, leftProjectionMatrix, rightViewMatrix, rightProjectionMatrix); }
 
 	private:
 		JsRuntimeHandle m_jsRuntime = nullptr;

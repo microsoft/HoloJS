@@ -5,7 +5,7 @@
     function makeLocation(href) {
         this.href = href;
     }
-    
+
     window.drawCallback = null;
     window.spatialMappingCallback = null;
     window.location = new makeLocation(nativeInterface.window.getBaseUrl());
@@ -148,10 +148,34 @@
     nativeInterface.window.setCallback(window.nativeCallback);
 
     window.getViewMatrix = function () {
-        return nativeInterface.window.holographicViewMatrix;
+        return nativeInterface.window.holographicViewMatrixMid;
+    };
+
+    window.getProjectionMatrix = function () {
+        return nativeInterface.window.holographicProjectionMatrixMid;
     };
 
     window.getCameraPositionVector = function () {
-        return nativeInterface.window.holographicCameraPosition;
+        return nativeInterface.window.holographicCameraPositionMid;
     };
+
+    window.getHolographicCameraParameters = function () {
+        return {
+            mid: {
+                viewMatrix: nativeInterface.window.holographicViewMatrixMid,
+                projectionMatrix: nativeInterface.window.holographicProjectionMatrixMid,
+                cameraPosition: nativeInterface.window.holographicCameraPositionMid
+            },
+            left: {
+                viewMatrix: nativeInterface.window.holographicViewMatrixLeft,
+                projectionMatrix: nativeInterface.window.holographicProjectionMatrixLeft,
+                cameraPosition: nativeInterface.window.holographicCameraPositionLeft
+            },
+            right: {
+                viewMatrix: nativeInterface.window.holographicViewMatrixRight,
+                projectionMatrix: nativeInterface.window.holographicProjectionMatrixRight,
+                cameraPosition: nativeInterface.window.holographicCameraPositionRight
+            },
+        }
+    }
 })();

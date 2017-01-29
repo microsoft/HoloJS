@@ -62,7 +62,7 @@ WindowElement::setCallback(
 	RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
 
 	JsValueRef callback = arguments[1];
-	
+
 	unsigned int refCount;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, &refCount));
 
@@ -126,7 +126,7 @@ WindowElement::Resize(int width, int height)
 }
 
 void
-WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
+WindowElement::VSync(float4x4 midViewMatrix, float4x4 midProjectionMatrix, float4x4 leftViewMatrix, float4x4 leftProjectionMatrix, float4x4 rightViewMatrix, float4x4 rightProjectionMatrix)
 {
 	// Workaround for RS1: spatial input events can be delivered on non-UI threads; in this case m_spatialInput
 	// queued events internally and since now we're on the UI thread we drain them
@@ -136,21 +136,69 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 
 	if (m_callbackFunction != JS_INVALID_REFERENCE)
 	{
-		if (m_viewMatrixStoragePointer != nullptr)
+		if (m_viewMatrixMidStoragePointer != nullptr)
 		{
 			// Update the view matrix inside the JSVM
-			CopyMemory(m_viewMatrixStoragePointer, &viewMatrix.m11, 16 * sizeof(float));
+			CopyMemory(m_viewMatrixMidStoragePointer, &midViewMatrix.m11, 16 * sizeof(float));
+		}
+		if (m_viewMatrixLeftStoragePointer != nullptr)
+		{
+			// Update the view matrix inside the JSVM
+			CopyMemory(m_viewMatrixLeftStoragePointer, &leftViewMatrix.m11, 16 * sizeof(float));
+		}
+		if (m_viewMatrixRightStoragePointer != nullptr)
+		{
+			// Update the view matrix inside the JSVM
+			CopyMemory(m_viewMatrixRightStoragePointer, &rightViewMatrix.m11, 16 * sizeof(float));
 		}
 
-		if (m_cameraPositionStoragePointer != nullptr)
+		if (m_projectionMatrixMidStoragePointer != nullptr)
+		{
+			// Update the projection matrix inside the JSVM
+			CopyMemory(m_projectionMatrixMidStoragePointer, &midProjectionMatrix.m11, 16 * sizeof(float));
+		}
+		if (m_projectionMatrixLeftStoragePointer != nullptr)
+		{
+			// Update the projection matrix inside the JSVM
+			CopyMemory(m_projectionMatrixLeftStoragePointer, &leftProjectionMatrix.m11, 16 * sizeof(float));
+		}
+		if (m_projectionMatrixRightStoragePointer != nullptr)
+		{
+			// Update the projection matrix inside the JSVM
+			CopyMemory(m_projectionMatrixRightStoragePointer, &rightProjectionMatrix.m11, 16 * sizeof(float));
+		}
+
+		if (m_cameraPositionMidStoragePointer != nullptr)
 		{
 			// Inverse the view matrix in order to find back the translation equivalent to the position
 			// in the last column.
-			bool success = invert(viewMatrix, &m_inverseViewMatrix);
+			bool success = invert(midViewMatrix, &m_inverseMidViewMatrix);
 			if (success)
 			{
 				// Update the camera Position inside the JSVM
-				CopyMemory(m_cameraPositionStoragePointer, &m_inverseViewMatrix.m41, 4 * sizeof(float));
+				CopyMemory(m_cameraPositionMidStoragePointer, &m_inverseMidViewMatrix.m41, 4 * sizeof(float));
+			}
+		}
+		if (m_cameraPositionLeftStoragePointer != nullptr)
+		{
+			// Inverse the view matrix in order to find back the translation equivalent to the position
+			// in the last column.
+			bool success = invert(leftViewMatrix, &m_inverseLeftViewMatrix);
+			if (success)
+			{
+				// Update the camera Position inside the JSVM
+				CopyMemory(m_cameraPositionLeftStoragePointer, &m_inverseLeftViewMatrix.m41, 4 * sizeof(float));
+			}
+		}
+		if (m_cameraPositionRightStoragePointer != nullptr)
+		{
+			// Inverse the view matrix in order to find back the translation equivalent to the position
+			// in the last column.
+			bool success = invert(rightViewMatrix, &m_inverseRightViewMatrix);
+			if (success)
+			{
+				// Update the camera Position inside the JSVM
+				CopyMemory(m_cameraPositionRightStoragePointer, &m_inverseRightViewMatrix.m41, 4 * sizeof(float));
 			}
 		}
 
@@ -164,10 +212,20 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 bool
 WindowElement::CreateViewMatrixStorageAndScriptProjection()
 {
-	if (m_viewMatrixScriptProjection == JS_INVALID_REFERENCE)
+	if (m_viewMatrixMidScriptProjection == JS_INVALID_REFERENCE)
 	{
-		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixScriptProjection));
-		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixMidScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionMidScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_projectionMatrixMidScriptProjection));
+
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixLeftScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionLeftScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_projectionMatrixLeftScriptProjection));
+
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixRightScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionRightScriptProjection));
+		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_projectionMatrixRightScriptProjection));
+
 
 		JsValueRef globalObject;
 		RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
@@ -179,24 +237,68 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 		RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(nativeInterface, L"window", &windowObject));
 
 		JsPropertyIdRef viewMatrixId;
-		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrix", &viewMatrixId));
-		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrixMid", &viewMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixMidScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrixLeft", &viewMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixLeftScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrixRight", &viewMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixRightScriptProjection, true));
 
 		JsPropertyIdRef cameraPositionId;
-		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPosition", &cameraPositionId));
-		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPositionMid", &cameraPositionId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionMidScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPositionLeft", &cameraPositionId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionLeftScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPositionRight", &cameraPositionId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionRightScriptProjection, true));
+
+		JsPropertyIdRef projectionMatrixId;
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicProjectionMatrixMid", &projectionMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, projectionMatrixId, m_projectionMatrixMidScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicProjectionMatrixLeft", &projectionMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, projectionMatrixId, m_projectionMatrixLeftScriptProjection, true));
+		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicProjectionMatrixRight", &projectionMatrixId));
+		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, projectionMatrixId, m_projectionMatrixRightScriptProjection, true));
 
 		unsigned int bufferLength;
 		JsTypedArrayType type;
 		int elementSize;
 		RETURN_IF_JS_ERROR(
 			JsGetTypedArrayStorage(
-				m_viewMatrixScriptProjection,
-				(ChakraBytePtr*)&m_viewMatrixStoragePointer, &bufferLength, &type, &elementSize));
+				m_viewMatrixMidScriptProjection,
+				(ChakraBytePtr*)&m_viewMatrixMidStoragePointer, &bufferLength, &type, &elementSize));
 		RETURN_IF_JS_ERROR(
 			JsGetTypedArrayStorage(
-				m_cameraPositionScriptProjection,
-				(ChakraBytePtr*)&m_cameraPositionStoragePointer, &bufferLength, &type, &elementSize));
+				m_viewMatrixLeftScriptProjection,
+				(ChakraBytePtr*)&m_viewMatrixLeftStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_viewMatrixRightScriptProjection,
+				(ChakraBytePtr*)&m_viewMatrixRightStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_cameraPositionMidScriptProjection,
+				(ChakraBytePtr*)&m_cameraPositionMidStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_cameraPositionLeftScriptProjection,
+				(ChakraBytePtr*)&m_cameraPositionLeftStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_cameraPositionRightScriptProjection,
+				(ChakraBytePtr*)&m_cameraPositionRightStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_projectionMatrixMidScriptProjection,
+				(ChakraBytePtr*)&m_projectionMatrixMidStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_projectionMatrixLeftScriptProjection,
+				(ChakraBytePtr*)&m_projectionMatrixLeftStoragePointer, &bufferLength, &type, &elementSize));
+		RETURN_IF_JS_ERROR(
+			JsGetTypedArrayStorage(
+				m_projectionMatrixRightScriptProjection,
+				(ChakraBytePtr*)&m_projectionMatrixRightStoragePointer, &bufferLength, &type, &elementSize));
 	}
 
 	return true;
