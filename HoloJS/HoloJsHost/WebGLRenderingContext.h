@@ -170,7 +170,7 @@ namespace HologramJS
 			void uniformMatrix4fv(WebGLUniformLocation* location, GLboolean transpose, GLsizei count, const GLfloat* value);
 #pragma endregion
 
-#pragma region Linex
+#pragma region Lines
 			void lineWidth(GLfloat width);
 #pragma endregion
 
