@@ -63,8 +63,8 @@
     <None Include="Scripts\app.js">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="..\Release_Win32\libGLESv2.dll" />
-    <None Include="..\Release_Win32\libEGL.dll" />
+    <None Include="..\prebuilt\angle\win32\debug\libEGL.dll" />
+    <None Include="..\prebuilt\angle\win32\debug\libGLESv2.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
