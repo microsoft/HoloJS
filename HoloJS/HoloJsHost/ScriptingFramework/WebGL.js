@@ -314,6 +314,10 @@
             return nativeInterface.webgl.stencilOp(this.glContext, fail, zfail, zpass);
         };
 
+        this.lineWidth = function (width) {
+            return nativeInterface.webgl.lineWidth(this.glContext, width);
+        };
+
         this.DEPTH_BUFFER_BIT = 0x00000100;
         this.STENCIL_BUFFER_BIT = 0x00000400;
         this.COLOR_BUFFER_BIT = 0x00004000;

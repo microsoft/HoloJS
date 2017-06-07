@@ -13,10 +13,10 @@ using namespace HologramJS::API;
 bool
 WebGLProjections::Initialize()
 {
+	// WebGL context projections
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext", L"webgl", createContext));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext2D", L"canvas2d", createContext2D));
 	
-	// WebGL context projections
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getShaderPrecisionFormat", L"webgl", getShaderPrecisionFormat));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getExtension", L"webgl", getExtension));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getParameter", L"webgl", getParameter));
@@ -107,6 +107,8 @@ WebGLProjections::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilFunc", L"webgl", stencilFunc));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilMask", L"webgl", stencilMask));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilOp", L"webgl", stencilOp));
+
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"lineWidth", L"webgl", lineWidth));
 
 	// Canvas 2D context projections
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage1", L"canvas2d", drawImage1));
@@ -2445,4 +2447,25 @@ WebGLProjections::stencilOp(
     context->stencilOp(fail, zfail, zpass);
 
     return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::lineWidth(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef* arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+
+	WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(context);
+
+	GLfloat width = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
+	context->lineWidth(width);
+
+	return JS_INVALID_REFERENCE;
 }
