@@ -92,6 +92,12 @@ cone.frustumCulled = false;
 torus.frustumCulled = false;
 cursor.frustumCulled = false;
 
+var controls;
+
+if (window.experimentalHolographic !== true) {
+    controls = new THREE.OrbitControls(camera);    
+}
+
 function initColors (geometry) {
     return geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.array.length).fill(1.0), 3));
 }

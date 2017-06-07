@@ -210,6 +210,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Scripts\OrbitControls.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>
