@@ -4,54 +4,81 @@
 using namespace HologramJS::Input;
 using namespace Windows::UI::Core;
 using namespace std;
+using namespace Windows::Foundation;
+
+enum class MouseButtons : int
+{
+	NoButton = 0,
+	LeftButton = 1,
+	RightButton = 2,
+	MiddleButton = 4
+};
+
+inline MouseButtons &
+operator|=(MouseButtons & __x, MouseButtons __y)
+{
+	__x = static_cast<MouseButtons>(static_cast<int>(__x) | static_cast<int>(__y));
+	return __x;
+}
 
 MouseInput::MouseInput()
 {
+	m_mouseDownToken = CoreWindow::GetForCurrentThread()->PointerPressed += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+		[this](CoreWindow ^sender, PointerEventArgs ^args)
+	{
+		this->MouseDown(args);
+	});
+
+	m_mouseUpToken = CoreWindow::GetForCurrentThread()->PointerReleased += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+		[this](CoreWindow ^sender, PointerEventArgs ^args)
+	{
+		this->MouseUp(args);
+	});
+
+	m_mouseWheelToken = CoreWindow::GetForCurrentThread()->PointerWheelChanged += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+		[this](CoreWindow ^sender, PointerEventArgs ^args)
+	{
+		this->MouseWheel(args);
+	});
+
+	m_mouseMoveToken = CoreWindow::GetForCurrentThread()->PointerMoved += ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+		[this](CoreWindow ^sender, PointerEventArgs ^args)
+	{
+		this->MouseMove(args);
+	});
 }
 
 
 MouseInput::~MouseInput()
 {
+	CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
+	CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
+	CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
+	CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
 }
 
-int GetButtonFromArgs(PointerEventArgs^ args)
+MouseButtons GetButtonFromArgs(PointerEventArgs^ args)
 {
-	auto pointProps = args->CurrentPoint->Properties;
-	const bool left = pointProps->IsLeftButtonPressed;
-	const bool middle = pointProps->IsMiddleButtonPressed;
-	const bool right = pointProps->IsRightButtonPressed;
-	if (left && !middle && !right)
+	auto returnValue = MouseButtons::NoButton;
+
+	const auto pointProps = args->CurrentPoint->Properties;
+
+	if (pointProps->IsLeftButtonPressed)
 	{
-		return 1;
+		returnValue |= MouseButtons::LeftButton;
 	}
-	else if (left && middle && !right)
+
+	if (pointProps->IsMiddleButtonPressed)
 	{
-		return 5;
+		returnValue |= MouseButtons::MiddleButton;
 	}
-	else if (left && middle && right)
+
+	if (pointProps->IsRightButtonPressed)
 	{
-		return 7;
+		returnValue |= MouseButtons::RightButton;
 	}
-	else if (left && !middle && right)
-	{
-		return 3;
-	}
-	else if (!left && middle && right)
-	{
-		return 6;
-	}
-	else if (!left && middle && !right)
-	{
-		return 4;
-	}
-	else if (!left && !middle && right)
-	{
-		return 2;
-	}
-	else
-	{
-		return 0;
-	}
+
+	return returnValue;
 }
 
 bool
@@ -59,11 +86,9 @@ MouseInput::CreateScriptParametersListForMouse(
 	const wstring& eventName,
 	const wstring& actionType,
 	PointerEventArgs^ args,
-	vector<JsValueRef>& outParams
+	JsValueRef (&outParams)[6]
 )
 {
-	outParams.resize(6);
-
 	outParams[0] = m_scriptCallback;
 	JsValueRef* eventNameParam = &outParams[1];
 	JsValueRef* xParam = &outParams[2];
@@ -74,7 +99,7 @@ MouseInput::CreateScriptParametersListForMouse(
 	RETURN_IF_JS_ERROR(JsPointerToString(eventName.c_str(), eventName.length(), eventNameParam));
 	RETURN_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.X, xParam));
 	RETURN_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.Y, yParam));
-	RETURN_IF_JS_ERROR(JsIntToNumber(GetButtonFromArgs(args), buttonParam));
+	RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(GetButtonFromArgs(args)), buttonParam));
 	RETURN_IF_JS_ERROR(JsPointerToString(actionType.c_str(), actionType.length(), actionParam));
 
 	return true;
@@ -86,14 +111,13 @@ MouseInput::MouseDown(PointerEventArgs^ args)
 	static std::wstring mouseEventName(L"mouse");
 	static std::wstring mouseActionType(L"mousedown");
 
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		std::vector<JsValueRef> parameters;
-		CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef parameters[6];
+	CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
+
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 
 void
@@ -102,14 +126,13 @@ MouseInput::MouseUp(PointerEventArgs^ args)
 	static std::wstring mouseEventName(L"mouse");
 	static std::wstring mouseActionType(L"mouseup");
 	
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		std::vector<JsValueRef> parameters;
-		EXIT_IF_FALSE(CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters));
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef parameters[6];
+	EXIT_IF_FALSE(CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters));
+
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 
 void
@@ -118,14 +141,13 @@ MouseInput::MouseMove(PointerEventArgs^ args)
 	static std::wstring mouseEventName(L"mouse");
 	static std::wstring mouseActionType(L"mousemove");
 
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		vector<JsValueRef> parameters;
-		CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef parameters[6];
+	CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
+
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 
 void
@@ -134,12 +156,11 @@ MouseInput::MouseWheel(PointerEventArgs^ args)
 	static std::wstring mouseEventName(L"mouse");
 	static std::wstring mouseActionType(L"mousewheel");
 
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		vector<JsValueRef> parameters;
-		CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+	
+	JsValueRef parameters[6];
+	CreateScriptParametersListForMouse(mouseEventName, mouseActionType, args, parameters);
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }

@@ -95,7 +95,8 @@ cursor.frustumCulled = false;
 var controls;
 
 if (window.experimentalHolographic !== true) {
-    controls = new THREE.OrbitControls(camera);    
+    camera.position.set(0, 0, 1);
+    controls = new THREE.OrbitControls(camera, canvas);
 }
 
 function initColors (geometry) {

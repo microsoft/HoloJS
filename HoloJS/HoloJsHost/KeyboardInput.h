@@ -7,6 +7,7 @@ namespace HologramJS
 		{
 		public:
 			KeyboardInput();
+			~KeyboardInput();
 
 			void KeyUp(Windows::UI::Core::KeyEventArgs ^args);
 			void KeyDown(Windows::UI::Core::KeyEventArgs ^args);
@@ -20,8 +21,11 @@ namespace HologramJS
 				const std::wstring& eventName,
 				const std::wstring& actionType,
 				Windows::UI::Core::KeyEventArgs^ args,
-				std::vector<JsValueRef>& outParams
+				JsValueRef (&outParams)[4]
 			);
+
+			Windows::Foundation::EventRegistrationToken m_keyDownToken;
+			Windows::Foundation::EventRegistrationToken m_keyUpToken;
 		};
 
 	}

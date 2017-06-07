@@ -10,11 +10,6 @@ namespace HologramJS
 			MouseInput();
 			~MouseInput();
 
-			void MouseDown(Windows::UI::Core::PointerEventArgs^ args);
-			void MouseUp(Windows::UI::Core::PointerEventArgs^ args);
-			void MouseMove(Windows::UI::Core::PointerEventArgs^ args);
-			void MouseWheel(Windows::UI::Core::PointerEventArgs^ args);
-
 			void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
 		private:
@@ -24,9 +19,19 @@ namespace HologramJS
 				const std::wstring& eventName,
 				const std::wstring& actionType,
 				Windows::UI::Core::PointerEventArgs^ args,
-				std::vector<JsValueRef>& outParams
+				JsValueRef (&outParams)[6]
 			);
 
+
+			void MouseDown(Windows::UI::Core::PointerEventArgs^ args);
+			void MouseUp(Windows::UI::Core::PointerEventArgs^ args);
+			void MouseMove(Windows::UI::Core::PointerEventArgs^ args);
+			void MouseWheel(Windows::UI::Core::PointerEventArgs^ args);
+
+			Windows::Foundation::EventRegistrationToken m_mouseDownToken;
+			Windows::Foundation::EventRegistrationToken m_mouseUpToken;
+			Windows::Foundation::EventRegistrationToken m_mouseWheelToken;
+			Windows::Foundation::EventRegistrationToken m_mouseMoveToken;
 		};
 	}
 }

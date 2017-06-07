@@ -21,7 +21,7 @@
                 }
             }
 
-            if (base.eventListeners.length === 0) {
+            if (base.eventListeners.length === 0 && base.native && base.nativeCallback) {
                 nativeInterface.eventing.removeCallback(base.native);
             }
         };
