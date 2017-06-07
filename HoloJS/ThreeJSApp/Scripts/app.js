@@ -24,7 +24,7 @@ class HolographicCamera extends THREE.Camera {
 
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.getViewMatrix ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let raycaster = new THREE.Raycaster();
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
