@@ -170,6 +170,10 @@ namespace HologramJS
 			void uniformMatrix4fv(WebGLUniformLocation* location, GLboolean transpose, GLsizei count, const GLfloat* value);
 #pragma endregion
 
+#pragma region Linex
+			void lineWidth(GLfloat width);
+#pragma endregion
+
 		private:
 
 			const GLenum UNSIGNED_BYTE = 0x1401;

@@ -688,3 +688,9 @@ WebGLRenderingContext::stencilOp(GLenum fail, GLenum zfail, GLenum zpass)
 {
     glStencilOp(fail, zfail, zpass);
 }
+
+void
+WebGLRenderingContext::lineWidth(GLfloat width)
+{
+	glLineWidth(width);
+}
