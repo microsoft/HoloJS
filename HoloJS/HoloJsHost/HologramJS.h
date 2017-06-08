@@ -21,14 +21,6 @@ namespace HologramJS
 		void ResizeWindow(int width, int height) { m_window.Resize(width, height); }
 		void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix) { m_window.VSync(viewMatrix); }
 
-		void KeyUp(Windows::UI::Core::KeyEventArgs ^args) { m_window.KeyboardRouter().KeyUp(args); }
-		void KeyDown(Windows::UI::Core::KeyEventArgs ^args) { m_window.KeyboardRouter().KeyDown(args); }
-
-		void MouseDown(Windows::UI::Core::PointerEventArgs^ args) { m_window.MouseRouter().MouseDown(args); }
-		void MouseUp(Windows::UI::Core::PointerEventArgs^ args) { m_window.MouseRouter().MouseUp(args); }
-		void MouseMove(Windows::UI::Core::PointerEventArgs^ args) { m_window.MouseRouter().MouseMove(args); }
-		void MouseWheel(Windows::UI::Core::PointerEventArgs^ args) { m_window.MouseRouter().MouseWheel(args); }
-
 	private:
 		JsRuntimeHandle m_jsRuntime = nullptr;
 		JsContextRef m_jsContext = nullptr;

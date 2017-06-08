@@ -1,1 +1,1 @@
-{ "scripts" : [ "polyfills.js", "three.js", "three-patches.js", "app.js" ] }
+{ "scripts" : [ "polyfills.js", "three.js", "three-patches.js", "OrbitControls.js", "app.js" ] }

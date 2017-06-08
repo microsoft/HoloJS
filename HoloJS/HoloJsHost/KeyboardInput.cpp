@@ -4,10 +4,27 @@
 using namespace HologramJS::Input;
 using namespace Windows::UI::Core;
 using namespace std;
-
+using namespace Windows::Foundation;
 
 KeyboardInput::KeyboardInput()
 {
+	m_keyDownToken = CoreWindow::GetForCurrentThread()->KeyDown += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(
+		[this](CoreWindow ^sender, KeyEventArgs ^args)
+	{
+		this->KeyDown(args);
+	});
+
+	m_keyUpToken = CoreWindow::GetForCurrentThread()->KeyUp += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(
+		[this](CoreWindow ^sender, KeyEventArgs ^args)
+	{
+		this->KeyUp(args);
+	});
+}
+
+KeyboardInput::~KeyboardInput()
+{
+	CoreWindow::GetForCurrentThread()->KeyDown -= m_keyDownToken;
+	CoreWindow::GetForCurrentThread()->KeyUp -= m_keyUpToken;
 }
 
 bool
@@ -15,11 +32,9 @@ KeyboardInput::CreateScriptParametersListForKeyboard(
 	const wstring& eventName,
 	const wstring& actionType,
 	KeyEventArgs^ args,
-	vector<JsValueRef>& outParams
+	JsValueRef (&outParams)[4]
 )
 {
-	outParams.resize(4);
-
 	outParams[0] = m_scriptCallback;
 	JsValueRef* eventNameParam = &outParams[1];
 	JsValueRef* keyParam = &outParams[2];
@@ -39,14 +54,13 @@ KeyboardInput::KeyUp(KeyEventArgs ^args)
 	static std::wstring keyboardEventName(L"keyboard");
 	static std::wstring keyActionType(L"up");
 
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		std::vector<JsValueRef> parameters;
-		EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+	
+	JsValueRef parameters[4];
+	EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 
 void
@@ -55,13 +69,12 @@ KeyboardInput::KeyDown(KeyEventArgs ^args)
 	static std::wstring keyboardEventName(L"keyboard");
 	static std::wstring keyActionType(L"down");
 
-	if (m_scriptCallback != JS_INVALID_REFERENCE)
-	{
-		std::vector<JsValueRef> parameters;
-		EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+	
+	JsValueRef parameters[4];
+	EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
 
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), (unsigned short)parameters.size(), &result));
-	}
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 

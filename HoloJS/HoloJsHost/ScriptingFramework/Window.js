@@ -19,7 +19,18 @@
         }
 
         var mouseEvent = {};
-        mouseEvent.button = button;
+        
+        mouseEvent.buttons = button;
+
+        // Native button parameter is actually MouseEvent.buttons. Convert it to MouseEvent.button now
+        if (button & 1) {
+            mouseEvent.button = 0;
+        } else if (button & 2) {
+            mouseEvent.button = 2;
+        } else if (button & 4) {
+            mouseEvent.button = 1;
+        }
+
         mouseEvent.clientX = x;
         mouseEvent.clientY = y;
 
@@ -27,6 +38,7 @@
         mouseEvent.srcElement = document.canvas;
 
         document.canvas.fireHandlersByType(action, mouseEvent);
+        document.fireHandlersByType(action, mouseEvent);
     }
 
     function onKeyboardEvent(event) {

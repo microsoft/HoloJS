@@ -28,8 +28,8 @@ RenderingContext2D::drawImage3(
 
 	m_canvasRenderTarget = ref new CanvasRenderTarget(
 		CanvasDevice::GetSharedDevice(),
-		m_width,
-		m_height,
+		static_cast<float>(m_width),
+		static_cast<float>(m_height),
 		96,
 		DirectXPixelFormat::R8G8B8A8UIntNormalized,
 		CanvasAlphaMode::Ignore);
@@ -54,8 +54,8 @@ RenderingContext2D::drawImage3(
 
     CanvasDrawingSession^ session = m_canvasRenderTarget->CreateDrawingSession();
 
-    Rect source(sx, sy, sWidth, sHeight);
-    Rect dest(dx, dy, dWidth, dHeight);
+    Rect source(static_cast<float>(sx), static_cast<float>(sy), static_cast<float>(sWidth), static_cast<float>(sHeight));
+    Rect dest(static_cast<float>(dx), static_cast<float>(dy), static_cast<float>(dWidth), static_cast<float>(dHeight));
     session->DrawImage(canvasBitmap, dest, source);
     session = nullptr;
 }
@@ -115,8 +115,8 @@ RenderingContext2D::drawImage2(
 
 	m_canvasRenderTarget = ref new CanvasRenderTarget(
 		CanvasDevice::GetSharedDevice(),
-		m_width,
-		m_height,
+		static_cast<float>(m_width),
+		static_cast<float>(m_height),
 		96,
 		DirectXPixelFormat::R8G8B8A8UIntNormalized,
 		CanvasAlphaMode::Ignore);
@@ -140,7 +140,7 @@ RenderingContext2D::drawImage2(
 
     auto session = m_canvasRenderTarget->CreateDrawingSession();
 
-    Rect dest(dx, dy, dWidth, dHeight);
+    Rect dest(static_cast<float>(dx), static_cast<float>(dy), static_cast<float>(dWidth), static_cast<float>(dHeight));
     session->DrawImage(canvasBitmap, dest);
     session = nullptr;
 }
