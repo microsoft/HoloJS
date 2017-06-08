@@ -134,12 +134,15 @@ function start () {
     update(clock.getDelta(), clock.getElapsedTime());
 }
 
+// Listen to spatial input events
+canvas.addEventListener("spatialinput", onSpatialInput);
+
 let lastSpatialInputX = 0;
 let spatialInputTracking = false;
-canvas.addEventListener("spatialinput", onSpatialInput);
 function onSpatialInput(spatialInputEvent) {
     if (spatialInputEvent.isPressed === true) {
         if (spatialInputTracking === true) {
+            // rotate the cube proportional to hand movement on X axis
             cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
         } else {
             spatialInputTracking = true;

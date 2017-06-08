@@ -103,6 +103,7 @@ function start() {
 
         window.requestAnimationFrame(drawScene);
 
+        // add event listener for spatial input (hands)
         canvas.addEventListener("spatialinput", onSpatialInput);
     }
 }
@@ -115,20 +116,20 @@ var lastSpatialInputZ = 0;
 function onSpatialInput(spatialInputEvent) {
     if (spatialInputEvent.isPressed === true) {
         if (spatialInputTracking === true) {
+            // Compute new cube position based on hand delta movement
             cubeX = cubeX + (lastSpatialInputX - spatialInputEvent.location.x);
             cubeY = cubeY + (lastSpatialInputY - spatialInputEvent.location.y);
             cubeZ = cubeZ + (lastSpatialInputZ - spatialInputEvent.location.z);
 
-            modelMatrix = new Float32Array([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                cubeX, -cubeY, cubeZ, 1.0
-            ]);
+            // Move the cube around to follow hand movement
+            modelMatrix[12] = cubeX;
+            modelMatrix[13] = -cubeY;
+            modelMatrix[14] = cubeZ;
         } else {
             spatialInputTracking = true;
         }
 
+        // Remember last hand position
         lastSpatialInputX = spatialInputEvent.location.x;
         lastSpatialInputY = spatialInputEvent.location.y;
         lastSpatialInputZ = spatialInputEvent.location.z;
