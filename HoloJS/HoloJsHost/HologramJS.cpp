@@ -13,6 +13,7 @@ using namespace Platform;
 using namespace concurrency;
 using namespace Windows::Foundation;
 using namespace std;
+using namespace Windows::Perception::Spatial;
 
 HologramScriptHost::HologramScriptHost()
 {
@@ -165,7 +166,7 @@ HologramScriptHost::RunWebScriptApp(
 }
 
 bool
-HologramScriptHost::EnableHolographicExperimental()
+HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference^ frameOfReference)
 {
 	// Get the global object
 	JsValueRef globalObject;
@@ -182,6 +183,8 @@ HologramScriptHost::EnableHolographicExperimental()
 	RETURN_IF_JS_ERROR(JsBoolToBoolean(true, &holographicValue));
 
 	RETURN_IF_JS_ERROR(JsSetProperty(windowRef, holographicPropertyId, holographicValue, true));
+
+	m_window.SetStationaryFrameOfReference(frameOfReference);
 
 	return true;
 }

@@ -41,6 +41,19 @@
         document.fireHandlersByType(action, mouseEvent);
     }
 
+    function onSpatialInputEvent(x, y, z, isPressed, kind) {
+        var spatialInputEvent = {};
+
+        spatialInputEvent.isPressed = isPressed;
+        spatialInputEvent.location = { x: x, y: y, z: z };
+
+        spatialInputEvent.preventDefault = function () { };
+        spatialInputEvent.srcElement = document.canvas;
+        spatialInputEvent.kind = kind;
+
+        document.canvas.fireHandlersByType("spatialinput", spatialInputEvent);
+    }
+
     function onKeyboardEvent(event) {
     }
 
@@ -83,6 +96,8 @@
             onMouseEvent(arguments[1], arguments[2], arguments[3], arguments[4]);
         } else if (type === "keyboard") {
             onKeyboardEvent(arguments[1], arguments[2]);
+        } else if (type === "spatialinput") {
+            onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5])
         }
         else {
             window.fireHandlersByType(type);

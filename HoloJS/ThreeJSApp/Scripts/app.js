@@ -107,7 +107,6 @@ function update (delta, elapsed) {
     window.requestAnimationFrame(() => update(clock.getDelta(), clock.getElapsedTime()));
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
-    cube.rotation.y += 0.01;
     sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.abs(Math.cos(elapsed * 0.3)) * 0.6 + 1.0;
     cone.position.y = Math.sin(elapsed * 0.5) * 0.1;
     torus.position.z = -2 - Math.abs(Math.cos(elapsed * 0.2));
@@ -133,4 +132,21 @@ function update (delta, elapsed) {
 
 function start () {
     update(clock.getDelta(), clock.getElapsedTime());
+}
+
+let lastSpatialInputX = 0;
+let spatialInputTracking = false;
+canvas.addEventListener("spatialinput", onSpatialInput);
+function onSpatialInput(spatialInputEvent) {
+    if (spatialInputEvent.isPressed === true) {
+        if (spatialInputTracking === true) {
+            cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
+        } else {
+            spatialInputTracking = true;
+        }
+
+        lastSpatialInputX = spatialInputEvent.location.x;
+    } else {
+        spatialInputTracking = false;
+    }
 }

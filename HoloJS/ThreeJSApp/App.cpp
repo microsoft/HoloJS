@@ -115,7 +115,7 @@ void App::LoadAndExecuteScript()
 
 	if (mHolographicSpace != nullptr)
 	{
-		m_holoScriptHost->EnableHolographicExperimental();
+		m_holoScriptHost->EnableHolographicExperimental(mStationaryReferenceFrame);
 	}
 
 	eglQuerySurface(mEglDisplay, mEglSurface, EGL_WIDTH, &mPanelWidth);

@@ -67,6 +67,7 @@ WindowElement::setCallback(
 
 	m_keyboardInput.SetScriptCallback(callback);
 	m_mouseInput.SetScriptCallback(callback);
+	m_spatialInput.SetScriptCallback(callback);
 
 	return JS_INVALID_REFERENCE;
 }

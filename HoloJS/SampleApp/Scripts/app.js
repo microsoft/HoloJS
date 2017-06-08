@@ -43,6 +43,8 @@ var projectionMatrix;
 var viewMatrix;
 var modelMatrix;
 
+var cubeX, cubeY, cubeZ;
+
 //
 // start
 //
@@ -86,17 +88,52 @@ function start() {
 
         initTextures();
 
+        cubeX = cubeY = 0;
+        cubeZ = -1.5;
+
         // Set up a simple translation transform for the cube
         modelMatrix = new Float32Array([
             1.0, 0.0, 0.0, 0.0,
             0.0, 1.0, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,
-           -0.0, 0.0, -1.5, 1.0
+            cubeX, cubeY, cubeZ, 1.0
         ]);
 
         // Set up to draw the scene periodically.
 
         window.requestAnimationFrame(drawScene);
+
+        canvas.addEventListener("spatialinput", onSpatialInput);
+    }
+}
+
+var spatialInputTracking = false;
+var lastSpatialInputX = 0;
+var lastSpatialInputY = 0;
+var lastSpatialInputZ = 0;
+
+function onSpatialInput(spatialInputEvent) {
+    if (spatialInputEvent.isPressed === true) {
+        if (spatialInputTracking === true) {
+            cubeX = cubeX + (lastSpatialInputX - spatialInputEvent.location.x);
+            cubeY = cubeY + (lastSpatialInputY - spatialInputEvent.location.y);
+            cubeZ = cubeZ + (lastSpatialInputZ - spatialInputEvent.location.z);
+
+            modelMatrix = new Float32Array([
+                1.0, 0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                cubeX, -cubeY, cubeZ, 1.0
+            ]);
+        } else {
+            spatialInputTracking = true;
+        }
+
+        lastSpatialInputX = spatialInputEvent.location.x;
+        lastSpatialInputY = spatialInputEvent.location.y;
+        lastSpatialInputZ = spatialInputEvent.location.z;
+    } else {
+        spatialInputTracking = false;
     }
 }
 

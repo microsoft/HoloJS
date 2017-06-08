@@ -223,6 +223,7 @@
     <ClInclude Include="ScriptHostUtilities.h" />
     <ClInclude Include="ScriptResourceTracker.h" />
     <ClInclude Include="ScriptsLoader.h" />
+    <ClInclude Include="SpatialInput.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="VideoElement.h" />
     <ClInclude Include="WebGLObjects.h" />
@@ -249,6 +250,7 @@
     <ClCompile Include="ScriptHostUtilities.cpp" />
     <ClCompile Include="ScriptResourceTracker.cpp" />
     <ClCompile Include="ScriptsLoader.cpp" />
+    <ClCompile Include="SpatialInput.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="VideoElement.cpp" />
     <ClCompile Include="WebGLObjects.cpp" />
