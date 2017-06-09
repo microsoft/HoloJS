@@ -13,6 +13,21 @@
         window.drawCallback = callback;
     };
 
+    // Mapping of type ids to strings;
+    // JavaScript side registers events by string but the native side sends events with a numeric type for performance reasons
+    window.nativeEvents = {};
+    window.nativeEvents.spatialInputEvents = ["sourcepress", "sourcerelease", "sourcelost", "sourcedetected", "sourceupdate"];
+    window.nativeEvents.keyboardEvents = ["keydown", "keyup"];
+    window.nativeEvents.mouseEvents = ["mouseup", "mousedown", "mousemove", "mousewheel"];
+
+    window.nativeEvents.events = ["resize", "mouse", "keyboard", "spatialinput"];
+    window.nativeEvents.resize = 0;
+    window.nativeEvents.mouse = 1;
+    window.nativeEvents.keyboard = 2;
+    window.nativeEvents.spatialinput = 3;
+
+    window.nativeEvents.spatialinput = 3;
+
     function onMouseEvent(x, y, button, action) {
         if (!document.canvas) {
             return;
@@ -37,11 +52,11 @@
         mouseEvent.preventDefault = function () { };
         mouseEvent.srcElement = document.canvas;
 
-        document.canvas.fireHandlersByType(action, mouseEvent);
-        document.fireHandlersByType(action, mouseEvent);
+        document.canvas.fireHandlersByType(window.nativeEvents.mouseEvents[action], mouseEvent);
+        document.fireHandlersByType(window.nativeEvents.mouseEvents[action], mouseEvent);
     }
 
-    function onSpatialInputEvent(x, y, z, isPressed, kind) {
+    function onSpatialInputEvent(x, y, z, isPressed, sourceKind, eventType) {
         var spatialInputEvent = {};
 
         spatialInputEvent.isPressed = isPressed;
@@ -49,9 +64,9 @@
 
         spatialInputEvent.preventDefault = function () { };
         spatialInputEvent.srcElement = document.canvas;
-        spatialInputEvent.kind = kind;
+        spatialInputEvent.sourceKind = sourceKind;
 
-        document.canvas.fireHandlersByType("spatialinput", spatialInputEvent);
+        document.canvas.fireHandlersByType(window.nativeEvents.spatialInputEvents[eventType], spatialInputEvent);
     }
 
     function onKeyboardEvent(event) {
@@ -90,14 +105,14 @@
             if (capturedCallback !== null) {
                 capturedCallback();
             }
-        } else if (type === "resize") {
-            window.fireHandlersByType(type);
-        } else if (type === "mouse") {
+        } else if (type === window.nativeEvents.resize) {
+            window.fireHandlersByType(window.nativeEvents.events[type]);
+        } else if (type === window.nativeEvents.mouse) {
             onMouseEvent(arguments[1], arguments[2], arguments[3], arguments[4]);
-        } else if (type === "keyboard") {
+        } else if (type === window.nativeEvents.keyboard) {
             onKeyboardEvent(arguments[1], arguments[2]);
-        } else if (type === "spatialinput") {
-            onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5])
+        } else if (type === window.nativeEvents.spatialinput) {
+            onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])
         }
         else {
             window.fireHandlersByType(type);

@@ -104,6 +104,9 @@
     <ClInclude Include="SpatialInput.h">
       <Filter>NativeFramework</Filter>
     </ClInclude>
+    <ClInclude Include="InputInterface.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

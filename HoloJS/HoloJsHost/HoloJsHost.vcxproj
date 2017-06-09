@@ -214,6 +214,7 @@
     <ClInclude Include="HologramJS.h" />
     <ClInclude Include="IBufferOnMemory.h" />
     <ClInclude Include="ImageElement.h" />
+    <ClInclude Include="InputInterface.h" />
     <ClInclude Include="IRelease.h" />
     <ClInclude Include="KeyboardInput.h" />
     <ClInclude Include="MouseInput.h" />

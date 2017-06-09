@@ -1,4 +1,6 @@
 #pragma once
+#include "InputInterface.h"
+
 namespace HologramJS
 {
 	namespace Input
@@ -27,9 +29,7 @@ namespace HologramJS
 
 			bool m_spatialInputAvailable = false;
 
-			Windows::Foundation::TypedEventHandler<Windows::UI::Input::Spatial::SpatialInteractionManager ^, Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs ^>^ m_eventHandler;
-
-			void CallbackScriptForSpatialInput(Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs^ args);
+			void CallbackScriptForSpatialInput(SpatialInputEventType type, Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs^ args);
 
 			JsValueRef m_spatialInputEventName;
 			JsValueRef m_spatialInputSourcePressedName;

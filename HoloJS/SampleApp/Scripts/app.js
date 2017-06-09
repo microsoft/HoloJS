@@ -104,7 +104,11 @@ function start() {
         window.requestAnimationFrame(drawScene);
 
         // add event listener for spatial input (hands)
-        canvas.addEventListener("spatialinput", onSpatialInput);
+        canvas.addEventListener("sourcepress", onSpatialSourcePress);
+        canvas.addEventListener("sourcerelease", onSpatialSourceRelease);
+        canvas.addEventListener("sourceupdate", onSpatialSourceUpdate);
+        // treat source lost the same way as source release - stop moving the cube when hands input is lost
+        canvas.addEventListener("sourcelost", onSpatialSourceRelease);
     }
 }
 
@@ -113,28 +117,35 @@ var lastSpatialInputX = 0;
 var lastSpatialInputY = 0;
 var lastSpatialInputZ = 0;
 
-function onSpatialInput(spatialInputEvent) {
-    if (spatialInputEvent.isPressed === true) {
-        if (spatialInputTracking === true) {
-            // Compute new cube position based on hand delta movement
-            cubeX = cubeX + (lastSpatialInputX - spatialInputEvent.location.x);
-            cubeY = cubeY + (lastSpatialInputY - spatialInputEvent.location.y);
-            cubeZ = cubeZ + (lastSpatialInputZ - spatialInputEvent.location.z);
+function onSpatialSourcePress(spatialInputEvent) {
+    // Remember last hand position
+    lastSpatialInputX = spatialInputEvent.location.x;
+    lastSpatialInputY = spatialInputEvent.location.y;
+    lastSpatialInputZ = spatialInputEvent.location.z;
 
-            // Move the cube around to follow hand movement
-            modelMatrix[12] = cubeX;
-            modelMatrix[13] = -cubeY;
-            modelMatrix[14] = cubeZ;
-        } else {
-            spatialInputTracking = true;
-        }
+    spatialInputTracking = true;
+}
+
+function onSpatialSourceRelease(spatialInputEvent) {
+    spatialInputTracking = false;
+}
+
+function onSpatialSourceUpdate(spatialInputEvent) {
+    if (spatialInputTracking === true) {
+        // Compute new cube position based on hand delta movement
+        cubeX = cubeX + (lastSpatialInputX - spatialInputEvent.location.x);
+        cubeY = cubeY + (lastSpatialInputY - spatialInputEvent.location.y);
+        cubeZ = cubeZ + (lastSpatialInputZ - spatialInputEvent.location.z);
+
+        // Move the cube around to follow hand movement
+        modelMatrix[12] = cubeX;
+        modelMatrix[13] = -cubeY;
+        modelMatrix[14] = cubeZ;
 
         // Remember last hand position
         lastSpatialInputX = spatialInputEvent.location.x;
         lastSpatialInputY = spatialInputEvent.location.y;
         lastSpatialInputZ = spatialInputEvent.location.z;
-    } else {
-        spatialInputTracking = false;
     }
 }
 

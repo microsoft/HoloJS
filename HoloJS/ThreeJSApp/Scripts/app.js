@@ -134,22 +134,29 @@ function start () {
     update(clock.getDelta(), clock.getElapsedTime());
 }
 
-// Listen to spatial input events
-canvas.addEventListener("spatialinput", onSpatialInput);
+// Listen to spatial input events (hands)
+canvas.addEventListener("sourcepress", onSpatialSourcePress);
+canvas.addEventListener("sourcerelease", onSpatialSourceRelease);
+canvas.addEventListener("sourceupdate", onSpatialSourceUpdate);
+// treat source lost the same way as source release - stop moving the cube when hands input is lost
+canvas.addEventListener("sourcelost", onSpatialSourceRelease);
 
 let lastSpatialInputX = 0;
 let spatialInputTracking = false;
-function onSpatialInput(spatialInputEvent) {
-    if (spatialInputEvent.isPressed === true) {
-        if (spatialInputTracking === true) {
-            // rotate the cube proportional to hand movement on X axis
-            cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
-        } else {
-            spatialInputTracking = true;
-        }
 
+function onSpatialSourcePress(spatialInputEvent) {
+    lastSpatialInputX = spatialInputEvent.location.x;
+    spatialInputTracking = true;
+}
+
+function onSpatialSourceRelease(spatialInputEvent) {
+    spatialInputTracking = false;
+}
+
+function onSpatialSourceUpdate(spatialInputEvent) {
+    if (spatialInputTracking === true) {
+        // rotate the cube proportional to hand movement on X axis
+        cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
         lastSpatialInputX = spatialInputEvent.location.x;
-    } else {
-        spatialInputTracking = false;
     }
 }
