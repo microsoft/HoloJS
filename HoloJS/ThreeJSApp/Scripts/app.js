@@ -107,7 +107,6 @@ function update (delta, elapsed) {
     window.requestAnimationFrame(() => update(clock.getDelta(), clock.getElapsedTime()));
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
-    cube.rotation.y += 0.01;
     sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.abs(Math.cos(elapsed * 0.3)) * 0.6 + 1.0;
     cone.position.y = Math.sin(elapsed * 0.5) * 0.1;
     torus.position.z = -2 - Math.abs(Math.cos(elapsed * 0.2));
@@ -133,4 +132,31 @@ function update (delta, elapsed) {
 
 function start () {
     update(clock.getDelta(), clock.getElapsedTime());
+}
+
+// Listen to spatial input events (hands)
+canvas.addEventListener("sourcepress", onSpatialSourcePress);
+canvas.addEventListener("sourcerelease", onSpatialSourceRelease);
+canvas.addEventListener("sourceupdate", onSpatialSourceUpdate);
+// treat source lost the same way as source release - stop moving the cube when hands input is lost
+canvas.addEventListener("sourcelost", onSpatialSourceRelease);
+
+let lastSpatialInputX = 0;
+let spatialInputTracking = false;
+
+function onSpatialSourcePress(spatialInputEvent) {
+    lastSpatialInputX = spatialInputEvent.location.x;
+    spatialInputTracking = true;
+}
+
+function onSpatialSourceRelease(spatialInputEvent) {
+    spatialInputTracking = false;
+}
+
+function onSpatialSourceUpdate(spatialInputEvent) {
+    if (spatialInputTracking === true) {
+        // rotate the cube proportional to hand movement on X axis
+        cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
+        lastSpatialInputX = spatialInputEvent.location.x;
+    }
 }

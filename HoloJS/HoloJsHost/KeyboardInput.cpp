@@ -11,13 +11,13 @@ KeyboardInput::KeyboardInput()
 	m_keyDownToken = CoreWindow::GetForCurrentThread()->KeyDown += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(
 		[this](CoreWindow ^sender, KeyEventArgs ^args)
 	{
-		this->KeyDown(args);
+		CallbackScriptForKeyboardInput(KeyboardInputEventType::KeyDown, args);
 	});
 
 	m_keyUpToken = CoreWindow::GetForCurrentThread()->KeyUp += ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>(
 		[this](CoreWindow ^sender, KeyEventArgs ^args)
 	{
-		this->KeyUp(args);
+		CallbackScriptForKeyboardInput(KeyboardInputEventType::KeyUp, args);
 	});
 }
 
@@ -27,52 +27,23 @@ KeyboardInput::~KeyboardInput()
 	CoreWindow::GetForCurrentThread()->KeyUp -= m_keyUpToken;
 }
 
-bool
-KeyboardInput::CreateScriptParametersListForKeyboard(
-	const wstring& eventName,
-	const wstring& actionType,
-	KeyEventArgs^ args,
-	JsValueRef (&outParams)[4]
+void
+KeyboardInput::CallbackScriptForKeyboardInput(
+	KeyboardInputEventType type,
+	KeyEventArgs^ args
 )
 {
-	outParams[0] = m_scriptCallback;
-	JsValueRef* eventNameParam = &outParams[1];
-	JsValueRef* keyParam = &outParams[2];
-	JsValueRef* actionParam = &outParams[3];
-
-	RETURN_IF_JS_ERROR(JsPointerToString(eventName.c_str(), eventName.length(), eventNameParam));
-	RETURN_IF_JS_ERROR(JsIntToNumber((int)args->VirtualKey, keyParam));
-	RETURN_IF_JS_ERROR(JsPointerToString(actionType.c_str(), actionType.length(), actionParam));
-
-	return true;
-}
-
-
-void
-KeyboardInput::KeyUp(KeyEventArgs ^args)
-{
-	static std::wstring keyboardEventName(L"keyboard");
-	static std::wstring keyActionType(L"up");
-
 	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
-	
+
 	JsValueRef parameters[4];
-	EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
+	parameters[0] = m_scriptCallback;
+	JsValueRef* eventTypeParam = &parameters[1];
+	JsValueRef* keyParam = &parameters[2];
+	JsValueRef* actionTypeParam = &parameters[3];
 
-	JsValueRef result;
-	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
-}
-
-void
-KeyboardInput::KeyDown(KeyEventArgs ^args)
-{
-	static std::wstring keyboardEventName(L"keyboard");
-	static std::wstring keyActionType(L"down");
-
-	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
-	
-	JsValueRef parameters[4];
-	EXIT_IF_FALSE(CreateScriptParametersListForKeyboard(keyboardEventName, keyActionType, args, parameters));
+	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Keyboard), eventTypeParam));
+	EXIT_IF_JS_ERROR(JsIntToNumber((int)args->VirtualKey, keyParam));
+	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), actionTypeParam));
 
 	JsValueRef result;
 	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));

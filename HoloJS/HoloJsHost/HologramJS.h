@@ -13,7 +13,7 @@ namespace HologramJS
 		bool Initialize();
 		void Shutdown();
 
-		bool EnableHolographicExperimental();
+		bool EnableHolographicExperimental(Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOfReference);
 
 		Windows::Foundation::IAsyncOperation<bool>^ RunLocalScriptAppAsync(Platform::String^ jsonFilePath);
 		Windows::Foundation::IAsyncOperation<bool>^ RunWebScriptAppAsync(Platform::String^ jsonUri);

@@ -1,4 +1,5 @@
 #pragma once
+#include "InputInterface.h"
 namespace HologramJS
 {
 	namespace Input
@@ -9,19 +10,14 @@ namespace HologramJS
 			KeyboardInput();
 			~KeyboardInput();
 
-			void KeyUp(Windows::UI::Core::KeyEventArgs ^args);
-			void KeyDown(Windows::UI::Core::KeyEventArgs ^args);
-
 			void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
 		private:
 			JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
-			bool CreateScriptParametersListForKeyboard(
-				const std::wstring& eventName,
-				const std::wstring& actionType,
-				Windows::UI::Core::KeyEventArgs^ args,
-				JsValueRef (&outParams)[4]
+			void CallbackScriptForKeyboardInput(
+				KeyboardInputEventType type,
+				Windows::UI::Core::KeyEventArgs^ args
 			);
 
 			Windows::Foundation::EventRegistrationToken m_keyDownToken;

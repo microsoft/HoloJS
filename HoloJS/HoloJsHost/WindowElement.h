@@ -1,5 +1,9 @@
 #pragma once
 
+#include "SpatialInput.h"
+#include "MouseInput.h"
+#include "KeyboardInput.h"
+
 namespace HologramJS
 {
 	namespace API
@@ -23,12 +27,18 @@ namespace HologramJS
 
 			void SetBaseUrl(const std::wstring& baseUrl) { m_baseUrl.assign(baseUrl); }
 
+			void SetStationaryFrameOfReference(Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOfReference)
+			{
+				m_spatialInput.SetStationaryFrameOfReference(frameOfReference);
+			}
+
 		private:
 
 			std::wstring m_baseUrl;
 
 			Input::KeyboardInput m_keyboardInput;
 			Input::MouseInput m_mouseInput;
+			Input::SpatialInput m_spatialInput;
 
 			int m_width;
 			int m_height;
@@ -112,6 +122,5 @@ namespace HologramJS
 
 			bool CreateViewMatrixStorageAndScriptProjection();
 		};
-
 	}
 }

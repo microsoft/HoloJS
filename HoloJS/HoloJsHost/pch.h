@@ -74,6 +74,3 @@ void Log(PCSTR file, int line);
 #include <windows.storage.streams.h>
 #include <wrl/implements.h>
 #include "IBufferOnMemory.h"
-
-#include "MouseInput.h"
-#include "KeyboardInput.h"

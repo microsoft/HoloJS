@@ -44,6 +44,9 @@
     <ClCompile Include="RenderingContext2D.cpp">
       <Filter>WebGLRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialInput.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -97,6 +100,12 @@
     </ClInclude>
     <ClInclude Include="RenderingContext2D.h">
       <Filter>WebGLRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialInput.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="InputInterface.h">
+      <Filter>NativeFramework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

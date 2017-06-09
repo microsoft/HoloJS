@@ -2,9 +2,11 @@
 #include "WindowElement.h"
 
 #include <WindowsNumerics.h>
+#include "InputInterface.h"
 
 using namespace HologramJS::API;
 using namespace HologramJS::Utilities;
+using namespace HologramJS::Input;
 
 WindowElement::WindowElement()
 {
@@ -67,6 +69,7 @@ WindowElement::setCallback(
 
 	m_keyboardInput.SetScriptCallback(callback);
 	m_mouseInput.SetScriptCallback(callback);
+	m_spatialInput.SetScriptCallback(callback);
 
 	return JS_INVALID_REFERENCE;
 }
@@ -110,9 +113,9 @@ WindowElement::Resize(int width, int height)
 		{
 			std::vector<JsValueRef> parameters(2);
 			parameters[0] = m_callbackFunction;
-			JsValueRef* eventNameParam = &parameters[1];
+			JsValueRef* eventTypeParam = &parameters[1];
 
-			EXIT_IF_JS_ERROR(JsPointerToString(resizeEventName.c_str(), resizeEventName.length(), eventNameParam));
+			EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), eventTypeParam));
 
 			JsValueRef result;
 			EXIT_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), (unsigned short)parameters.size(), &result));
