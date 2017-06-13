@@ -35,6 +35,7 @@ WindowElement::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getHeight", L"window", getHeightStatic, this, &m_getHeightFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getBaseUrl", L"window", getBaseUrlStatic, this, &m_getBaseUrlFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setCallback", L"window", setCallbackStatic, this, &m_setCallbackFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
 
 	RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
 
@@ -70,6 +71,7 @@ WindowElement::setCallback(
 	m_keyboardInput.SetScriptCallback(callback);
 	m_mouseInput.SetScriptCallback(callback);
 	m_spatialInput.SetScriptCallback(callback);
+	m_spatialMapping.SetScriptCallback(callback);
 
 	return JS_INVALID_REFERENCE;
 }
@@ -192,4 +194,13 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 	}
 
 	return true;
+}
+
+JsValueRef
+WindowElement::requestSpatialMapping(
+	JsValueRef* arguments,
+	unsigned short argumentCount
+)
+{
+	return m_spatialMapping.GetSpatialData();
 }

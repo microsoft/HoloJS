@@ -10,7 +10,8 @@ namespace HologramJS
 			Resize = 0,
 			Mouse,
 			Keyboard,
-			SpatialInput
+			SpatialInput,
+			SpatialMapping
 		};
 
 		enum class KeyboardInputEventType : int {

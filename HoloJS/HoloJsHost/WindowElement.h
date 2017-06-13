@@ -3,6 +3,7 @@
 #include "SpatialInput.h"
 #include "MouseInput.h"
 #include "KeyboardInput.h"
+#include "SpatialMapping.h"
 
 namespace HologramJS
 {
@@ -30,6 +31,7 @@ namespace HologramJS
 			void SetStationaryFrameOfReference(Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOfReference)
 			{
 				m_spatialInput.SetStationaryFrameOfReference(frameOfReference);
+				m_spatialMapping.EnableSpatialMapping(frameOfReference);
 			}
 
 		private:
@@ -39,6 +41,7 @@ namespace HologramJS
 			Input::KeyboardInput m_keyboardInput;
 			Input::MouseInput m_mouseInput;
 			Input::SpatialInput m_spatialInput;
+			Input::SpatialMapping m_spatialMapping;
 
 			int m_width;
 			int m_height;
@@ -109,6 +112,23 @@ namespace HologramJS
 			}
 
 			JsValueRef setCallback(
+				JsValueRef* arguments,
+				unsigned short argumentCount
+			);
+
+			JsValueRef m_requestSpatialMapping = JS_INVALID_REFERENCE;
+			static JsValueRef CHAKRA_CALLBACK requestSpatialMappingStatic(
+				JsValueRef callee,
+				bool isConstructCall,
+				JsValueRef* arguments,
+				unsigned short argumentCount,
+				PVOID callbackData
+			)
+			{
+				return reinterpret_cast<WindowElement*>(callbackData)->requestSpatialMapping(arguments, argumentCount);
+			}
+
+			JsValueRef requestSpatialMapping(
 				JsValueRef* arguments,
 				unsigned short argumentCount
 			);
