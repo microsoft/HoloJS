@@ -25,7 +25,6 @@ class HolographicCamera extends THREE.Camera {
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
 let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
-let raycaster = new THREE.Raycaster();
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -110,20 +109,6 @@ function update (delta, elapsed) {
     sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.abs(Math.cos(elapsed * 0.3)) * 0.6 + 1.0;
     cone.position.y = Math.sin(elapsed * 0.5) * 0.1;
     torus.position.z = -2 - Math.abs(Math.cos(elapsed * 0.2));
-
-    raycaster.ray.origin.setFromMatrixPosition(camera.matrixWorld);
-    raycaster.ray.direction.set(0, 0, -1).transformDirection(camera.matrixWorld);
-    let intersects = raycaster.intersectObjects(scene.children);
-    if (intersects.length > 0) {
-        cursor.material.color.set(0xFFFF00);
-        cursor.material.opacity = 0.8;
-        cursor.scale.set(2, 2, 2);
-    }
-    else {
-        cursor.material.color.set(0xFFFFFF);
-        cursor.material.opacity = 0.5;
-        cursor.scale.set(1, 1, 1);
-    }
 
     if (camera.update) camera.update();
 
