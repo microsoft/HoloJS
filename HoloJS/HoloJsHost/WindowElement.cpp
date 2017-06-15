@@ -126,6 +126,10 @@ WindowElement::Resize(int width, int height)
 void
 WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 {
+	// Workaround for RS1: spatial input events can be delivered on non-UI threads; in this case m_spatialInput
+	// queued events internally and since now we're on the UI thread we drain them
+	m_spatialInput.DrainQueuedSpatialInputEvents();
+
 	if (m_callbackFunction != JS_INVALID_REFERENCE)
 	{
 		if (m_viewMatrixStoragePointer != nullptr)
