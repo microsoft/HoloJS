@@ -107,95 +107,62 @@ function update (delta, elapsed) {
 
 function start () {
     update(clock.getDelta(), clock.getElapsedTime());
+
+    // Listen to spatial input events (hands)
+    // On press, spatial mapping data is requested and the visible meshes are updated
+    canvas.addEventListener("sourcepress", onSpatialSourcePress);
+
+    // Initial request for spatial mapping data
+    window.requestSpatialMappingData(onSurfaceAvailable);
 }
 
-// Listen to spatial input events (hands)
-canvas.addEventListener("sourcepress", onSpatialSourcePress);
-canvas.addEventListener("spatialmapping", onSurfaceAvailable);
-
-function onSpatialSourcePress(spatialInputEvent) {
-    var spatialMapData = window.requestSpatialMappingData();
-}
-
-function SRSurfaceMesh(scene) {
+function SpatialMappingMeshes(scene) {
     var self = this;
     this.meshObjects = [];
     this.scene = scene;
-    this.lowestPoint = Number.MAX_VALUE;
-
-    self.objFormatMesh = [];
-
-    this.updatePositionRelativeToAttachedFor = function (originData) {
-        if (originData.OriginToAttachedFor) {
-            var matrix = getMatrixFromRestArray(originData.OriginToAttachedFor);
-            matrix.transpose();
-
-            for (var meshIndex in self.meshObjects) {
-                self.meshObjects[meshIndex].Mesh.matrix = matrix;
-            }
-        }
-    };
 
     function hideMeshData() {
         for (var meshIndex in self.meshObjects) {
             self.scene.remove(self.meshObjects[meshIndex].Mesh);
         }
-    }
+    };
 
     function showMeshData() {
         for (var meshIndex in self.meshObjects) {
             self.scene.add(self.meshObjects[meshIndex].Mesh);
         }
-    }
+    };
 
-    this.clearMeshData = function (guid) {
-        if (guid != undefined) {
+    this.clearMeshData = function (id) {
+        if (id != undefined) {
             for (var meshIndex in self.meshObjects) {
-                if (self.meshObjects[meshIndex].SurfaceId == guid) {
-                    self.scene.remove(self.meshObjects[meshIndex].Mesh);
-                    self.meshObjects[meshIndex].Mesh.geometry.dispose();
-                    self.meshObjects[meshIndex].Mesh.material.dispose();
+                if (self.meshObjects[meshIndex].id == id) {
+                    self.scene.remove(self.meshObjects[meshIndex].mesh);
+                    self.meshObjects[meshIndex].mesh.geometry.dispose();
+                    self.meshObjects[meshIndex].mesh.material.dispose();
                     self.meshObjects.splice(meshIndex, 1);
                     break;
                 }
             }
         }
-        else {
-            self.lowestPoint = Number.MAX_VALUE;
-            for (var i in self.meshObjects) {
-                self.scene.remove(self.meshObjects[i].Mesh);
-                self.meshObjects[i].Mesh.geometry.dispose();
-                self.meshObjects[i].Mesh.material.dispose();
-            }
-            self.meshObjects.splice(0, self.meshObjects.length);
-        }
-
     };
 
     this.setMeshData = function (surfaceData) {
-        //self.clearMeshData(newMeshData.Surface.SurfaceId);
-        createMeshObjects(surfaceData);
+        self.clearMeshData(surfaceData.id);
+        var newMeshObject = createMeshObject(surfaceData);
+
+        self.scene.add(newMeshObject.mesh);
+        self.meshObjects.push(newMeshObject);
     }
 
-    function getTotalTriangles() {
-        var totalTriangles = 0;
-        for (var meshIndex in self.meshObjects) {
-            totalTriangles += self.meshObjects[meshIndex].triCount;
-        }
-
-        return totalTriangles;
-    }
-
-    function createMeshObjects(surface) {
+    function createMeshObject(surface) {
         var geometry = new THREE.Geometry();
 
         var vertexTransform = new THREE.Matrix4();
         vertexTransform.fromArray(surface.originToSurfaceTransform);
-        vertexTransform.transpose();
 
         var normalTransform = new THREE.Matrix4();
         normalTransform.fromArray(surface.normalTransform);
-        normalTransform.transpose();
 
         var vertexIndex = 0;
         // Iterate over vertices, normals and indices and add them to the new geometry object
@@ -230,21 +197,17 @@ function SRSurfaceMesh(scene) {
                     vertexNormals));
         }
 
-        //geometry.computeFaceNormals();
-        //geometry.computeVertexNormals();
-        self.scene.add(new THREE.Mesh(geometry, material));
+        return { id: surface.id, mesh: new THREE.Mesh(geometry, material) };
     }
 }
 
-var meshManager = new SRSurfaceMesh(scene);
-
-var added = false;
+var meshManager = new SpatialMappingMeshes(scene);
 function onSurfaceAvailable(surfaceData) {
-    //if (added === false) {
-        meshManager.setMeshData(surfaceData);
-        added = true;
-    //}
+    meshManager.setMeshData(surfaceData);
+}
+
+function onSpatialSourcePress(spatialInputEvent) {
+    window.requestSpatialMappingData(onSurfaceAvailable);
 }
 
 start();
-

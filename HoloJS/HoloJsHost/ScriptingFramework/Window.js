@@ -14,7 +14,8 @@
         window.drawCallback = callback;
     };
 
-    window.requestSpatialMappingData = function () {
+    window.requestSpatialMappingData = function (callback) {
+        window.addEventListener("spatialmapping", callback);
         return nativeInterface.window.requestSpatialMappingData();
     };
 
@@ -74,7 +75,7 @@
     }
 
     function onSpatialMappingEvent(surfaceData) {
-        document.canvas.fireHandlersByType(window.nativeEvents.events[window.nativeEvents.spatialmapping], surfaceData);
+        window.fireHandlersByType(window.nativeEvents.events[window.nativeEvents.spatialmapping], surfaceData);
     }
 
     function onKeyboardEvent(event) {

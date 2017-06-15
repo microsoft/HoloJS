@@ -197,6 +197,12 @@ SpatialMapping::ProcessSurface(
 		memcpy(typedArrayBuffer, GetPointerToData(mesh->VertexPositions->Data), mesh->VertexPositions->Data->Length);
 		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"vertices", positionsArray));
 
+		// Add mesh ID
+		JsValueRef meshIdRef;
+		const auto meshGuidString = mesh->SurfaceInfo->Id.ToString();
+		EXIT_IF_JS_ERROR(JsPointerToString(meshGuidString->Data(), meshGuidString->Length(), &meshIdRef));
+		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"id", meshIdRef));
+
 		// Create JS callback parameters
 		JsValueRef parameters[3];
 		parameters[0] = m_scriptCallback;
