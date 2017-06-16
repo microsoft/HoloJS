@@ -267,7 +267,7 @@ ScriptsLoader::GetBaseUriForJsonUri(
 	}
 
 	// Build base path without the .json file name it in
-	return localUri.substr(0, lastSegmentIndex - 1);
+	return localUri.substr(0, lastSegmentIndex);
 }
 
 }
