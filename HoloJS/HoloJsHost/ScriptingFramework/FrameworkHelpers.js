@@ -1,10 +1,10 @@
-﻿var nativeInterface = (nativeInterface ? nativeInterface : {});
+﻿var nativeInterface = nativeInterface ? nativeInterface : {};
 
 (function () {
     nativeInterface.extendWithEventHandling = function (base) {
         base.eventListeners = [];
         base.addEventListener = function (eventType, eventHandler) {
-            if ((base.eventListeners.length === 0) && base.native && base.nativeCallback) {
+            if (base.eventListeners.length === 0 && base.native && base.nativeCallback) {
                 nativeInterface.eventing.setCallback(base.native, base.nativeCallback.bind(base));
             }
             base.eventListeners.push({ type: eventType, handler: eventHandler });

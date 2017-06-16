@@ -14,16 +14,16 @@ function URL() {
     URL.createObjectURL = function (blob) {
         URL.objects.push({ data: blob, key: URL.index });
         return URL.index++;
-    }
+    };
 
-    URL.revokeObjectURL = function(url) {
+    URL.revokeObjectURL = function (url) {
         for (var index = 0; index < URL.objects.length; index++) {
             if (url === URL.objects[index].key) {
                 URL.objects.splice(index, 1);
                 break;
             }
         }
-    }
+    };
 
     URL.objects = [];
 }
@@ -55,22 +55,22 @@ function Anchor() {
         this.warn = function (entry) {
             this.warningEntries.push(entry);
             nativeInterface.system.log("warn: " + entry + "\r\n");
-        }
+        };
 
         this.error = function (entry) {
             this.errorEntries.push(entry);
             nativeInterface.system.log("error: " + entry + "\r\n");
-        }
+        };
 
         this.info = function (entry) {
             this.infoEntries.push("info: " + entry);
             nativeInterface.system.log("info: " + entry + "\r\n");
-        }
+        };
 
         this.dir = function (entry) {
             this.dirEntries.push("dir: " + entry);
             nativeInterface.system.log("dir: " + entry + "\r\n");
-        }
+        };
     }
 
     function makeDocument() {

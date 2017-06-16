@@ -10,7 +10,7 @@
         this.context2d = nativeInterface.canvas2d.createContext2D();
 
         this.drawImage = function (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
-            if (arguments.length == 9) {
+            if (arguments.length === 9) {
                 nativeInterface.canvas2d.drawImage3(
                     this.context2d,
                     this.canvas.width,
@@ -26,7 +26,7 @@
                     dy,
                     dWidth,
                     dHeight);
-            } else if (arguments.length == 3) {
+            } else if (arguments.length === 3) {
                 nativeInterface.canvas2d.drawImage1(
                     this.context2d,
                     this.canvas.width,
@@ -36,7 +36,7 @@
                     image.height,
                     dx,
                     dy);
-            } else if (arguments.length == 5) {
+            } else if (arguments.length === 5) {
                 nativeInterface.canvas2d.drawImage2(
                     this.context2d,
                     this.canvas.width,
@@ -70,5 +70,5 @@
                 return this.context;
             }
         }.bind(this);
-    }
+    };
 })();

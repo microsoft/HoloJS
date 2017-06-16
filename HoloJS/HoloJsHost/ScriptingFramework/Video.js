@@ -18,11 +18,11 @@ function HTMLVideoElement() {
         if (this.loadEvent) {
             this.loadEvent();
         }
-    }
+    };
 
     this.play = function () {
 
-    }
+    };
 
     Object.defineProperty(this, "onload", {
         get: function () {
@@ -46,7 +46,7 @@ function HTMLVideoElement() {
             this.source = source.src;
             nativeInterface.video.setVideoSource(this.native, source.src);
         }
-    }
+    };
 
     Object.defineProperty(this, "src", {
         get: function () {

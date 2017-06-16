@@ -88,15 +88,15 @@
             if (arguments.length === 9) {
                 //GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ArrayBufferView? pixels
                 nativeInterface.webgl.texImage2D1(this.glContext, arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6], arguments[7], arguments[8]);
-            } else if (arguments.length === 6 && (arguments[5] instanceof Image)) {
+            } else if (arguments.length === 6 && arguments[5] instanceof Image) {
                 var image = arguments[5];
                 //GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
                 nativeInterface.webgl.texImage2D2(this.glContext, arguments[0], arguments[1], arguments[2], image.width, image.height, arguments[3], arguments[4], image.native);
-            } else if ((arguments.length === 6) && (arguments[5].isCanvas2D === true) && arguments[5].context && arguments[5].context.context2d) {
+            } else if (arguments.length === 6 && arguments[5].isCanvas2D === true && arguments[5].context && arguments[5].context.context2d) {
                 //GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
                 var canvas = arguments[5];
                 nativeInterface.webgl.texImage2D3(this.glContext, arguments[0], arguments[1], arguments[2], canvas.width, canvas.height, arguments[3], arguments[4], canvas.context.context2d);
-            } else if (arguments.length === 6 && (arguments[5] instanceof HTMLVideoElement)) {
+            } else if (arguments.length === 6 && arguments[5] instanceof HTMLVideoElement) {
                 var video = arguments[5];
                 nativeInterface.webgl.texImage2D4(this.glContext, arguments[0], arguments[1], arguments[2], video.width, video.height, arguments[3], arguments[4], video.native);
             } else {
@@ -730,6 +730,6 @@
         this.CONTEXT_LOST_WEBGL = 0x9242;
         this.UNPACK_COLORSPACE_CONVERSION_WEBGL = 0x9243;
         this.BROWSER_DEFAULT_WEBGL = 0x9244;
-    }
+    };
 })();
 

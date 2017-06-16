@@ -17,7 +17,7 @@
         if (this.loadEvent) {
             this.loadEvent();
         }
-    }
+    };
 
     Object.defineProperty(this, "onload", {
         get: function () {

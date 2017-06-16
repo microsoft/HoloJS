@@ -1,4 +1,4 @@
-﻿var window = (window ? window : {});
+﻿var window = window ? window : {};
 
 (function () {
 
@@ -104,7 +104,7 @@
 
     Object.defineProperty(window, "innerHeight", {
         get: function () {
-            return nativeInterface.window.getHeight()
+            return nativeInterface.window.getHeight();
         }
     });
 
@@ -116,7 +116,7 @@
 
     Object.defineProperty(window, "height", {
         get: function () {
-            return nativeInterface.window.getHeight()
+            return nativeInterface.window.getHeight();
         }
     });
 
@@ -175,7 +175,7 @@
                 viewMatrix: nativeInterface.window.holographicViewMatrixRight,
                 projectionMatrix: nativeInterface.window.holographicProjectionMatrixRight,
                 cameraPosition: nativeInterface.window.holographicCameraPositionRight
-            },
-        }
-    }
+            }
+        };
+    };
 })();
