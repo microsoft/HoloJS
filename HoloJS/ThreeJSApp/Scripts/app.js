@@ -40,8 +40,9 @@ let torus = new THREE.Mesh(initColors(new THREE.TorusKnotBufferGeometry(0.2, 0.0
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 loader.setCrossOrigin('anonymous');
+material.map.needsUpdate = true;
 
-directionalLight.position.set(0, 1, 1);
+directionalLight.position.set(0, 2, 0);
 
 cube.position.set(0, 0, -1.5);
 cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from([
@@ -72,9 +73,9 @@ scene.add(ambientLight);
 scene.add(directionalLight);
 scene.add(pointLight);
 
-//scene.add(cube);
-//scene.add(sphere);
-//scene.add(cone);
+scene.add(cube);
+scene.add(sphere);
+scene.add(cone);
 scene.add(torus);
 scene.add(camera);
 
@@ -110,9 +111,6 @@ function start () {
     // Listen to spatial input events (hands)
     // On press, spatial mapping data is requested and the visible meshes are updated
     canvas.addEventListener("sourcepress", onSpatialSourcePress);
-
-    // Initial request for spatial mapping data
-    //window.requestSpatialMappingData(onSurfaceAvailable);
 }
 
 function SpatialMappingMeshes(scene) {
@@ -188,7 +186,7 @@ function SpatialMappingMeshes(scene) {
         vertexTransform.fromArray(surface.originToSurfaceTransform);
         geometry.applyMatrix(vertexTransform);
 
-        return { id: surface.id, mesh: new THREE.Mesh(geometry, material) };
+        return { id: surface.id, mesh: new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xFFFFFF })) };
     }
 
     // This method is slower than the one above, but allows for mesh manipulation
@@ -232,7 +230,7 @@ function SpatialMappingMeshes(scene) {
                     vertexNormals));
         }
 
-        return { id: surface.id, mesh: new THREE.Mesh(geometry, material) };
+        return { id: surface.id, mesh: new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xFFFFFF })) };
     }
 }
 
