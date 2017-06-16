@@ -1,4 +1,0 @@
-[submodule "angle"]
-	path = angle
-	url = https://github.com/sjando/angle.git
-	branch = projection
