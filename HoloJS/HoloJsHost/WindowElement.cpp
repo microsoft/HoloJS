@@ -208,5 +208,12 @@ WindowElement::requestSpatialMapping(
 	unsigned short argumentCount
 )
 {
-	return m_spatialMapping.GetSpatialData();
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+	const auto extentX = ScriptHostUtilities::GLfloatFromJsRef(arguments[1]);
+	const auto extentY = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
+	const auto extentZ = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
+	const auto trianglesPerCubicMeter = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
+
+	return m_spatialMapping.GetSpatialData(extentX, extentY, extentZ, trianglesPerCubicMeter);
 }

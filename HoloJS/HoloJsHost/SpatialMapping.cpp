@@ -24,10 +24,12 @@ SpatialMapping::~SpatialMapping()
 }
 
 JsValueRef
-SpatialMapping::GetSpatialData()
+SpatialMapping::GetSpatialData(float extentX, float extentY, float extentZ, int trianglesPerCubicMeter)
 {
 	RETURN_INVALID_REF_IF_FALSE(m_surfaceAccessAllowed);
-	RETURN_INVALID_REF_IF_FALSE(CreateSurfaceObserver());
+	RETURN_INVALID_REF_IF_FALSE(CreateSurfaceObserver(extentX, extentY, extentZ));
+
+	m_trianglesResolution = trianglesPerCubicMeter;
 
 	auto mapContainingSurfaceCollection = m_surfaceObserver->GetObservedSurfaces();
 
@@ -67,7 +69,7 @@ SpatialMapping::EnableSpatialMapping(SpatialStationaryFrameOfReference^ frameOfR
 }
 
 bool
-SpatialMapping::CreateSurfaceObserver()
+SpatialMapping::CreateSurfaceObserver(float extentX, float extentY, float extentZ)
 {
 	RETURN_IF_FALSE(m_surfaceAccessAllowed);
 
@@ -79,7 +81,7 @@ SpatialMapping::CreateSurfaceObserver()
 	SpatialBoundingBox axisAlignedBoundingBox =
 	{
 		{ 0.f,  0.f, 0.f },
-		{ 20.f, 20.f, 5.f },
+		{ extentX, extentY, extentZ },
 	};
 	SpatialBoundingVolume^ bounds = SpatialBoundingVolume::FromBox(m_frameOfReference->CoordinateSystem, axisAlignedBoundingBox);
 		
@@ -127,7 +129,10 @@ byte* GetPointerToData(Windows::Storage::Streams::IBuffer^ buffer)
 void
 SpatialMapping::ProcessOneSpatialMappingDataUpdate()
 {
-	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+	if (m_scriptCallback == JS_INVALID_REFERENCE)
+	{
+		return;
+	}
 	
 	std::lock_guard<std::mutex> guard(m_processingLock);
 	if (m_meshIds.size() == 0)
@@ -195,7 +200,7 @@ SpatialMapping::ProcessSurface(
 	SpatialSurfaceInfo^ surface
 )
 {
-	auto computeMeshTask = create_task(surface->TryComputeLatestMeshAsync(10000, m_surfaceMeshOptions));
+	auto computeMeshTask = create_task(surface->TryComputeLatestMeshAsync(m_trianglesResolution, m_surfaceMeshOptions));
 
 	computeMeshTask.then([this](SpatialSurfaceMesh^ mesh)
 	{

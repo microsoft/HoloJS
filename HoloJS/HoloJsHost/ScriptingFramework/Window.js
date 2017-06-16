@@ -14,9 +14,22 @@
         window.drawCallback = callback;
     };
 
-    window.requestSpatialMappingData = function (callback) {
+    window.requestSpatialMappingData = function (callback, options) {
         window.addEventListener("spatialmapping", callback);
-        return nativeInterface.window.requestSpatialMappingData();
+        
+        var extentX, extentY, extentZ;
+        if (options && options.scanExtentMeters) {
+            extentX = options.scanExtentMeters.x;
+            extentY = options.scanExtentMeters.y;
+            extentZ = options.scanExtentMeters.z;
+        } else {
+            extentX = 10;
+            extentY = 5;
+            extentZ = 10;
+        }
+
+        var trianglesPerCubicMeter = (options && options.trianglesPerCubicMeter ? options.trianglesPerCubicMeter : 1000);
+        return nativeInterface.window.requestSpatialMappingData(extentX, extentY, extentZ, trianglesPerCubicMeter);
     };
 
     // Mapping of type ids to strings;

@@ -15,7 +15,7 @@ namespace HologramJS
 
 			void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
-			JsValueRef GetSpatialData();
+			JsValueRef GetSpatialData(float extentX, float extentY, float extentZ, int trianglesPerCubicMeter);
 
 			void ProcessOneSpatialMappingDataUpdate();
 
@@ -28,7 +28,7 @@ namespace HologramJS
 			Windows::Perception::Spatial::Surfaces::SpatialSurfaceObserver^ m_surfaceObserver;
 			Windows::Perception::Spatial::Surfaces::SpatialSurfaceMeshOptions^ m_surfaceMeshOptions;
 
-			bool CreateSurfaceObserver();
+			bool CreateSurfaceObserver(float extentX, float extentY, float extentZ);
 
 			void ProcessSurface(Windows::Perception::Spatial::Surfaces::SpatialSurfaceInfo^ surface);
 
@@ -41,6 +41,8 @@ namespace HologramJS
 			std::list<std::vector<byte>> m_meshIds;
 
 			bool m_spatialMappingDataAvailable = false;
+
+			int m_trianglesResolution = 1000;
 		};
 
 

@@ -240,7 +240,8 @@ function onSurfaceAvailable(surfaceData) {
 }
 
 function onSpatialSourcePress(spatialInputEvent) {
-    window.requestSpatialMappingData(onSurfaceAvailable);
+    var mappingOptions = { scanExtentMeters: { x: 5, y: 5, z: 3 }, trianglesPerCubicMeter: 100 };
+    window.requestSpatialMappingData(onSurfaceAvailable, mappingOptions);
 }
 
 start();
