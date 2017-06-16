@@ -84,17 +84,22 @@ SpatialMapping::CreateSurfaceObserver()
 	SpatialBoundingVolume^ bounds = SpatialBoundingVolume::FromBox(m_frameOfReference->CoordinateSystem, axisAlignedBoundingBox);
 		
 	m_surfaceMeshOptions = ref new SpatialSurfaceMeshOptions();
-	IVectorView<DirectXPixelFormat>^ supportedVertexPositionFormats = m_surfaceMeshOptions->SupportedVertexPositionFormats;
 	unsigned int formatIndex = 0;
-	if (supportedVertexPositionFormats->IndexOf(DirectXPixelFormat::R16G16B16A16IntNormalized, &formatIndex))
-	{
-		m_surfaceMeshOptions->VertexPositionFormat = DirectXPixelFormat::R16G16B16A16IntNormalized;
-	}
 
+	// Set the vertex format
+	IVectorView<DirectXPixelFormat>^ supportedVertexPositionFormats = m_surfaceMeshOptions->SupportedVertexPositionFormats;
+
+	RETURN_IF_FALSE(supportedVertexPositionFormats->IndexOf(DirectXPixelFormat::R32G32B32A32Float, &formatIndex));
+	m_surfaceMeshOptions->VertexPositionFormat = DirectXPixelFormat::R32G32B32A32Float;
+
+	// Set the normals format
 	IVectorView<DirectXPixelFormat>^ supportedVertexNormalFormats = m_surfaceMeshOptions->SupportedVertexNormalFormats;
-	if (supportedVertexNormalFormats->IndexOf(DirectXPixelFormat::R8G8B8A8IntNormalized, &formatIndex))
+	RETURN_IF_FALSE(supportedVertexNormalFormats->IndexOf(DirectXPixelFormat::R8G8B8A8IntNormalized, &formatIndex));
+	m_surfaceMeshOptions->VertexNormalFormat = DirectXPixelFormat::R8G8B8A8IntNormalized;
+
+	for (const auto format : m_surfaceMeshOptions->SupportedTriangleIndexFormats)
 	{
-		m_surfaceMeshOptions->VertexNormalFormat = DirectXPixelFormat::R8G8B8A8IntNormalized;
+		OutputDebugStringW(format.ToString()->Data());
 	}
 
 	m_surfaceMeshOptions->IncludeVertexNormals = true;
@@ -120,6 +125,72 @@ byte* GetPointerToData(Windows::Storage::Streams::IBuffer^ buffer)
 }
 
 void
+SpatialMapping::ProcessOneSpatialMappingDataUpdate()
+{
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+	
+	std::lock_guard<std::mutex> guard(m_processingLock);
+	if (m_meshIds.size() == 0)
+	{
+		return;
+	}
+
+	JsTypedArrayType arrayType;
+	int elementSize;
+	unsigned int typedArraySize;
+	byte* typedArrayStorage;
+
+	JsValueRef originToSurfaceRef;
+	EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeFloat32, JS_INVALID_REFERENCE, 0, m_originToSurfaces.front().size(), &originToSurfaceRef));
+	EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(originToSurfaceRef, &typedArrayStorage, &typedArraySize, &arrayType, &elementSize));
+	memcpy(typedArrayStorage, m_originToSurfaces.front().data(), typedArraySize);
+
+	JsValueRef normalBufferRef;
+	EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt8, JS_INVALID_REFERENCE, 0, m_normalBuffers.front().size(), &normalBufferRef));
+	EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(normalBufferRef, &typedArrayStorage, &typedArraySize, &arrayType, &elementSize));
+	memcpy(typedArrayStorage, m_normalBuffers.front().data(), typedArraySize);
+
+	JsValueRef indexBufferRef;
+	EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt16, JS_INVALID_REFERENCE, 0, m_indexBuffers.front().size(), &indexBufferRef));
+	EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(indexBufferRef, &typedArrayStorage, &typedArraySize, &arrayType, &elementSize));
+	memcpy(typedArrayStorage, m_indexBuffers.front().data(), typedArraySize);
+
+	JsValueRef vertexBufferRef;
+	EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeFloat32, JS_INVALID_REFERENCE, 0, m_vertexBuffers.front().size(), &vertexBufferRef));
+	EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(vertexBufferRef, &typedArrayStorage, &typedArraySize, &arrayType, &elementSize));
+	memcpy(typedArrayStorage, m_vertexBuffers.front().data(), typedArraySize);
+
+	JsValueRef meshIdRef;
+	EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt8, JS_INVALID_REFERENCE, 0, m_meshIds.front().size(), &meshIdRef));
+	EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(meshIdRef, &typedArrayStorage, &typedArraySize, &arrayType, &elementSize));
+	memcpy(typedArrayStorage, m_meshIds.front().data(), typedArraySize);
+
+	JsValueRef meshObjectRef;
+	EXIT_IF_JS_ERROR(JsCreateObject(&meshObjectRef));
+	EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObjectRef, L"originToSurfaceTransform", originToSurfaceRef));
+	EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObjectRef, L"normals", normalBufferRef));
+	EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObjectRef, L"indices", indexBufferRef));
+	EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObjectRef, L"vertices", vertexBufferRef));
+	EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObjectRef, L"id", meshIdRef));
+
+	// Create JS callback parameters
+	JsValueRef parameters[3];
+	parameters[0] = m_scriptCallback;
+	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::SpatialMapping), &parameters[1]));
+	parameters[2] = meshObjectRef;
+
+	// Invoke JS callback
+	JsValueRef result;
+	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+
+	m_meshIds.pop_front();
+	m_vertexBuffers.pop_front();
+	m_indexBuffers.pop_front();
+	m_normalBuffers.pop_front();
+	m_originToSurfaces.pop_front();
+}
+
+void
 SpatialMapping::ProcessSurface(
 	SpatialSurfaceInfo^ surface
 )
@@ -128,18 +199,12 @@ SpatialMapping::ProcessSurface(
 
 	computeMeshTask.then([this](SpatialSurfaceMesh^ mesh)
 	{
-		JsTypedArrayType arrayType;
-		int elementSize;
-		float* typedArrayBuffer;
-		unsigned int typedArraySize;
-
 		if (mesh == nullptr)
 		{
 			return;
 		}
 
-		JsValueRef meshObject;
-		EXIT_IF_JS_ERROR(JsCreateObject(&meshObject));
+		m_processingLock.lock();
 
 		// Combine origin transform with mesh scale to create position transform
 		auto originToSurface = mesh->CoordinateSystem->TryGetTransformTo(m_frameOfReference->CoordinateSystem);
@@ -149,68 +214,47 @@ SpatialMapping::ProcessSurface(
 		XMFLOAT4X4 posTransformf4;
 		XMStoreFloat4x4(&posTransformf4, posTransformMat);
 
-		// Store position transform
-		JsValueRef originToSurfaceJsArray;
-		EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeFloat32, JS_INVALID_REFERENCE, 0, 16, &originToSurfaceJsArray));
-		EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(originToSurfaceJsArray, reinterpret_cast<BYTE**>(&typedArrayBuffer), &typedArraySize, &arrayType, &elementSize));
-		EXIT_IF_FALSE(typedArraySize == sizeof(posTransformf4));
-		memcpy(typedArrayBuffer, posTransformf4.m, sizeof(posTransformf4));
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"originToSurfaceTransform", originToSurfaceJsArray));
+		// Copy position transform to buffer
+		m_originToSurfaces.emplace_back(sizeof(posTransformf4));
+		memcpy(m_originToSurfaces.back().data(), posTransformf4.m, sizeof(posTransformf4));
 
-		// Compute normals transform
-		// Normals transforms for non-uniform scaling require the inverse transpose of the original transform
-		XMMATRIX normTransformMat = XMMatrixTranspose(XMMatrixInverse(nullptr, posTransformMat));
-		XMFLOAT4X4 normTransformf4;
-		XMStoreFloat4x4(&normTransformf4, posTransformMat);
+		// Copy normals to buffer; go from float4 to float3
+		m_normalBuffers.emplace_back(3 * mesh->VertexNormals->ElementCount);
+		auto destNormalPointer = m_normalBuffers.back().data();
+		auto sourceNormalPointer = reinterpret_cast<byte*>(GetPointerToData(mesh->VertexNormals->Data));
+		for (int i = 0; i < mesh->VertexNormals->ElementCount; i++)
+		{
+			memcpy(destNormalPointer, sourceNormalPointer, 3 * sizeof(byte));
+			destNormalPointer += 3;
+			sourceNormalPointer += 4;
+		}
 
-		// Store normals transform
-		JsValueRef normalsTransformJsArray;
-		EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeFloat32, JS_INVALID_REFERENCE, 0, 16, &normalsTransformJsArray));
-		EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(normalsTransformJsArray, reinterpret_cast<BYTE**>(&typedArrayBuffer), &typedArraySize, &arrayType, &elementSize));
-		EXIT_IF_FALSE(typedArraySize == sizeof(normTransformf4));
-		memcpy(typedArrayBuffer, normTransformf4.m, sizeof(normTransformf4));
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"normalTransform", normalsTransformJsArray));
+		// Copy indices to buffer; swap order to CW
+		m_indexBuffers.emplace_back(mesh->TriangleIndices->ElementCount);
+		auto destIndexPointer = m_indexBuffers.back().data();
+		auto sourceIndexPointer = reinterpret_cast<short int*>(GetPointerToData(mesh->TriangleIndices->Data));
+		for (int i = 0; i <= mesh->TriangleIndices->ElementCount - 3; i += 3)
+		{
+			destIndexPointer[i] = sourceIndexPointer[i + 2];
+			destIndexPointer[i + 1] = sourceIndexPointer[i + 1];
+			destIndexPointer[i + 2] = sourceIndexPointer[i];
+		}
 
-		// Store normals array;
-		JsValueRef normalsJsArray;
-		const auto normalsElementCount = 4 * mesh->VertexNormals->ElementCount; // 4 * R8G8B8A8IntNormalized
-		EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt8, JS_INVALID_REFERENCE, 0, normalsElementCount, &normalsJsArray));
-		EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(normalsJsArray, reinterpret_cast<BYTE**>(&typedArrayBuffer), &typedArraySize, &arrayType, &elementSize));
-		EXIT_IF_FALSE(typedArraySize == mesh->VertexNormals->Data->Length);
-		memcpy(typedArrayBuffer, GetPointerToData(mesh->VertexNormals->Data), mesh->VertexNormals->Data->Length);
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"normals", normalsJsArray));
+		// Copy positions to buffer; go from float4 to float3
+		m_vertexBuffers.emplace_back(3 * mesh->VertexPositions->ElementCount);
+		auto destVertexPointer = m_vertexBuffers.back().data();
+		auto sourceVertexPointer = reinterpret_cast<float*>(GetPointerToData(mesh->VertexPositions->Data));
+		for (int i = 0; i < mesh->VertexPositions->ElementCount; i++)
+		{
+			memcpy(destVertexPointer, sourceVertexPointer, 3 * sizeof(float));
+			destVertexPointer += 3;
+			sourceVertexPointer += 4;
+		}
 
-		// Store indices array
-		JsValueRef indicesArray;
-		EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt16, JS_INVALID_REFERENCE, 0, mesh->TriangleIndices->ElementCount, &indicesArray));
-		EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(indicesArray, reinterpret_cast<BYTE**>(&typedArrayBuffer), &typedArraySize, &arrayType, &elementSize));
-		EXIT_IF_FALSE(typedArraySize == mesh->TriangleIndices->Data->Length);
-		memcpy(typedArrayBuffer, GetPointerToData(mesh->TriangleIndices->Data), mesh->TriangleIndices->Data->Length);
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"indices", indicesArray));
+		// Copy mesh ID
+		m_meshIds.emplace_back(sizeof(GUID));
+		memcpy(m_meshIds.back().data(), &mesh->SurfaceInfo->Id, sizeof(GUID));
 
-		//Store positions array
-		JsValueRef positionsArray;
-		const auto positionsElementCount = 4 * mesh->VertexPositions->ElementCount; // 4 * R16G16B16A16
-		EXIT_IF_JS_ERROR(JsCreateTypedArray(JsArrayTypeInt16, JS_INVALID_REFERENCE, 0, positionsElementCount, &positionsArray));
-		EXIT_IF_JS_ERROR(JsGetTypedArrayStorage(positionsArray, reinterpret_cast<BYTE**>(&typedArrayBuffer), &typedArraySize, &arrayType, &elementSize));
-		EXIT_IF_FALSE(typedArraySize == mesh->VertexPositions->Data->Length);
-		memcpy(typedArrayBuffer, GetPointerToData(mesh->VertexPositions->Data), mesh->VertexPositions->Data->Length);
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"vertices", positionsArray));
-
-		// Add mesh ID
-		JsValueRef meshIdRef;
-		const auto meshGuidString = mesh->SurfaceInfo->Id.ToString();
-		EXIT_IF_JS_ERROR(JsPointerToString(meshGuidString->Data(), meshGuidString->Length(), &meshIdRef));
-		EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(meshObject, L"id", meshIdRef));
-
-		// Create JS callback parameters
-		JsValueRef parameters[3];
-		parameters[0] = m_scriptCallback;
-		EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::SpatialMapping), &parameters[1]));
-		parameters[2] = meshObject;
-
-		// Invoke JS callback
-		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
-	});
+		m_processingLock.unlock();
+	}, concurrency::task_continuation_context::use_arbitrary());
 }

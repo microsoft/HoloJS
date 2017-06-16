@@ -132,6 +132,8 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 	// queued events internally and since now we're on the UI thread we drain them
 	m_spatialInput.DrainQueuedSpatialInputEvents();
 
+	m_spatialMapping.ProcessOneSpatialMappingDataUpdate();
+
 	if (m_callbackFunction != JS_INVALID_REFERENCE)
 	{
 		if (m_viewMatrixStoragePointer != nullptr)
