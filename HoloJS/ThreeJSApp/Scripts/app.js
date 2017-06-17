@@ -37,13 +37,12 @@ let cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), material.c
 let sphere = new THREE.Mesh(initColors(new THREE.SphereBufferGeometry(0.1, 20, 20)), material.clone());
 let cone = new THREE.Mesh(initColors(new THREE.ConeBufferGeometry(0.1, 0.2, 20, 20)), material.clone());
 let torus = new THREE.Mesh(initColors(new THREE.TorusKnotBufferGeometry(0.2, 0.02, 100, 100)), material.clone());
-let cursor = new THREE.Mesh(initColors(new THREE.RingBufferGeometry(0.001, 0.003, 20, 20)), material.clone());
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 loader.setCrossOrigin('anonymous');
 material.map.needsUpdate = true;
 
-directionalLight.position.set(0, 1, 1);
+directionalLight.position.set(0, 2, 0);
 
 cube.position.set(0, 0, -1.5);
 cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from([
@@ -70,10 +69,6 @@ torus.material.color.set(0x00ff00);
 torus.material.roughness = 0.5;
 torus.material.metalness = 1.0;
 
-cursor.position.set(0, 0, -0.5);
-cursor.material.transparent = true;
-cursor.material.opacity = 0.5;
-
 scene.add(ambientLight);
 scene.add(directionalLight);
 scene.add(pointLight);
@@ -82,14 +77,12 @@ scene.add(cube);
 scene.add(sphere);
 scene.add(cone);
 scene.add(torus);
-camera.add(cursor);
 scene.add(camera);
 
 cube.frustumCulled = false;
 sphere.frustumCulled = false;
 cone.frustumCulled = false;
 torus.frustumCulled = false;
-cursor.frustumCulled = false;
 
 var controls;
 
@@ -106,9 +99,6 @@ function update (delta, elapsed) {
     window.requestAnimationFrame(() => update(clock.getDelta(), clock.getElapsedTime()));
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
-    sphere.scale.x = sphere.scale.y = sphere.scale.z = Math.abs(Math.cos(elapsed * 0.3)) * 0.6 + 1.0;
-    cone.position.y = Math.sin(elapsed * 0.5) * 0.1;
-    torus.position.z = -2 - Math.abs(Math.cos(elapsed * 0.2));
 
     if (camera.update) camera.update();
 
@@ -117,31 +107,141 @@ function update (delta, elapsed) {
 
 function start () {
     update(clock.getDelta(), clock.getElapsedTime());
+
+    // Listen to spatial input events (hands)
+    // On press, spatial mapping data is requested and the visible meshes are updated
+    canvas.addEventListener("sourcepress", onSpatialSourcePress);
 }
 
-// Listen to spatial input events (hands)
-canvas.addEventListener("sourcepress", onSpatialSourcePress);
-canvas.addEventListener("sourcerelease", onSpatialSourceRelease);
-canvas.addEventListener("sourceupdate", onSpatialSourceUpdate);
-// treat source lost the same way as source release - stop moving the cube when hands input is lost
-canvas.addEventListener("sourcelost", onSpatialSourceRelease);
+function SpatialMappingMeshes(scene) {
+    var self = this;
+    this.meshObjects = [];
+    this.scene = scene;
 
-let lastSpatialInputX = 0;
-let spatialInputTracking = false;
+    function hideMeshData() {
+        for (var meshIndex in self.meshObjects) {
+            self.scene.remove(self.meshObjects[meshIndex].Mesh);
+        }
+    };
 
-function onSpatialSourcePress(spatialInputEvent) {
-    lastSpatialInputX = spatialInputEvent.location.x;
-    spatialInputTracking = true;
-}
+    function showMeshData() {
+        for (var meshIndex in self.meshObjects) {
+            self.scene.add(self.meshObjects[meshIndex].Mesh);
+        }
+    };
 
-function onSpatialSourceRelease(spatialInputEvent) {
-    spatialInputTracking = false;
-}
+    function idEquals(id1, id2) {
+        if (id1.length != id2.length) {
+            return false;
+        }
 
-function onSpatialSourceUpdate(spatialInputEvent) {
-    if (spatialInputTracking === true) {
-        // rotate the cube proportional to hand movement on X axis
-        cube.rotation.y += (lastSpatialInputX - spatialInputEvent.location.x);
-        lastSpatialInputX = spatialInputEvent.location.x;
+        for (var i = 0; i < id1.length; i++) {
+            if (id1[i] != id2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    this.clearMeshData = function (id) {
+        if (id != undefined) {
+            for (var meshIndex in self.meshObjects) {
+                if (idEquals(self.meshObjects[meshIndex].id, id)) {
+                    self.scene.remove(self.meshObjects[meshIndex].mesh);
+                    self.meshObjects[meshIndex].mesh.geometry.dispose();
+                    self.meshObjects[meshIndex].mesh.material.dispose();
+                    self.meshObjects.splice(meshIndex, 1);
+                    break;
+                }
+            }
+        }
+    };
+
+    this.setMeshData = function (surfaceData) {
+        self.clearMeshData(surfaceData.id);
+        //var newMeshObject = createMeshObject(surfaceData);
+        var newMeshObject = createMeshObjectBuffered(surfaceData);
+
+        self.scene.add(newMeshObject.mesh);
+        self.meshObjects.push(newMeshObject);
+    }
+
+    // This method is faster to render the mesh, but does not allow easy
+    // manipulation of the surface; the buffers are passed through directly to the
+    // GPU
+    function createMeshObjectBuffered(surface) {
+        var geometry = new THREE.BufferGeometry();
+
+        // Make copies of the incoming buffers; they get recycled after this returns
+        var indices = new Uint16Array(surface.indices);
+        var vertices = new Float32Array(surface.vertices);
+        var normals = new Uint8Array(surface.normals);
+
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3, true));
+        
+        var vertexTransform = new THREE.Matrix4();
+        vertexTransform.fromArray(surface.originToSurfaceTransform);
+        geometry.applyMatrix(vertexTransform);
+
+        return { id: surface.id, mesh: new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xFFFFFF })) };
+    }
+
+    // This method is slower than the one above, but allows for mesh manipulation
+    function createMeshObject(surface) {
+        var geometry = new THREE.Geometry();
+
+        var vertexTransform = new THREE.Matrix4();
+        vertexTransform.fromArray(surface.originToSurfaceTransform);
+
+        var normalTransform = new THREE.Matrix4();
+        normalTransform.fromArray(surface.normalTransform);
+
+        var vertexIndex = 0;
+        // Iterate over vertices, normals and indices and add them to the new geometry object
+        for (vertexIndex = 0; vertexIndex <= surface.vertices.length - 3; vertexIndex += 3) {
+            geometry.vertices.push(new THREE.Vector3(
+                surface.vertices[vertexIndex],
+                surface.vertices[vertexIndex + 1],
+                surface.vertices[vertexIndex + 2]
+            ));
+        }
+
+        geometry.applyMatrix(vertexTransform);
+
+        for (var indiceIndex = 0; indiceIndex <= surface.indices.length - 3; indiceIndex += 3) {
+            var vertexNormals = [];
+            for (var normalIndex = 0; normalIndex < 3; normalIndex++) {
+                vertexNormals[normalIndex] = new THREE.Vector3(
+                    surface.normals[surface.indices[indiceIndex + normalIndex]],
+                    surface.normals[surface.indices[indiceIndex + normalIndex] + 1],
+                    surface.normals[surface.indices[indiceIndex + normalIndex] + 2]
+                );
+                vertexNormals[normalIndex].applyMatrix4(normalTransform);
+            }
+            geometry.faces.push(
+                //Data passed back from surface reconstruction uses front CW winding order
+                new THREE.Face3(
+                    surface.indices[indiceIndex],
+                    surface.indices[indiceIndex + 1],
+                    surface.indices[indiceIndex + 2],
+                    vertexNormals));
+        }
+
+        return { id: surface.id, mesh: new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color: 0xFFFFFF })) };
     }
 }
+
+var meshManager = new SpatialMappingMeshes(scene);
+function onSurfaceAvailable(surfaceData) {
+    meshManager.setMeshData(surfaceData);
+}
+
+function onSpatialSourcePress(spatialInputEvent) {
+    var mappingOptions = { scanExtentMeters: { x: 5, y: 5, z: 3 }, trianglesPerCubicMeter: 100 };
+    window.requestSpatialMappingData(onSurfaceAvailable, mappingOptions);
+}
+
+start();

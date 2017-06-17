@@ -7,10 +7,29 @@
     }
     
     window.drawCallback = null;
+    window.spatialMappingCallback = null;
     window.location = new makeLocation(nativeInterface.window.getBaseUrl());
 
     window.requestAnimationFrame = function (callback) {
         window.drawCallback = callback;
+    };
+
+    window.requestSpatialMappingData = function (callback, options) {
+        window.addEventListener("spatialmapping", callback);
+        
+        var extentX, extentY, extentZ;
+        if (options && options.scanExtentMeters) {
+            extentX = options.scanExtentMeters.x;
+            extentY = options.scanExtentMeters.y;
+            extentZ = options.scanExtentMeters.z;
+        } else {
+            extentX = 10;
+            extentY = 5;
+            extentZ = 10;
+        }
+
+        var trianglesPerCubicMeter = (options && options.trianglesPerCubicMeter ? options.trianglesPerCubicMeter : 1000);
+        return nativeInterface.window.requestSpatialMappingData(extentX, extentY, extentZ, trianglesPerCubicMeter);
     };
 
     // Mapping of type ids to strings;
@@ -20,13 +39,12 @@
     window.nativeEvents.keyboardEvents = ["keydown", "keyup"];
     window.nativeEvents.mouseEvents = ["mouseup", "mousedown", "mousemove", "mousewheel"];
 
-    window.nativeEvents.events = ["resize", "mouse", "keyboard", "spatialinput"];
+    window.nativeEvents.events = ["resize", "mouse", "keyboard", "spatialinput", "spatialmapping"];
     window.nativeEvents.resize = 0;
     window.nativeEvents.mouse = 1;
     window.nativeEvents.keyboard = 2;
     window.nativeEvents.spatialinput = 3;
-
-    window.nativeEvents.spatialinput = 3;
+    window.nativeEvents.spatialmapping = 4;
 
     function onMouseEvent(x, y, button, action) {
         if (!document.canvas) {
@@ -67,6 +85,10 @@
         spatialInputEvent.sourceKind = sourceKind;
 
         document.canvas.fireHandlersByType(window.nativeEvents.spatialInputEvents[eventType], spatialInputEvent);
+    }
+
+    function onSpatialMappingEvent(surfaceData) {
+        window.fireHandlersByType(window.nativeEvents.events[window.nativeEvents.spatialmapping], surfaceData);
     }
 
     function onKeyboardEvent(event) {
@@ -113,6 +135,8 @@
             onKeyboardEvent(arguments[1], arguments[2]);
         } else if (type === window.nativeEvents.spatialinput) {
             onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])
+        } else if (type === window.nativeEvents.spatialmapping) {
+            onSpatialMappingEvent(arguments[1])
         }
         else {
             window.fireHandlersByType(type);

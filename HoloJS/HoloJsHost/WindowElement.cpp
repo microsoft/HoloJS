@@ -35,6 +35,7 @@ WindowElement::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getHeight", L"window", getHeightStatic, this, &m_getHeightFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getBaseUrl", L"window", getBaseUrlStatic, this, &m_getBaseUrlFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setCallback", L"window", setCallbackStatic, this, &m_setCallbackFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
 
 	RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
 
@@ -70,6 +71,7 @@ WindowElement::setCallback(
 	m_keyboardInput.SetScriptCallback(callback);
 	m_mouseInput.SetScriptCallback(callback);
 	m_spatialInput.SetScriptCallback(callback);
+	m_spatialMapping.SetScriptCallback(callback);
 
 	return JS_INVALID_REFERENCE;
 }
@@ -129,6 +131,8 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 	// Workaround for RS1: spatial input events can be delivered on non-UI threads; in this case m_spatialInput
 	// queued events internally and since now we're on the UI thread we drain them
 	m_spatialInput.DrainQueuedSpatialInputEvents();
+
+	m_spatialMapping.ProcessOneSpatialMappingDataUpdate();
 
 	if (m_callbackFunction != JS_INVALID_REFERENCE)
 	{
@@ -196,4 +200,20 @@ WindowElement::CreateViewMatrixStorageAndScriptProjection()
 	}
 
 	return true;
+}
+
+JsValueRef
+WindowElement::requestSpatialMapping(
+	JsValueRef* arguments,
+	unsigned short argumentCount
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+	const auto extentX = ScriptHostUtilities::GLfloatFromJsRef(arguments[1]);
+	const auto extentY = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
+	const auto extentZ = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
+	const auto trianglesPerCubicMeter = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
+
+	return m_spatialMapping.GetSpatialData(extentX, extentY, extentZ, trianglesPerCubicMeter);
 }

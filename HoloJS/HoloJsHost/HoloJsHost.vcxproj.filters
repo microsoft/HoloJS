@@ -47,6 +47,9 @@
     <ClCompile Include="SpatialInput.cpp">
       <Filter>NativeFramework</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialMapping.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -105,6 +108,9 @@
       <Filter>NativeFramework</Filter>
     </ClInclude>
     <ClInclude Include="InputInterface.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialMapping.h">
       <Filter>NativeFramework</Filter>
     </ClInclude>
   </ItemGroup>
