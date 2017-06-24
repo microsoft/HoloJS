@@ -46,6 +46,6 @@ KeyboardInput::CallbackScriptForKeyboardInput(
 	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), actionTypeParam));
 
 	JsValueRef result;
-	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+	HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 

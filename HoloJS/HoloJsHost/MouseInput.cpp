@@ -87,6 +87,8 @@ MouseInput::CallbackScriptForMouseInput(
 	Windows::UI::Core::PointerEventArgs^ args
 )
 {
+	EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+
 	JsValueRef parameters[6];
 	parameters[0] = m_scriptCallback;
 	JsValueRef* eventTypeParam = &parameters[1];
@@ -102,5 +104,5 @@ MouseInput::CallbackScriptForMouseInput(
 	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), actionParam));
 
 	JsValueRef result;
-	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+	HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }

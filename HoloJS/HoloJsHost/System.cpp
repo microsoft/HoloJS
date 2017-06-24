@@ -184,7 +184,7 @@ System::setTimeout(
 
 		// Call the script
 		JsValueRef result;
-		JsCallFunction(timeout->ScriptCallback, timeout->ScriptCallbackParameters.data(), static_cast<unsigned short>(timeout->ScriptCallbackParameters.size()), &result);
+		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(timeout->ScriptCallback, timeout->ScriptCallbackParameters.data(), static_cast<unsigned short>(timeout->ScriptCallbackParameters.size()), &result));
 
 		// Release script resources
 		unsigned int refCount;

@@ -2,6 +2,11 @@
 
 namespace HologramJS
 {
+	struct Script {
+		std::wstring path;
+		std::wstring code;
+	};
+
 	class ScriptsLoader
 	{
 	public:
@@ -10,8 +15,6 @@ namespace HologramJS
 
 		concurrency::task<bool> LoadScripts(Windows::Storage::StorageFolder^ root, const std::wstring& jsonPath);
 		concurrency::task<bool> DownloadScripts(const std::wstring& uri);
-
-		const std::list<std::wstring>& LoadedScripts() { return m_loadedScripts; }
 
 		static std::list<std::wstring> SplitPath(const std::wstring& path);
 
@@ -36,7 +39,11 @@ namespace HologramJS
 
 		static std::wstring GetFileSystemBasePathForJsonPath(const std::wstring& jsonFilePath);
 		static std::wstring GetBaseUriForJsonUri(const std::wstring& jsonUri);
+	
+		void ExecuteScripts();
 
-		std::list<std::wstring> m_loadedScripts;
+		std::list<std::shared_ptr<Script>> m_loadedScripts;
+		JsSourceContext m_jsSourceContext = 0;
+
 	};
 }

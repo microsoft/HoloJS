@@ -24,7 +24,6 @@ namespace HologramJS
 	private:
 		JsRuntimeHandle m_jsRuntime = nullptr;
 		JsContextRef m_jsContext = nullptr;
-		JsSourceContext m_jsSourceContext = 0;
 
 		concurrency::task<bool> RunLocalScriptApp(std::wstring jsonFilePath);
 		concurrency::task<bool> RunWebScriptApp(std::wstring jsonFilePath);

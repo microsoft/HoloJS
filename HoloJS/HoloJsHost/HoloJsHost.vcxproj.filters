@@ -113,6 +113,9 @@
     <ClInclude Include="SpatialMapping.h">
       <Filter>NativeFramework</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptErrorHandling.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
