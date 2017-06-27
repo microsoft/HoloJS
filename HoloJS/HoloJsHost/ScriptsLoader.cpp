@@ -89,7 +89,7 @@ ScriptsLoader::LoadScripts(
 
 		// Allow mixing Web scripts with local scripts
 		// When referencing web scripts in a local app, only absolute URIs are allowed
-		if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"https://") == 0)
+		if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"http://") == 0)
 		{
 			auto scriptUri = ref new Uri(Platform::StringReference(scriptPath.c_str()));
 			auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
