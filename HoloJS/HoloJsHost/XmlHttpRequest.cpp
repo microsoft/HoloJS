@@ -96,22 +96,6 @@ XmlHttpRequest::getResponseText(
 	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(xhr->m_responseText.c_str(), xhr->m_responseText.length(), &returnValue));
 
 	return returnValue;
-
-
-	
-	/*
-	
-	if (xhr != null)
-	{
-	if (xhr.responseType == "blob" || xhr.responseType == "arraybuffer")
-	{
-	return XHRResourceTracker.CreateExternalArray(xhr.response);
-	}
-	}
-
-	return JavaScriptValue.Invalid;
-	*/
-	return JS_INVALID_REFERENCE;
 }
 
 _Use_decl_annotations_
@@ -129,21 +113,26 @@ XmlHttpRequest::getResponse(
 	auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
 	RETURN_INVALID_REF_IF_NULL(xhr);
 
-	RETURN_INVALID_REF_IF_TRUE(xhr->IsTextResponse());
+	if (xhr->IsTextResponse())
+	{
+		return getResponseText(callee, isConstructCall, arguments, argumentCount, callbackData);
+	}
+	else
+	{
+		Microsoft::WRL::ComPtr<Windows::Storage::Streams::IBufferByteAccess> bufferByteAccess;
+		RETURN_INVALID_REF_IF_FAILED(reinterpret_cast<IInspectable*>(xhr->m_response)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess)));
 
-	Microsoft::WRL::ComPtr<Windows::Storage::Streams::IBufferByteAccess> bufferByteAccess;
-	RETURN_INVALID_REF_IF_FAILED(reinterpret_cast<IInspectable*>(xhr->m_response)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess)));
+		byte* responseNativeBuffer;
+		RETURN_INVALID_REF_IF_FAILED(bufferByteAccess->Buffer(&responseNativeBuffer));
 
-	byte* responseNativeBuffer;
-	RETURN_INVALID_REF_IF_FAILED(bufferByteAccess->Buffer(&responseNativeBuffer));
+		JsValueRef returnArray;
+		void* responesExternalBuffer;
+		RETURN_INVALID_REF_IF_JS_ERROR(ScriptResourceTracker::CreateAndTrackExternalBuffer(xhr->m_responseLength, &responesExternalBuffer, &returnArray));
 
-	JsValueRef returnArray;
-	void* responesExternalBuffer;
-	RETURN_INVALID_REF_IF_JS_ERROR(ScriptResourceTracker::CreateAndTrackExternalBuffer(xhr->m_responseLength, &responesExternalBuffer, &returnArray));
+		CopyMemory(responesExternalBuffer, responseNativeBuffer, xhr->m_responseLength);
 
-	CopyMemory(responesExternalBuffer, responseNativeBuffer, xhr->m_responseLength);
-
-	return returnArray;
+		return returnArray;
+	}
 }
 
 void
