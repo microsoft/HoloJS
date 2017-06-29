@@ -1,9 +1,7 @@
 ﻿#include "pch.h"
 #include "XmlHttpRequest.h"
 #include "VideoElement.h"
-#include "WindowElement.h"
 #include "ImageElement.h"
-#include "System.h"
 #include "HologramJS.h"
 #include "WebGLProjections.h"
 #include "ScriptsLoader.h"
@@ -64,6 +62,8 @@ HologramScriptHost::Initialize()
 	RETURN_IF_FALSE(m_window.Initialize());
 
 	RETURN_IF_FALSE(m_system.Initialize());
+
+	RETURN_IF_FALSE(m_timers.Initialize());
 
 	return true;
 }

@@ -50,6 +50,9 @@
     <ClCompile Include="SpatialMapping.cpp">
       <Filter>NativeFramework</Filter>
     </ClCompile>
+    <ClCompile Include="Timers.cpp">
+      <Filter>NativeFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -111,6 +114,9 @@
       <Filter>NativeFramework</Filter>
     </ClInclude>
     <ClInclude Include="SpatialMapping.h">
+      <Filter>NativeFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="Timers.h">
       <Filter>NativeFramework</Filter>
     </ClInclude>
   </ItemGroup>

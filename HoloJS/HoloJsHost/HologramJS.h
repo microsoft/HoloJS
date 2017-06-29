@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include "Timers.h"
+#include "System.h"
+#include "WindowElement.h"
+
 namespace HologramJS
 {
 	[Windows::Foundation::Metadata::WebHostHidden]
@@ -31,6 +35,7 @@ namespace HologramJS
 
 		API::WindowElement m_window;
 		API::System m_system;
+		API::Timers m_timers;
 		Utilities::EventsManager m_scriptEventsManager;
 	};
 }
