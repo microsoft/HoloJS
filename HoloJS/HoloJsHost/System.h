@@ -1,5 +1,7 @@
 #pragma once
 
+#include <agents.h>
+
 namespace HologramJS
 {
 	namespace API
@@ -14,6 +16,20 @@ namespace HologramJS
 
 		private:
 
+			class Timeout
+			{
+			public:
+				std::unique_ptr<concurrency::timer<int>> Timer;
+				std::unique_ptr<concurrency::call<int>> Callback;
+				std::unique_ptr<concurrency::task<void>> Continuation;
+				JsValueRef ScriptCallback;
+				std::vector<JsValueRef> ScriptCallbackParameters;
+				int ID;
+			};
+
+			std::mutex m_timeoutsLock;
+			std::list<std::shared_ptr<Timeout>> m_timeouts;
+
 			JsValueRef m_setTimeoutFunction = JS_INVALID_REFERENCE;
 			static JsValueRef CHAKRA_CALLBACK setTimeoutStatic(
 				JsValueRef callee,
@@ -24,6 +40,18 @@ namespace HologramJS
 			)
 			{
 				return reinterpret_cast<System*>(callbackData)->setTimeout(callee, arguments, argumentCount);
+			}
+
+			JsValueRef m_clearTimeoutFunction = JS_INVALID_REFERENCE;
+			static JsValueRef CHAKRA_CALLBACK clearTimeoutStatic(
+				JsValueRef callee,
+				bool isConstructCall,
+				JsValueRef* arguments,
+				unsigned short argumentCount,
+				PVOID callbackData
+			)
+			{
+				return reinterpret_cast<System*>(callbackData)->clearTimeout(callee, arguments, argumentCount);
 			}
 
 			JsValueRef m_logFunction = JS_INVALID_REFERENCE;
@@ -39,6 +67,12 @@ namespace HologramJS
 			}
 
 			JsValueRef setTimeout(
+				JsValueRef callee,
+				JsValueRef* arguments,
+				unsigned short argumentCount
+			);
+
+			JsValueRef clearTimeout(
 				JsValueRef callee,
 				JsValueRef* arguments,
 				unsigned short argumentCount

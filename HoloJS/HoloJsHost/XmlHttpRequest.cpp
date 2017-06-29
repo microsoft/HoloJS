@@ -14,6 +14,8 @@ JsValueRef XmlHttpRequest::m_createXHRFunction = JS_INVALID_REFERENCE;
 JsValueRef XmlHttpRequest::m_getResponseFunction = JS_INVALID_REFERENCE;
 JsValueRef XmlHttpRequest::m_getResponseTextFunction = JS_INVALID_REFERENCE;
 JsValueRef XmlHttpRequest::m_sendXHRFunction = JS_INVALID_REFERENCE;
+JsValueRef XmlHttpRequest::m_getHeaderFunction = JS_INVALID_REFERENCE;
+JsValueRef XmlHttpRequest::m_setHeaderFunction = JS_INVALID_REFERENCE;
 
 XmlHttpRequest::XmlHttpRequest()
 {
@@ -26,6 +28,8 @@ XmlHttpRequest::Initialize()
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"send", L"xhr", sendXHR, nullptr, &m_sendXHRFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getResponse", L"xhr", getResponse, nullptr, &m_getResponseFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getResponseText", L"xhr", getResponseText, nullptr, &m_getResponseTextFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getHeader", L"xhr", getHeader, nullptr, &m_getHeaderFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setHeader", L"xhr", setHeader, nullptr, &m_setHeaderFunction));
 
 	return true;
 }
@@ -49,6 +53,64 @@ XmlHttpRequest::createXHR(
 _Use_decl_annotations_
 JsValueRef
 CHAKRA_CALLBACK
+XmlHttpRequest::setHeader(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef *arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
+	auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(xhr);
+
+	wstring header;
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], header));
+
+	wstring value;
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[3], value));
+
+	xhr->m_requestHeaders.emplace_back(header, value);
+
+	return JS_INVALID_REFERENCE;
+}
+
+_Use_decl_annotations_
+JsValueRef
+CHAKRA_CALLBACK
+XmlHttpRequest::getHeader(
+	JsValueRef callee,
+	bool isConstructCall,
+	JsValueRef *arguments,
+	unsigned short argumentCount,
+	PVOID callbackData
+)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+	auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
+	RETURN_INVALID_REF_IF_NULL(xhr);
+
+	wstring header;
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], header));
+
+	if (xhr->m_responseHeaders->HasKey(Platform::StringReference(header.c_str())))
+	{
+		auto valueRef = xhr->m_responseHeaders->Lookup(Platform::StringReference(header.c_str()));
+		JsValueRef returnValue;
+		RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(valueRef->Data(), valueRef->Length(), &returnValue));
+
+		return returnValue;
+	}
+	else
+	{
+		return JS_INVALID_REFERENCE;
+	}
+}
+
+_Use_decl_annotations_
+JsValueRef
+CHAKRA_CALLBACK
 XmlHttpRequest::sendXHR(
 	JsValueRef callee,
 	bool isConstructCall,
@@ -57,7 +119,7 @@ XmlHttpRequest::sendXHR(
 	PVOID callbackData
 )
 {
-	RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
 	auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
 	RETURN_INVALID_REF_IF_NULL(xhr);
 
@@ -69,6 +131,9 @@ XmlHttpRequest::sendXHR(
 
 	wstring type;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[4], type));
+
+	JsValueType valueType;
+	JsGetValueType(arguments[5], &valueType);
 
 	xhr->SendRequest(method, uri, type);
 
@@ -222,6 +287,11 @@ XmlHttpRequest::DownloadAsync()
 
 	Windows::Web::Http::HttpClient^ httpClient = ref new  Windows::Web::Http::HttpClient();
 
+	for (const auto& headerPair : m_requestHeaders)
+	{
+		httpClient->DefaultRequestHeaders->Append(Platform::StringReference(headerPair.first.c_str()), Platform::StringReference(headerPair.second.c_str()));
+	}
+
 	if (_wcsicmp(m_method.c_str(), L"get") == 0)
 	{
 		auto responseMessage = await httpClient->GetAsync(uri);
@@ -240,6 +310,7 @@ XmlHttpRequest::DownloadAsync()
 
 			m_status = 200;
 			m_statusText = L"OK";
+			m_responseHeaders = responseMessage->Headers;
 		}
 		else
 		{

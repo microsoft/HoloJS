@@ -43,10 +43,19 @@
     this.open = function (method, url) {
         this.method = method;
         this.url = url;
+        this.headers = [];
     };
 
+    this.setRequestHeader = function (header, value) {
+        nativeInterface.xhr.setHeader(this.native, header, value);
+    }
+
+    this.getResponseHeader = function (header) {
+        return nativeInterface.xhr.getHeader(this.native, header);
+    }
+
     this.send = function () {
-        nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : "text"));
+        nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : "text"), this.headers);
     };
 
     Object.defineProperty(this, "responseText", {
