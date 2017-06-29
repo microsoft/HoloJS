@@ -27,7 +27,11 @@ namespace HologramJS
 				int ID;
 			};
 
+			// Lock for the list of active timers
 			std::mutex m_timeoutsLock;
+			
+			// List of active timers
+			// On timer clear or timer firing, it is removed from this list
 			std::list<std::shared_ptr<Timeout>> m_timeouts;
 
 			JsValueRef m_setTimeoutFunction = JS_INVALID_REFERENCE;

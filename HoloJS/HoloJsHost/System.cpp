@@ -113,6 +113,8 @@ System::setTimeout(
 	unsigned int refCount;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(timeout->ScriptCallback, &refCount));
 
+	// Capture the parameters intended for the callback function;
+	// Increase the ref count to prevent garbage collection before the timer fires
 	timeout->ScriptCallbackParameters.resize(argumentCount - 2);
 	timeout->ScriptCallbackParameters[0] = callee;
 	JsAddRef(callee, &refCount);
@@ -122,6 +124,7 @@ System::setTimeout(
 		timeout->ScriptCallbackParameters[i - 2] = arguments[i];
 	}
 
+	// Create a timer object to be inserted in our list of active timers
 	timeout->Timer = make_unique<timer<int>>(timeoutValue, 0, nullptr, false);
 	task_completion_event<void> tce;
 	timeout->Callback = make_unique<call<int>>([tce](int)
@@ -151,6 +154,7 @@ System::setTimeout(
 
 	int id = timeout->ID;
 
+	// Declare the code to be executed when the timer fires
 	timeout->Continuation->then([this, id]()
 	{
 		shared_ptr<Timeout> timeout;
