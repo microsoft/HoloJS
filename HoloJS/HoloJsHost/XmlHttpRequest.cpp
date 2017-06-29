@@ -94,9 +94,10 @@ XmlHttpRequest::getHeader(
 	wstring header;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], header));
 
-	if (xhr->m_responseHeaders->HasKey(Platform::StringReference(header.c_str())))
+	auto headerRef = Platform::StringReference(header.c_str());
+	if (xhr->m_responseHeaders->HasKey(headerRef))
 	{
-		auto valueRef = xhr->m_responseHeaders->Lookup(Platform::StringReference(header.c_str()));
+		auto valueRef = xhr->m_responseHeaders->Lookup(headerRef);
 		JsValueRef returnValue;
 		RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(valueRef->Data(), valueRef->Length(), &returnValue));
 
@@ -119,7 +120,7 @@ XmlHttpRequest::sendXHR(
 	PVOID callbackData
 )
 {
-	RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
 	auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
 	RETURN_INVALID_REF_IF_NULL(xhr);
 
