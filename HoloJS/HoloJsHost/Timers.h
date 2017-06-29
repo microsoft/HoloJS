@@ -30,7 +30,6 @@ namespace HologramJS
 				~TimerDefinition() { ReleaseScriptResources(); }
 
 				void Stop() { Timer->stop(); }
-				concurrency::task<void>* GetContinuation() { return Continuation.get(); }
 
 				bool CaptureScriptResources(JsValueRef scriptCallback, const std::vector<JsValueRef>& scriptCallbackParameters);
 				bool ReleaseScriptResources();
