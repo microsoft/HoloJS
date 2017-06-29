@@ -36,6 +36,16 @@ namespace HologramJS
 				bool ReleaseScriptResources();
 				bool InvokeScriptCallback();
 
+				TimerType GetType() const { return Type; }
+
+				void Continue();
+
+				void SetCallback(std::function<void()> lambda)
+				{
+					UserLambda = lambda;
+					Continuation->then(lambda, concurrency::task_continuation_context::use_current());
+				}
+
 				int ID;
 			private:
 
@@ -46,6 +56,8 @@ namespace HologramJS
 				std::unique_ptr<concurrency::timer<int>> Timer;
 				std::unique_ptr<concurrency::call<int>> Callback;
 				std::unique_ptr<concurrency::task<void>> Continuation;
+
+				std::function<void()> UserLambda;
 			};
 
 			// Lock for the list of active timers
@@ -64,19 +76,7 @@ namespace HologramJS
 				PVOID callbackData
 			)
 			{
-				return reinterpret_cast<Timers*>(callbackData)->setTimeout(callee, arguments, argumentCount);
-			}
-
-			JsValueRef m_clearTimeoutFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK clearTimeoutStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<Timers*>(callbackData)->clearTimeout(callee, arguments, argumentCount);
+				return reinterpret_cast<Timers*>(callbackData)->CreateTimer(TimerType::Timeout, callee, arguments, argumentCount);
 			}
 
 			JsValueRef m_setIntervalFunction = JS_INVALID_REFERENCE;
@@ -88,11 +88,11 @@ namespace HologramJS
 				PVOID callbackData
 			)
 			{
-				return reinterpret_cast<Timers*>(callbackData)->setInterval(callee, arguments, argumentCount);
+				return reinterpret_cast<Timers*>(callbackData)->CreateTimer(TimerType::Interval, callee, arguments, argumentCount);
 			}
 
-			JsValueRef m_clearIntervalFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK clearIntervalStatic(
+			JsValueRef m_clearTimerFunction = JS_INVALID_REFERENCE;
+			static JsValueRef CHAKRA_CALLBACK clearTimerStatic(
 				JsValueRef callee,
 				bool isConstructCall,
 				JsValueRef* arguments,
@@ -100,33 +100,21 @@ namespace HologramJS
 				PVOID callbackData
 			)
 			{
-				return reinterpret_cast<Timers*>(callbackData)->clearInterval(callee, arguments, argumentCount);
+				return reinterpret_cast<Timers*>(callbackData)->ClearTimer(callee, arguments, argumentCount);
 			}
 
-			JsValueRef setTimeout(
+			JsValueRef CreateTimer(
+				TimerType type,
 				JsValueRef callee,
 				JsValueRef* arguments,
 				unsigned short argumentCount
 			);
 
-			JsValueRef clearTimeout(
+			JsValueRef ClearTimer(
 				JsValueRef callee,
 				JsValueRef* arguments,
 				unsigned short argumentCount
 			);
-
-			JsValueRef clearInterval(
-				JsValueRef callee,
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
-
-			JsValueRef setInterval(
-				JsValueRef callee,
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
-
 		};
 
 	}

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Timers.h"
+#include <concrt.h>
 
 using namespace HologramJS::API;
 using namespace concurrency;
@@ -10,9 +11,8 @@ bool
 Timers::Initialize()
 {
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setTimeout", L"timers", setTimeoutStatic, this, &m_setTimeoutFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"clearTimeout", L"timers", clearTimeoutStatic, this, &m_clearTimeoutFunction));
+	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"clearTimer", L"timers", clearTimerStatic, this, &m_clearTimerFunction));
 	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setInterval", L"timers", setIntervalStatic, this, &m_setIntervalFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"clearInterval", L"timers", clearIntervalStatic, this, &m_clearIntervalFunction));
 
 	return true;
 }
@@ -22,17 +22,36 @@ Timers::TimerDefinition::TimerDefinition(TimerType type, int duration)
 {
 	Timer = make_unique<timer<int>>(duration, 0, nullptr, (type == TimerType::Timeout ? false : true));
 	
-	task_completion_event<void> tce;
-	Callback = make_unique<call<int>>([tce](int)
+	concurrency::task_completion_event<void> completionEvent;
+	Callback = make_unique<call<int>>([completionEvent](int)
 	{
-		tce.set();
+		completionEvent.set();
 	});
 
 	// Connect the timer to the callback and start the timer.
 	Timer->link_target(Callback.get());
 	Timer->start();
-	Continuation = make_unique<task<void>>(tce);
+	Continuation = make_unique<task<void>>(completionEvent);
+	
 	ID = 0;
+}
+
+void
+Timers::TimerDefinition::Continue()
+{
+	// Create a new completion event;
+	// For a periodic timer, Continue must be called every interval otherwise the task_completion_event won't
+	// fire again
+	concurrency::task_completion_event<void> completionEvent;
+	Callback = make_unique<call<int>>([completionEvent](int)
+	{
+		completionEvent.set();
+	});
+
+	// Connect the timer to the callback and start the timer.
+	Timer->link_target(Callback.get());
+	Continuation = make_unique<task<void>>(completionEvent);
+	Continuation->then(UserLambda, concurrency::task_continuation_context::use_current());
 }
 
 bool
@@ -91,7 +110,7 @@ Timers::TimerDefinition::InvokeScriptCallback()
 }
 
 JsValueRef
-Timers::clearTimeout(
+Timers::ClearTimer(
 	JsValueRef callee,
 	JsValueRef* arguments,
 	unsigned short argumentCount
@@ -133,7 +152,8 @@ Timers::clearTimeout(
 }
 
 JsValueRef
-Timers::setTimeout(
+Timers::CreateTimer(
+	TimerType type,
 	JsValueRef callee,
 	JsValueRef* arguments,
 	unsigned short argumentCount
@@ -153,7 +173,7 @@ Timers::setTimeout(
 		capturedParameters[i - 2] = arguments[i];
 	}
 
-	shared_ptr<TimerDefinition> timeout = make_shared<TimerDefinition>(TimerType::Timeout, timeoutValue);
+	shared_ptr<TimerDefinition> timeout = make_shared<TimerDefinition>(type, timeoutValue);
 	RETURN_INVALID_REF_IF_FALSE(timeout->CaptureScriptResources(scriptCallback, capturedParameters));
 
 	// Insert the timeout in the list and assign it an ID
@@ -173,9 +193,9 @@ Timers::setTimeout(
 	int id = timeout->ID;
 
 	// Declare the code to be executed when the timer fires
-	timeout->GetContinuation()->then([this, id]()
+	timeout->SetCallback([this, id]()
 	{
-		shared_ptr<TimerDefinition> timeout;
+		shared_ptr<TimerDefinition> timer;
 		// Lookup and remove the firing timer from the list of timers
 		{
 			// Lock the list of timeouts
@@ -186,46 +206,35 @@ Timers::setTimeout(
 			{
 				if (id == timeoutInstance->ID)
 				{
-					// Found it; remove it
-					timeout = timeoutInstance;
-					m_timeouts.remove(timeout);
+					// Found it; remove it if it's a timeout timer
+					timer = timeoutInstance;
+					if (timer->GetType() == TimerType::Timeout)
+					{
+						m_timeouts.remove(timer);
+					}
+					else
+					{
+						// Set up this timer to continue firing
+						timer->Continue();
+					}
+
 					break;
 				}
 			}
 		}
 
-		if (!timeout)
+		if (!timer)
 		{
 			// The timeout must have been cleared; return
 			return;
 		}
 
 		// Call the script
-		timeout->InvokeScriptCallback();
-	}, task_continuation_context::use_current());
+		timer->InvokeScriptCallback();
+	});
 
 	JsValueRef retValue;
 	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(timeout->ID, &retValue));
 	return retValue;
-}
-
-JsValueRef
-Timers::setInterval(
-	JsValueRef callee,
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
-{
-	return JS_INVALID_REFERENCE;
-}
-
-JsValueRef
-Timers::clearInterval(
-	JsValueRef callee,
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
-{
-	return JS_INVALID_REFERENCE;
 }
 

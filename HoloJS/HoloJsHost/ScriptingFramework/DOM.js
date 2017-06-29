@@ -3,9 +3,9 @@ var navigator;
 var console;
 
 var setTimeout = nativeInterface.timers.setTimeout;
-var clearTimeout = nativeInterface.timers.clearTimeout;
+var clearTimeout = nativeInterface.timers.clearTimer;
 var setInterval = nativeInterface.timers.setInterval;
-var clearInterval = nativeInterface.timers.clearInterval;
+var clearInterval = nativeInterface.timers.clearTimer;
 
 function Source() {
 
