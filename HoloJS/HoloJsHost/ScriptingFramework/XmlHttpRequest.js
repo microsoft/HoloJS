@@ -9,8 +9,12 @@
             this.statusText = arguments[3];
             this.responseType = arguments[4];
 
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                this.fireHandlersByType("load", { target: this });
+            if (this.readyState === XMLHttpRequest.DONE) {
+                if (this.status >= 200 && this.status <= 205) {
+                    this.fireHandlersByType("load", { target: this });
+                } else {
+                    this.fireHandlersByType("error", { target: this });
+                }
             }
         }
     };
