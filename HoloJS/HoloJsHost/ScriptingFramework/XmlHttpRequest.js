@@ -9,8 +9,12 @@
             this.statusText = arguments[3];
             this.responseType = arguments[4];
 
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                this.fireHandlersByType("load", { target: this });
+            if (this.readyState === XMLHttpRequest.DONE) {
+                if (this.status >= 200 && this.status <= 205) {
+                    this.fireHandlersByType("load", { target: this });
+                } else {
+                    this.fireHandlersByType("error", { target: this });
+                }
             }
         }
     };
@@ -44,6 +48,14 @@
         this.method = method;
         this.url = url;
     };
+
+    this.setRequestHeader = function (header, value) {
+        nativeInterface.xhr.setHeader(this.native, header, value);
+    }
+
+    this.getResponseHeader = function (header) {
+        return nativeInterface.xhr.getHeader(this.native, header);
+    }
 
     this.send = function () {
         nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : "text"));

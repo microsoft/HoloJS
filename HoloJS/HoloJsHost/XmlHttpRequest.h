@@ -29,6 +29,8 @@ namespace HologramJS
 
 			std::wstring m_url;
 			std::wstring m_method;
+			std::vector<std::pair<std::wstring, std::wstring>> m_requestHeaders;
+			Windows::Web::Http::Headers::HttpResponseHeaderCollection^ m_responseHeaders;
 			std::wstring m_responseType = L"";
 
 			std::wstring m_responseText;
@@ -80,6 +82,24 @@ namespace HologramJS
 
 			static JsValueRef m_getResponseFunction;
 			static JsValueRef CHAKRA_CALLBACK getResponse(
+				_In_ JsValueRef callee,
+				_In_ bool isConstructCall,
+				_In_ JsValueRef *arguments,
+				_In_ unsigned short argumentCount,
+				_In_ PVOID callbackData
+			);
+
+			static JsValueRef m_setHeaderFunction;
+			static JsValueRef CHAKRA_CALLBACK setHeader(
+				_In_ JsValueRef callee,
+				_In_ bool isConstructCall,
+				_In_ JsValueRef *arguments,
+				_In_ unsigned short argumentCount,
+				_In_ PVOID callbackData
+			);
+
+			static JsValueRef m_getHeaderFunction;
+			static JsValueRef CHAKRA_CALLBACK getHeader(
 				_In_ JsValueRef callee,
 				_In_ bool isConstructCall,
 				_In_ JsValueRef *arguments,

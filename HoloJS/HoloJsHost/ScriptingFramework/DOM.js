@@ -3,6 +3,7 @@ var navigator;
 var console;
 
 var setTimeout = nativeInterface.system.setTimeout;
+var clearTimeout = nativeInterface.system.clearTimeout;
 
 function Source() {
 
