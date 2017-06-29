@@ -3,6 +3,8 @@
 #include "XmlHttpRequest.h"
 
 using namespace HologramJS::API;
+using namespace Windows::Foundation;
+using namespace Windows::Web::Http;
 using namespace HologramJS::Utilities;
 using namespace concurrency;
 using namespace std;
@@ -295,28 +297,40 @@ XmlHttpRequest::DownloadAsync()
 
 	if (_wcsicmp(m_method.c_str(), L"get") == 0)
 	{
-		auto responseMessage = await httpClient->GetAsync(uri);
-		if (responseMessage->IsSuccessStatusCode)
+		HttpResponseMessage^ responseMessage;
+		try
 		{
-			if (IsTextResponse())
+			responseMessage = await httpClient->GetAsync(uri);
+		}
+		catch (...)
+		{
+			m_status = -1;
+		}
+
+		if (responseMessage)
+		{
+			if (responseMessage->IsSuccessStatusCode)
 			{
-				auto responseText= await responseMessage->Content->ReadAsStringAsync();
-				m_responseText.assign(responseText->Data());
+				if (IsTextResponse())
+				{
+					auto responseText = await responseMessage->Content->ReadAsStringAsync();
+					m_responseText.assign(responseText->Data());
+				}
+				else
+				{
+					m_response = await responseMessage->Content->ReadAsBufferAsync();
+					m_responseLength = m_response->Length;
+				}
+
+				m_status = 200;
+				m_statusText = L"OK";
+				m_responseHeaders = responseMessage->Headers;
 			}
 			else
 			{
-				m_response = await responseMessage->Content->ReadAsBufferAsync();
-				m_responseLength = m_response->Length;
+				m_status = static_cast<int>(responseMessage->StatusCode);
+				m_statusText.assign(responseMessage->ReasonPhrase->Data());
 			}
-
-			m_status = 200;
-			m_statusText = L"OK";
-			m_responseHeaders = responseMessage->Headers;
-		}
-		else
-		{
-			m_status = static_cast<int>(responseMessage->StatusCode);
-			m_statusText.assign(responseMessage->ReasonPhrase->Data());
 		}
 	}
 
