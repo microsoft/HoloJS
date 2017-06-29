@@ -221,6 +221,7 @@
     <ClInclude Include="ObjectEvents.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderingContext2D.h" />
+    <ClInclude Include="ScriptErrorHandling.h" />
     <ClInclude Include="ScriptHostUtilities.h" />
     <ClInclude Include="ScriptResourceTracker.h" />
     <ClInclude Include="ScriptsLoader.h" />

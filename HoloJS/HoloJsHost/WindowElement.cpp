@@ -120,7 +120,7 @@ WindowElement::Resize(int width, int height)
 			EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), eventTypeParam));
 
 			JsValueRef result;
-			EXIT_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), (unsigned short)parameters.size(), &result));
+			HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
 		}
 	}
 }
@@ -157,7 +157,7 @@ WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 		std::vector<JsValueRef> parameters(1);
 		parameters[0] = m_callbackFunction;
 		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
 	}
 }
 

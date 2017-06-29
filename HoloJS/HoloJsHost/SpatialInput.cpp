@@ -104,7 +104,7 @@ SpatialInput::CallbackScriptForSpatialInput(const SpatialEventData& eventData)
 	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(eventData.type), spatialInputTypeParam));
 
 	JsValueRef result;
-	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+	HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
 
 void
@@ -143,7 +143,7 @@ SpatialInput::QueueEventOrFireCallback(SpatialInputEventType type, Windows::UI::
 		EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), spatialInputTypeParam));
 
 		JsValueRef result;
-		EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 	}
 	else
 	{

@@ -53,7 +53,10 @@ ScriptsLoader::DownloadScripts(
 		wstring scriptText = scriptPlatformText->Data();
 		if (!scriptText.empty())
 		{
-			m_loadedScripts.emplace_back(std::move(scriptText));
+			std::shared_ptr<Script> script(new Script());
+			script->path = move(scriptUri->AbsoluteUri->Data());
+			script->code = move(scriptText);
+			m_loadedScripts.emplace_back(script);
 		}
 	}
 
@@ -96,7 +99,10 @@ ScriptsLoader::LoadScripts(
 			wstring scriptText = scriptPlatformText->Data();
 			if (!scriptText.empty())
 			{
-				m_loadedScripts.emplace_back(std::move(scriptText));
+				std::shared_ptr<Script> script(new Script());
+				script->path = move(scriptUri->AbsoluteUri->Data());
+				script->code = move(scriptText);
+				m_loadedScripts.emplace_back(script);
 			}
 		}
 		else if (!scriptPathElements.empty())
@@ -110,13 +116,17 @@ ScriptsLoader::LoadScripts(
 			wstring scriptText = scriptPlatformString->Data();
 			if (!scriptText.empty())
 			{
-				m_loadedScripts.emplace_back(std::move(scriptText));
+				std::shared_ptr<Script> script(new Script());
+				script->path = move(scriptName);
+				script->code = move(scriptText);
+				m_loadedScripts.emplace_back(script);
 			}
 		}
 	}
 
 	return true;
 }
+
 
 list<wstring>
 ScriptsLoader::GetScriptsListFromJSON(Platform::String^ json)
@@ -281,6 +291,16 @@ ScriptsLoader::GetBaseUriForJsonUri(
 
 	// Build base path without the .json file name it in
 	return localUri.substr(0, lastSegmentIndex - 1);
+}
+
+void
+ScriptsLoader::ExecuteScripts()
+{
+	for (const auto& script : m_loadedScripts)
+	{
+		JsValueRef result;
+		HANDLE_EXCEPTION_IF_JS_ERROR(JsRunScript(script->code.c_str(), m_jsSourceContext++, script->path.c_str(), &result));
+	}
 }
 
 }

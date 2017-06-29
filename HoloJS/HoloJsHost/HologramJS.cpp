@@ -4,9 +4,9 @@
 #include "WindowElement.h"
 #include "ImageElement.h"
 #include "System.h"
+#include "ScriptsLoader.h"
 #include "HologramJS.h"
 #include "WebGLProjections.h"
-#include "ScriptsLoader.h"
 
 using namespace HologramJS;
 using namespace Platform;
@@ -105,11 +105,7 @@ HologramScriptHost::RunLocalScriptApp(
 
 		m_window.SetBaseUrl(basePath);
 
-		for (const auto& script : loader->LoadedScripts())
-		{
-			JsValueRef result;
-			RETURN_IF_JS_ERROR(JsRunScript(script.c_str(), m_jsSourceContext++, L"", &result));
-		}
+		loader->ExecuteScripts();
 	}
 
 	return true;
@@ -155,11 +151,8 @@ HologramScriptHost::RunWebScriptApp(
 		API::ImageElement::BaseUrl.assign(basePath);
 		API::VideoElement::BaseUrl.assign(basePath);
 
-		for (const auto& script : loader->LoadedScripts())
-		{
-			JsValueRef result;
-			RETURN_IF_JS_ERROR(JsRunScript(script.c_str(), m_jsSourceContext++, L"", &result));
-		}
+		loader->ExecuteScripts();
+
 	}
 
 	return true;

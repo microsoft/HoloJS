@@ -64,8 +64,10 @@ void Log(PCSTR file, int line);
 #define RETURN_INVALID_REF_IF_FAILED(x) do { if (FAILED(x)) { Log(__FILE__, __LINE__); return JS_INVALID_REFERENCE; } } while (0, 0)
 #define RETURN_INVALID_REF_IF_NULL(x) do { if ((x) == nullptr) { Log(__FILE__, __LINE__); return JS_INVALID_REFERENCE; } } while (0, 0)
 #define RETURN_INVALID_REF_IF_JS_ERROR(x) do { if ((x) != JsNoError) { Log(__FILE__, __LINE__); return JS_INVALID_REFERENCE; } } while (0, 0)
+#define HANDLE_EXCEPTION_IF_JS_ERROR(x) if ((x) != JsNoError) { HologramJS::ScriptErrorHandling::PrintException();}
 
 #include "IRelease.h"
+#include "ScriptErrorHandling.h"
 #include "ObjectEvents.h"
 #include "ExternalObject.h"
 #include "ScriptHostUtilities.h"

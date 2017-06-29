@@ -44,12 +44,7 @@ namespace HologramJS
 			{
 				JsValueRef result;
 				parameters.insert(parameters.begin(), m_scriptCallbackContext);
-				RETURN_IF_JS_ERROR(
-					JsCallFunction(
-						m_scriptCallback,
-						parameters.data(),
-						static_cast<unsigned short>(parameters.size()),
-						&result));
+				HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
 
 				return true;
 			}
