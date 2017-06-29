@@ -86,7 +86,20 @@ ScriptsLoader::LoadScripts(
 	for (const auto& scriptPath : scriptsList)
 	{
 		auto scriptPathElements = SplitPath(scriptPath);
-		if (!scriptPathElements.empty())
+
+		// Allow mixing Web scripts with local scripts
+		// When referencing web scripts in a local app, only absolute URIs are allowed
+		if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"http://") == 0)
+		{
+			auto scriptUri = ref new Uri(Platform::StringReference(scriptPath.c_str()));
+			auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
+			wstring scriptText = scriptPlatformText->Data();
+			if (!scriptText.empty())
+			{
+				m_loadedScripts.emplace_back(std::move(scriptText));
+			}
+		}
+		else if (!scriptPathElements.empty())
 		{
 			auto scriptName = scriptPathElements.front();
 			scriptPathElements.erase(scriptPathElements.begin());
