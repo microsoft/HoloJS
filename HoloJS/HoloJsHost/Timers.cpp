@@ -99,7 +99,7 @@ Timers::TimerDefinition::InvokeScriptCallback()
 	RETURN_IF_TRUE(ScriptCallback == JS_INVALID_REFERENCE);
 
 	JsValueRef result;
-	RETURN_IF_JS_ERROR(
+	RETURN_ON_SCRIPT_ERROR(
 		JsCallFunction(
 			ScriptCallback,
 			ScriptCallbackParameters.data(),

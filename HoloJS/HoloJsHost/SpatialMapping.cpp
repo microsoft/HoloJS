@@ -186,7 +186,7 @@ SpatialMapping::ProcessOneSpatialMappingDataUpdate()
 
 	// Invoke JS callback
 	JsValueRef result;
-	EXIT_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+	HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 
 	m_meshIds.pop_front();
 	m_vertexBuffers.pop_front();
