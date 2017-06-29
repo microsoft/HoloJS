@@ -31,40 +31,61 @@ namespace HologramJS
 
 				void Stop() { Timer->stop(); }
 
+				// Captures the script callback and parameters to be passed to this callback
 				bool CaptureScriptResources(JsValueRef scriptCallback, const std::vector<JsValueRef>& scriptCallbackParameters);
+
+				// Release captured script resources
 				bool ReleaseScriptResources();
+
+				// Invokes the script callback
 				bool InvokeScriptCallback();
 
 				TimerType GetType() const { return Type; }
 
+				// For periodic timers, to keep the timer firing, call this method each time the timer fires
 				void Continue();
 
-				void SetCallback(std::function<void()> lambda)
+				void SetNativeCallback(std::function<void()> lambda)
 				{
-					UserLambda = lambda;
+					NativeCallback = lambda;
 					Continuation->then(lambda, concurrency::task_continuation_context::use_current());
 				}
 
 				int ID;
 			private:
 
+				// Timeout or Interval (periodic)
 				TimerType Type;
+
+				// Script resources
 				JsValueRef ScriptCallback = JS_INVALID_REFERENCE;
 				std::vector<JsValueRef> ScriptCallbackParameters;
 
+				// Internal timer and task structures
 				std::unique_ptr<concurrency::timer<int>> Timer;
-				std::unique_ptr<concurrency::call<int>> Callback;
+				std::unique_ptr<concurrency::call<int>> InternalCallback;
 				std::unique_ptr<concurrency::task<void>> Continuation;
 
-				std::function<void()> UserLambda;
+
+				// C++ callback invoked when the timer fires
+				std::function<void()> NativeCallback;
 			};
 
 			// Lock for the list of active timers
-			std::mutex m_timeoutsLock;
+			std::mutex m_timersLock;
 
 			// List of active timers
 			// On timer clear or timer firing, it is removed from this list
-			std::list<std::shared_ptr<TimerDefinition>> m_timeouts;
+			std::list<std::shared_ptr<TimerDefinition>> m_timers;
+
+			enum class ListOperationType
+			{
+				ProcessTick,
+				Remove
+			};
+
+			std::shared_ptr<TimerDefinition> ProcessTimersList(ListOperationType operationType, int id);
+			int InsertInTimersList(std::shared_ptr<TimerDefinition> timer);
 
 			JsValueRef m_setTimeoutFunction = JS_INVALID_REFERENCE;
 			static JsValueRef CHAKRA_CALLBACK setTimeoutStatic(

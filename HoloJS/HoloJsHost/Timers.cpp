@@ -23,13 +23,13 @@ Timers::TimerDefinition::TimerDefinition(TimerType type, int duration)
 	Timer = make_unique<timer<int>>(duration, 0, nullptr, (type == TimerType::Timeout ? false : true));
 	
 	concurrency::task_completion_event<void> completionEvent;
-	Callback = make_unique<call<int>>([completionEvent](int)
+	InternalCallback = make_unique<call<int>>([completionEvent](int)
 	{
 		completionEvent.set();
 	});
 
 	// Connect the timer to the callback and start the timer.
-	Timer->link_target(Callback.get());
+	Timer->link_target(InternalCallback.get());
 	Timer->start();
 	Continuation = make_unique<task<void>>(completionEvent);
 	
@@ -43,15 +43,15 @@ Timers::TimerDefinition::Continue()
 	// For a periodic timer, Continue must be called every interval otherwise the task_completion_event won't
 	// fire again
 	concurrency::task_completion_event<void> completionEvent;
-	Callback = make_unique<call<int>>([completionEvent](int)
+	InternalCallback = make_unique<call<int>>([completionEvent](int)
 	{
 		completionEvent.set();
 	});
 
 	// Connect the timer to the callback and start the timer.
-	Timer->link_target(Callback.get());
+	Timer->link_target(InternalCallback.get());
 	Continuation = make_unique<task<void>>(completionEvent);
-	Continuation->then(UserLambda, concurrency::task_continuation_context::use_current());
+	Continuation->then(NativeCallback, concurrency::task_continuation_context::use_current());
 }
 
 bool
@@ -118,35 +118,17 @@ Timers::ClearTimer(
 {
 	RETURN_INVALID_REF_IF_TRUE(argumentCount < 2);
 
-	int timeoutId;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsNumberToInt(arguments[1], &timeoutId));
+	int timerId;
+	RETURN_INVALID_REF_IF_JS_ERROR(JsNumberToInt(arguments[1], &timerId));
 
-	shared_ptr<TimerDefinition> timeout;
-	// Lookup and remove the timer from the list
-	{
-		// Lock the timeouts list
-		std::lock_guard<std::mutex> guard(m_timeoutsLock);
-
-		// Lookup the ID in the timeouts list
-		for (auto& timeoutInstance : m_timeouts)
-		{
-			if (timeoutId == timeoutInstance->ID)
-			{
-				// Found it; remove it
-				timeout = timeoutInstance;
-				m_timeouts.remove(timeout);
-				break;
-			}
-		}
-	}
-
-	if (!timeout)
+	shared_ptr<TimerDefinition> timer = ProcessTimersList(ListOperationType::Remove, timerId);
+	if (!timer)
 	{
 		// The timeout must have fired already; return
 		return JS_INVALID_REFERENCE;
 	}
 
-	timeout->Stop();
+	timer->Stop();
 
 	return JS_INVALID_REFERENCE;
 }
@@ -173,68 +155,84 @@ Timers::CreateTimer(
 		capturedParameters[i - 2] = arguments[i];
 	}
 
-	shared_ptr<TimerDefinition> timeout = make_shared<TimerDefinition>(type, timeoutValue);
-	RETURN_INVALID_REF_IF_FALSE(timeout->CaptureScriptResources(scriptCallback, capturedParameters));
+	shared_ptr<TimerDefinition> timer = make_shared<TimerDefinition>(type, timeoutValue);
 
-	// Insert the timeout in the list and assign it an ID
+	// Declare the script code to execute when the timer fires and what parameters to pass to it
+	RETURN_INVALID_REF_IF_FALSE(timer->CaptureScriptResources(scriptCallback, capturedParameters));
+
+	const int id = InsertInTimersList(timer);
+
+	// Declare the native code to be executed when the timer fires
+	timer->SetNativeCallback([this, id]()
 	{
-		std::lock_guard<std::mutex> guard(m_timeoutsLock);
-
-		for (const auto& timeoutInstance : m_timeouts)
-		{
-			if (timeout->ID <= timeoutInstance->ID)
-			{
-				timeout->ID = timeoutInstance->ID + 1;
-			}
-		}
-		m_timeouts.push_back(timeout);
-	}
-
-	int id = timeout->ID;
-
-	// Declare the code to be executed when the timer fires
-	timeout->SetCallback([this, id]()
-	{
-		shared_ptr<TimerDefinition> timer;
-		// Lookup and remove the firing timer from the list of timers
-		{
-			// Lock the list of timeouts
-			std::lock_guard<std::mutex> guard(m_timeoutsLock);
-
-			// Lookup the ID in the timeouts list
-			for (auto& timeoutInstance : m_timeouts)
-			{
-				if (id == timeoutInstance->ID)
-				{
-					// Found it; remove it if it's a timeout timer
-					timer = timeoutInstance;
-					if (timer->GetType() == TimerType::Timeout)
-					{
-						m_timeouts.remove(timer);
-					}
-					else
-					{
-						// Set up this timer to continue firing
-						timer->Continue();
-					}
-
-					break;
-				}
-			}
-		}
-
+		shared_ptr<TimerDefinition> timer = ProcessTimersList(ListOperationType::ProcessTick, id);
 		if (!timer)
 		{
-			// The timeout must have been cleared; return
+			// The timer must have been cleared; return
 			return;
 		}
 
 		// Call the script
 		timer->InvokeScriptCallback();
+
+		if (timer->GetType() == TimerType::Interval)
+		{
+			timer->Continue();
+		}
 	});
 
 	JsValueRef retValue;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(timeout->ID, &retValue));
+	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(timer->ID, &retValue));
 	return retValue;
+}
+
+shared_ptr<Timers::TimerDefinition>
+Timers::ProcessTimersList(ListOperationType operationType, int id)
+{
+	shared_ptr<TimerDefinition> timer;
+	
+	// Lock the list of timers
+	std::lock_guard<std::mutex> guard(m_timersLock);
+
+	// Lookup timer in list;
+	for (auto& timeoutInstance : m_timers)
+	{
+		if (id == timeoutInstance->ID)
+		{
+			// Found it
+			timer = timeoutInstance;
+
+			if ((operationType == ListOperationType::ProcessTick && timer->GetType() == TimerType::Timeout)
+				|| operationType == ListOperationType::Remove)
+			{
+				m_timers.remove(timer);
+			}
+
+			break;
+		}
+	}
+
+	return timer;
+}
+
+int
+Timers::InsertInTimersList(std::shared_ptr<TimerDefinition> timer)
+{
+	std::lock_guard<std::mutex> guard(m_timersLock);
+
+	timer->ID = 0;
+
+	// Determine a unique ID: largest ID + 1
+	for (const auto& timerInstance : m_timers)
+	{
+		if (timer->ID <= timerInstance->ID)
+		{
+			timer->ID = timerInstance->ID + 1;
+		}
+	}
+	
+	m_timers.push_back(timer);
+
+	return timer->ID;
 }
 
