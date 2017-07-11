@@ -1,4 +1,6 @@
-﻿function Image() {
+﻿function HTMLImageElement() { }
+
+function Image() {
 
     this.native = new nativeInterface.image.createImage();
 
@@ -56,3 +58,5 @@
         }
     });
 }
+
+Image.prototype = new HTMLImageElement();
