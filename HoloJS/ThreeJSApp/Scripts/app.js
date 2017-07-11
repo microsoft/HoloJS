@@ -53,7 +53,8 @@ cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from(
     0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, // back - cyan
     1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, // front - purple
 ]), 3));
-loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
+//loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
+loader.load('camera://local/default', tex => { cube.material.map = tex; start(); }, x => x, err => start());
 
 sphere.position.set(0.4, 0, -1.5);
 sphere.material.color.set(0xff0000);

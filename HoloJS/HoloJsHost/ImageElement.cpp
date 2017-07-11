@@ -7,6 +7,9 @@ using namespace HologramJS::API;
 using namespace std;
 using namespace concurrency;
 using namespace Windows::Graphics::Imaging;
+using namespace Windows::Media::Capture;
+using namespace Windows::Media::MediaProperties;
+using namespace Windows::Storage::Streams;
 
 bool ImageElement::UseFileSystem = false;
 wstring ImageElement::BaseUrl = L"";
@@ -112,10 +115,41 @@ ImageElement::LoadAsync()
 	{
 		DownloadAsync();
 	}
+	else if (_wcsicmp(m_source.c_str(), L"camera://local/default") == 0)
+	{
+		GetFromCameraAsync();
+	}
 	else
 	{
 		ReadFromPackageAsync();
 	}
+}
+
+task<void>
+ImageElement::GetFromCameraAsync()
+{
+	auto mediaCapture = ref new MediaCapture();
+	
+	await mediaCapture->InitializeAsync();
+
+	auto captureFormat = ImageEncodingProperties::CreateJpeg();
+
+	auto captureStream = ref new InMemoryRandomAccessStream();
+	
+	// take photo
+	await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
+	captureStream->Seek(0);
+
+	std::vector<byte> rawBuffer(captureStream->Size);
+
+	Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
+	Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(&imageBuffer, rawBuffer.data(), rawBuffer.size());
+	auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
+	IBuffer^ imageIBuffer = reinterpret_cast<IBuffer^>(iinspectable);
+
+	await captureStream->ReadAsync(imageIBuffer, captureStream->Size, InputStreamOptions::None);
+
+	LoadImageFromBuffer(imageIBuffer);
 }
 
 task<void>
