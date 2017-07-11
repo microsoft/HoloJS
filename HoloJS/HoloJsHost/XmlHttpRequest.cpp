@@ -135,9 +135,6 @@ XmlHttpRequest::sendXHR(
 	wstring type;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[4], type));
 
-	JsValueType valueType;
-	JsGetValueType(arguments[5], &valueType);
-
 	xhr->SendRequest(method, uri, type);
 
 	return JS_INVALID_REFERENCE;
