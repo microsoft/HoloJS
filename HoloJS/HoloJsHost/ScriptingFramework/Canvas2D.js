@@ -9,7 +9,7 @@
         this.canvas = canvas;
         this.context2d = nativeInterface.canvas2d.createContext2D();
 
-        this.drawImage = function (image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+        this.drawImage = function (image) {
             if (arguments.length == 9) {
                 nativeInterface.canvas2d.drawImage3(
                     this.context2d,
@@ -18,14 +18,14 @@
                     image.native,
                     image.width,
                     image.height,
-                    sx,
-                    sy,
-                    sWidth,
-                    sHeight,
-                    dx,
-                    dy,
-                    dWidth,
-                    dHeight);
+                    arguments[1], //sx,
+                    arguments[2], //sy,
+                    arguments[3], //sWidth,
+                    arguments[4], //sHeight,
+                    arguments[5], //dx,
+                    arguments[6], //dy,
+                    arguments[7], //dWidth,
+                    arguments[8]); //dHeight);
             } else if (arguments.length == 3) {
                 nativeInterface.canvas2d.drawImage1(
                     this.context2d,
@@ -34,8 +34,8 @@
                     image.native,
                     image.width,
                     image.height,
-                    dx,
-                    dy);
+                    arguments[1],  //dx,
+                    arguments[2]); //dy
             } else if (arguments.length == 5) {
                 nativeInterface.canvas2d.drawImage2(
                     this.context2d,
@@ -44,10 +44,10 @@
                     image.native,
                     image.width,
                     image.height,
-                    dx,
-                    dy,
-                    dWidth,
-                    dHeight);
+                    arguments[1],  //dx,
+                    arguments[2],  //dy
+                    arguments[3],  //dWidth,
+                    arguments[4]); //dHeight
             }
         }.bind(this);
 
