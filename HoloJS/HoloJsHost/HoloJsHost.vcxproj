@@ -211,6 +211,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ChakraForHoloJS.h" />
+    <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExternalObject.h" />
     <ClInclude Include="FileSystemLoader.h" />
     <ClInclude Include="HologramJS.h" />

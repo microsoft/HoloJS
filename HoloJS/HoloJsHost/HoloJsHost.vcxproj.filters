@@ -14,18 +14,6 @@
     <ClCompile Include="WindowElement.cpp">
       <Filter>Interface\NativeSide</Filter>
     </ClCompile>
-    <ClCompile Include="KeyboardInput.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="MouseInput.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptHostUtilities.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptResourceTracker.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
     <ClCompile Include="System.cpp">
       <Filter>Runtime</Filter>
     </ClCompile>
@@ -37,12 +25,6 @@
     </ClCompile>
     <ClCompile Include="WebGLRenderingContext.cpp">
       <Filter>Render\WebGL</Filter>
-    </ClCompile>
-    <ClCompile Include="SpatialInput.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
-    <ClCompile Include="SpatialMapping.cpp">
-      <Filter>Runtime</Filter>
     </ClCompile>
     <ClCompile Include="Timers.cpp">
       <Filter>Runtime</Filter>
@@ -62,11 +44,29 @@
     <ClCompile Include="RenderingContext2D.cpp">
       <Filter>Render\2D</Filter>
     </ClCompile>
-    <ClCompile Include="Log.cpp">
-      <Filter>Runtime</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardInput.cpp">
+      <Filter>Runtime\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseInput.cpp">
+      <Filter>Runtime\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialInput.cpp">
+      <Filter>Runtime\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialMapping.cpp">
+      <Filter>Runtime\SpatialMapping</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptHostUtilities.cpp">
+      <Filter>Runtime\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptResourceTracker.cpp">
+      <Filter>Runtime\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>Runtime\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,21 +89,6 @@
     <ClInclude Include="WindowElement.h">
       <Filter>Interface\NativeSide</Filter>
     </ClInclude>
-    <ClInclude Include="IBufferOnMemory.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyboardInput.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseInput.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptHostUtilities.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptResourceTracker.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
     <ClInclude Include="System.h">
       <Filter>Runtime</Filter>
     </ClInclude>
@@ -116,19 +101,7 @@
     <ClInclude Include="WebGLRenderingContext.h">
       <Filter>Render\WebGL</Filter>
     </ClInclude>
-    <ClInclude Include="SpatialInput.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="InputInterface.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="SpatialMapping.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
     <ClInclude Include="Timers.h">
-      <Filter>Runtime</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptErrorHandling.h">
       <Filter>Runtime</Filter>
     </ClInclude>
     <ClInclude Include="FileSystemLoader.h">
@@ -150,6 +123,36 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="InputInterface.h">
+      <Filter>Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardInput.h">
+      <Filter>Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseInput.h">
+      <Filter>Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialInput.h">
+      <Filter>Runtime\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialMapping.h">
+      <Filter>Runtime\SpatialMapping</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptHostUtilities.h">
+      <Filter>Runtime\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptResourceTracker.h">
+      <Filter>Runtime\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="IBufferOnMemory.h">
+      <Filter>Runtime\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptErrorHandling.h">
+      <Filter>Runtime\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorHandling.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -210,6 +213,15 @@
     </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{82ea3f82-1b16-4a7c-9189-23fe78dfb89c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Input">
+      <UniqueIdentifier>{fb800fd0-c592-4b83-b601-5e0efc78b70f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\SpatialMapping">
+      <UniqueIdentifier>{902dfde1-6a39-4994-9054-e00c0c633532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Utilities">
+      <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
