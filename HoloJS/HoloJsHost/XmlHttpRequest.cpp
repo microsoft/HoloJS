@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "XmlHttpRequest.h"
-#include "ScriptHostUtilities.h"
-#include "ScriptsLoader.h"
 #include "ExternalObject.h"
+#include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
+#include "ScriptsLoader.h"
 
 using namespace HologramJS::API;
 using namespace Windows::Foundation;
@@ -175,24 +175,16 @@ void XmlHttpRequest::SendRequest(const std::wstring& method, const std::wstring&
 task<void> XmlHttpRequest::ReadFromPackageAsync()
 {
     wstring completePath = BasePath + m_url;
-    auto mainPathElements = HologramJS::ScriptsLoader::SplitPath(completePath);
-
-    if (mainPathElements.size() == 0) {
-        return;
-    }
-
-    auto fileName = mainPathElements.front();
-    mainPathElements.erase(mainPathElements.begin());
 
     if (IsTextResponse()) {
-        auto responsePlatformString = await HologramJS::ScriptsLoader::ReadTextFromFile(
-            Windows::ApplicationModel::Package::Current->InstalledLocation, mainPathElements, fileName);
+        auto responsePlatformString = await HologramJS::Loaders::FileSystemLoader::ReadTextFromFileAsync(
+            Windows::ApplicationModel::Package::Current->InstalledLocation, completePath);
         m_responseText = responsePlatformString->Data();
         m_responseType.assign(L"text");
     } else  // arraybuffer or blob
     {
-        m_response = await HologramJS::ScriptsLoader::ReadBinaryFromFile(
-            Windows::ApplicationModel::Package::Current->InstalledLocation, mainPathElements, fileName);
+        m_response = await HologramJS::Loaders::FileSystemLoader::ReadBinaryFromFileAsync(
+            Windows::ApplicationModel::Package::Current->InstalledLocation, completePath);
 
         m_responseLength = m_response->Length;
     }

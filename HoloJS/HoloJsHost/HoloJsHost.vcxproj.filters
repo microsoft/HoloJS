@@ -53,6 +53,12 @@
     <ClCompile Include="Timers.cpp">
       <Filter>NativeFramework</Filter>
     </ClCompile>
+    <ClCompile Include="FileSystemLoader.cpp">
+      <Filter>Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="WebLoader.cpp">
+      <Filter>Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -123,6 +129,12 @@
       <Filter>NativeFramework</Filter>
     </ClInclude>
     <ClInclude Include="ChakraForHoloJS.h" />
+    <ClInclude Include="FileSystemLoader.h">
+      <Filter>Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="WebLoader.h">
+      <Filter>Loaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -164,6 +176,9 @@
     </Filter>
     <Filter Include="API">
       <UniqueIdentifier>{29f9bcec-9229-4ad7-9d4d-31ffc9c331e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Loaders">
+      <UniqueIdentifier>{10eafaf8-e776-40d8-9013-018f503650ef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

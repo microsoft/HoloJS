@@ -70,12 +70,12 @@ IAsyncOperation<bool> ^ HologramScriptHost::RunLocalScriptAppAsync(Platform::Str
 task<bool> HologramScriptHost::RunLocalScriptApp(wstring jsonFilePath)
 {
     unique_ptr<HologramJS::ScriptsLoader> loader(new ScriptsLoader());
-    auto loadResult = await loader->LoadScripts(Package::Current->InstalledLocation,
+    auto loadResult = await loader->LoadScriptsAsync(Package::Current->InstalledLocation,
                                                 L"hologramjs\\scriptingframework\\framework.json");
 
     if (loadResult) {
         loadResult =
-            await loader->LoadScripts(Package::Current->InstalledLocation, jsonFilePath);
+            await loader->LoadScriptsAsync(Package::Current->InstalledLocation, jsonFilePath);
     }
 
     if (loadResult) {
@@ -105,11 +105,11 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
 {
     unique_ptr<HologramJS::ScriptsLoader> loader(new HologramJS::ScriptsLoader());
     wstring jsonUriString = jsonUri;
-    auto loadResult = await loader->LoadScripts(Package::Current->InstalledLocation,
+    auto loadResult = await loader->LoadScriptsAsync(Package::Current->InstalledLocation,
                                                 L"hologramjs\\scriptingframework\\framework.json");
 
     if (loadResult) {
-        loadResult = await loader->DownloadScripts(jsonUriString);
+        loadResult = await loader->DownloadScriptsAsync(jsonUriString);
     }
 
     if (loadResult) {

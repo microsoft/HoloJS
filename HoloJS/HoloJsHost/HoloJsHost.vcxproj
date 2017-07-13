@@ -212,6 +212,7 @@
   <ItemGroup>
     <ClInclude Include="ChakraForHoloJS.h" />
     <ClInclude Include="ExternalObject.h" />
+    <ClInclude Include="FileSystemLoader.h" />
     <ClInclude Include="HologramJS.h" />
     <ClInclude Include="IBufferOnMemory.h" />
     <ClInclude Include="ImageElement.h" />
@@ -234,10 +235,12 @@
     <ClInclude Include="WebGLObjects.h" />
     <ClInclude Include="WebGLProjections.h" />
     <ClInclude Include="WebGLRenderingContext.h" />
+    <ClInclude Include="WebLoader.h" />
     <ClInclude Include="WindowElement.h" />
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileSystemLoader.cpp" />
     <ClCompile Include="HologramJS.cpp" />
     <ClCompile Include="ImageElement.cpp" />
     <ClCompile Include="KeyboardInput.cpp" />
@@ -263,6 +266,7 @@
     <ClCompile Include="WebGLObjects.cpp" />
     <ClCompile Include="WebGLProjections.cpp" />
     <ClCompile Include="WebGLRenderingContext.cpp" />
+    <ClCompile Include="WebLoader.cpp" />
     <ClCompile Include="WindowElement.cpp" />
     <ClCompile Include="XmlHttpRequest.cpp" />
   </ItemGroup>
