@@ -1,136 +1,127 @@
 #pragma once
 
-namespace HologramJS
-{
-	namespace WebGL
-	{
-		class WebGLShaderPrecisionFormat : public HologramJS::Utilities::IRelease
-		{
-		public:
-			GLint rangeMin;
-			GLint rangeMax;
-			GLint precision;
-			WebGLShaderPrecisionFormat(GLint min, GLint max, GLint precision);
+#include "IRelease.h"
+#include "ChakraForHoloJS.h"
 
-			virtual void Release();
+namespace HologramJS {
+namespace WebGL {
+class WebGLShaderPrecisionFormat : public HologramJS::Utilities::IRelease {
+   public:
+    GLint rangeMin;
+    GLint rangeMax;
+    GLint precision;
+    WebGLShaderPrecisionFormat(GLint min, GLint max, GLint precision);
 
-			virtual ~WebGLShaderPrecisionFormat() {}
-		};
+    virtual void Release();
 
-		class WebGLRenderbuffer : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLRenderbuffer();
-			virtual void Release();
-			virtual ~WebGLRenderbuffer() {}
-			void bindRenderbuffer(GLenum target);
-			void framebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget);
-			GLuint id;
-		};
+    virtual ~WebGLShaderPrecisionFormat() {}
+};
 
-		class WebGLFramebuffer : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLFramebuffer();
-			virtual void Release();
-			virtual ~WebGLFramebuffer() {}
-			void bindFramebuffer(GLenum target);
-			GLuint id;
-		};
+class WebGLRenderbuffer : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLRenderbuffer();
+    virtual void Release();
+    virtual ~WebGLRenderbuffer() {}
+    void bindRenderbuffer(GLenum target);
+    void framebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget);
+    GLuint id;
+};
 
-		class WebGLTexture : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLTexture();
-			virtual void Release();
-			virtual ~WebGLTexture() {}
-			void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLint level);
+class WebGLFramebuffer : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLFramebuffer();
+    virtual void Release();
+    virtual ~WebGLFramebuffer() {}
+    void bindFramebuffer(GLenum target);
+    GLuint id;
+};
 
-			void Bind(GLenum target);
-			GLuint id;
-		};
+class WebGLTexture : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLTexture();
+    virtual void Release();
+    virtual ~WebGLTexture() {}
+    void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLint level);
 
-		class WebGLBuffer : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLBuffer();
-			virtual void Release();
-			virtual ~WebGLBuffer() {}
+    void Bind(GLenum target);
+    GLuint id;
+};
 
-			void Bind(GLenum target);
-			GLuint id;
-		};
+class WebGLBuffer : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLBuffer();
+    virtual void Release();
+    virtual ~WebGLBuffer() {}
 
-		class WebGLShader : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLShader(GLenum type);
-			virtual void Release();
-			virtual ~WebGLShader() {}
+    void Bind(GLenum target);
+    GLuint id;
+};
 
-			void SetSource(PCSTR source);
-			void Compile();
-			JsValueRef GetParameter(GLenum pname);
-			std::wstring GetInfoLog();
-			void Delete();
+class WebGLShader : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLShader(GLenum type);
+    virtual void Release();
+    virtual ~WebGLShader() {}
 
-			GLuint id;
-			GLenum type;
-		};
+    void SetSource(PCSTR source);
+    void Compile();
+    JsValueRef GetParameter(GLenum pname);
+    std::wstring GetInfoLog();
+    void Delete();
 
-		class WebGLActiveInfo : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLActiveInfo();
-			void Release() {}
-			virtual ~WebGLActiveInfo() {}
-			std::wstring name;
-			int size;
-			int type;
-		};
+    GLuint id;
+    GLenum type;
+};
 
-		class WebGLUniformLocation : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLUniformLocation();
-			void Release() {}
-			virtual ~WebGLUniformLocation() {}
-			int location;
-		};
+class WebGLActiveInfo : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLActiveInfo();
+    void Release() {}
+    virtual ~WebGLActiveInfo() {}
+    std::wstring name;
+    int size;
+    int type;
+};
 
-		class WebGLProgram : public HologramJS::Utilities::IRelease
-		{
-		public:
-			WebGLProgram();
-			virtual void Release();
-			virtual ~WebGLProgram() {}
+class WebGLUniformLocation : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLUniformLocation();
+    void Release() {}
+    virtual ~WebGLUniformLocation() {}
+    int location;
+};
 
-			void AttachShader(WebGLShader* shader);
-			void BindAttribLocation(GLuint index, PCSTR name);
-			void Link();
-			JsValueRef GetParameter(GLenum pname);
-			std::wstring GetInfoLog();
-			void Delete();
+class WebGLProgram : public HologramJS::Utilities::IRelease {
+   public:
+    WebGLProgram();
+    virtual void Release();
+    virtual ~WebGLProgram() {}
 
-			WebGLActiveInfo* GetActiveUniform(GLuint index);
-			WebGLUniformLocation* GetUniformLocation(PCSTR name);
+    void AttachShader(WebGLShader* shader);
+    void BindAttribLocation(GLuint index, PCSTR name);
+    void Link();
+    JsValueRef GetParameter(GLenum pname);
+    std::wstring GetInfoLog();
+    void Delete();
 
-			void Validate();
-			void Use();
+    WebGLActiveInfo* GetActiveUniform(GLuint index);
+    WebGLUniformLocation* GetUniformLocation(PCSTR name);
 
-			WebGLActiveInfo* GetActiveAttrib(GLuint index);
-			GLint GetAttribLocation(PCSTR name);
+    void Validate();
+    void Use();
 
-			GLuint id;
-		};
+    WebGLActiveInfo* GetActiveAttrib(GLuint index);
+    GLint GetAttribLocation(PCSTR name);
 
-		class ANGLE_instanced_arrays
-		{
-		public:
-			ANGLE_instanced_arrays();
-			void drawArraysInstancedANGLE(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
-			void drawElementsInstancedANGLE(GLenum mode, GLsizei count, GLenum type, GLint indices, GLsizei primcount);
-			void vertexAttribDivisorANGLE(GLuint index, GLuint divisor);
-		};
-	}
-}
+    GLuint id;
+};
+
+class ANGLE_instanced_arrays {
+   public:
+    ANGLE_instanced_arrays();
+    void drawArraysInstancedANGLE(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+    void drawElementsInstancedANGLE(GLenum mode, GLsizei count, GLenum type, GLint indices, GLsizei primcount);
+    void vertexAttribDivisorANGLE(GLuint index, GLuint divisor);
+};
+}  // namespace WebGL
+}  // namespace HologramJS

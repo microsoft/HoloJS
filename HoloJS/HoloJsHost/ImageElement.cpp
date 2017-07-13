@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "ScriptsLoader.h"
 #include "ImageElement.h"
+#include "ExternalObject.h"
+#include "ScriptHostUtilities.h"
+#include "ScriptResourceTracker.h"
 
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;

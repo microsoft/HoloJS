@@ -1,37 +1,29 @@
 #pragma once
 
-namespace HologramJS
-{
-	namespace API
-	{
-		class System
-		{
-		public:
-			System() {}
-			~System() {}
+#include "ChakraForHoloJS.h"
 
-			bool Initialize();
+namespace HologramJS {
+namespace API {
+class System {
+   public:
+    System() {}
+    ~System() {}
 
-		private:
+    bool Initialize();
 
-			JsValueRef m_logFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK logStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<System*>(callbackData)->log(callee, arguments, argumentCount);
-			}
+   private:
+    JsValueRef m_logFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK logStatic(JsValueRef callee,
+                                                bool isConstructCall,
+                                                JsValueRef* arguments,
+                                                unsigned short argumentCount,
+                                                PVOID callbackData)
+    {
+        return reinterpret_cast<System*>(callbackData)->log(callee, arguments, argumentCount);
+    }
 
-			JsValueRef log(
-				JsValueRef callee,
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
-		};
+    JsValueRef log(JsValueRef callee, JsValueRef* arguments, unsigned short argumentCount);
+};
 
-	}
-}
+}  // namespace API
+}  // namespace HologramJS

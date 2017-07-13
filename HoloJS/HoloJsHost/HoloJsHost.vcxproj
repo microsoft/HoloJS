@@ -210,6 +210,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ChakraForHoloJS.h" />
     <ClInclude Include="ExternalObject.h" />
     <ClInclude Include="HologramJS.h" />
     <ClInclude Include="IBufferOnMemory.h" />

@@ -5,15 +5,6 @@
 #include <experimental\resumable>
 #include <pplawait.h>
 
-// Chakra stuff
-#define USE_EDGEMODE_JSRT
-#define CHAKRA_CALLBACK CALLBACK
-#define CHAKRA_API STDAPI_(JsErrorCode)
-typedef DWORD_PTR ChakraCookie;
-typedef BYTE* ChakraBytePtr;
-#include <jsrt.h>
-#include <chakrart.h>
-
 #include <filesystem>
 #include <memory>
 
@@ -68,14 +59,3 @@ void Log(PCSTR file, int line);
 
 #define HANDLE_EXCEPTION_IF_JS_ERROR(x) if ((x) != JsNoError) { HologramJS::ScriptErrorHandling::PrintException();}
 #define RETURN_ON_SCRIPT_ERROR(x) if ((x) != JsNoError) { HologramJS::ScriptErrorHandling::PrintException(); return false; }
-
-#include "IRelease.h"
-#include "ScriptErrorHandling.h"
-#include "ObjectEvents.h"
-#include "ExternalObject.h"
-#include "ScriptHostUtilities.h"
-#include "ScriptResourceTracker.h"
-
-#include <windows.storage.streams.h>
-#include <wrl/implements.h>
-#include "IBufferOnMemory.h"

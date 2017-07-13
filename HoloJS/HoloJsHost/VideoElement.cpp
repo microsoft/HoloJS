@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "VideoElement.h"
+#include "ChakraForHoloJS.h"
+#include "ExternalObject.h"
+#include "ScriptHostUtilities.h"
+#include "ScriptResourceTracker.h"
 
 using namespace HologramJS::API;
 using namespace std;
@@ -13,99 +17,75 @@ wstring VideoElement::BasePath = L"";
 JsValueRef VideoElement::m_createVideoFunction = JS_INVALID_REFERENCE;
 JsValueRef VideoElement::m_setVideoSourceFunction = JS_INVALID_REFERENCE;
 
-bool
-VideoElement::Initialize()
+bool VideoElement::Initialize()
 {
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createVideo", L"video", createVideo, nullptr, &m_createVideoFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setVideoSource", L"video", setVideoSource, nullptr, &m_setVideoSourceFunction));
+    RETURN_IF_FALSE(
+        ScriptHostUtilities::ProjectFunction(L"createVideo", L"video", createVideo, nullptr, &m_createVideoFunction));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
+        L"setVideoSource", L"video", setVideoSource, nullptr, &m_setVideoSourceFunction));
 
-	RETURN_IF_FAILED(MFStartup(MF_VERSION));
+    RETURN_IF_FAILED(MFStartup(MF_VERSION));
 
-	return true;
+    return true;
 }
 
-_Use_decl_annotations_
-JsValueRef
-CHAKRA_CALLBACK
-VideoElement::createVideo(
-	JsValueRef callee,
-	bool isConstructCall,
-	JsValueRef *arguments,
-	unsigned short argumentCount,
-	PVOID callbackData
-)
+_Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK VideoElement::createVideo(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-	ExternalObject* externalObject = new ExternalObject();
-	RETURN_INVALID_REF_IF_FALSE(externalObject->Initialize(new VideoElement()));
-	return ScriptResourceTracker::ObjectToDirectExternal(externalObject);
+    ExternalObject* externalObject = new ExternalObject();
+    RETURN_INVALID_REF_IF_FALSE(externalObject->Initialize(new VideoElement()));
+    return ScriptResourceTracker::ObjectToDirectExternal(externalObject);
 }
 
-_Use_decl_annotations_
-JsValueRef
-CHAKRA_CALLBACK
-VideoElement::setVideoSource(
-	JsValueRef callee,
-	bool isConstructCall,
-	JsValueRef *arguments,
-	unsigned short argumentCount,
-	PVOID callbackData
-)
+_Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK VideoElement::setVideoSource(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-	RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
-	auto video = ScriptResourceTracker::ExternalToObject<VideoElement>(arguments[1]);
-	RETURN_INVALID_REF_IF_NULL(video);
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+    auto video = ScriptResourceTracker::ExternalToObject<VideoElement>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(video);
 
-	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], video->m_source));
+    RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], video->m_source));
 
-	video->LoadAsync();
+    video->LoadAsync();
 
-	return JS_INVALID_REFERENCE;
+    return JS_INVALID_REFERENCE;
 }
 
-task<bool>
-VideoElement::LoadAsync()
+task<bool> VideoElement::LoadAsync()
 {
-	if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0)
-		|| (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0)
-		|| !UseFileSystem)
-	{
+    if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0) ||
+        (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0) || !UseFileSystem) {
         auto videoReaderConfigResult = await create_task([this]() -> bool { return ConfigureVideoReader(); });
-		if (videoReaderConfigResult)
-		{
-			FireOnLoadEvent();
+        if (videoReaderConfigResult) {
+            FireOnLoadEvent();
 
-            create_task([this]() -> bool
-            {
+            create_task([this]() -> bool {
                 m_stopStreamingRequested = false;
                 m_isStreaming = true;
                 return StreamAndDecode();
             });
-		}
-	}
+        }
+    }
 
-	return false;
+    return false;
 }
 
-bool
-VideoElement::ConfigureVideoReader()
+bool VideoElement::ConfigureVideoReader()
 {
-	wstring source;
+    wstring source;
 
-	if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0)
-		|| (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0))
-	{
-		source = m_source;
-	}
-	else
-	{
-		source = BaseUrl + L"/" + m_source;
-	}
+    if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0) ||
+        (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0)) {
+        source = m_source;
+    } else {
+        source = BaseUrl + L"/" + m_source;
+    }
 
     RETURN_IF_FALSE(InitializeHardwareDecoding());
 
-	ComPtr<IMFAttributes> attributes;
-	RETURN_IF_FAILED(MFCreateAttributes(&attributes, 1));
-	RETURN_IF_FAILED(attributes->SetUINT32(MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING, 1));
+    ComPtr<IMFAttributes> attributes;
+    RETURN_IF_FAILED(MFCreateAttributes(&attributes, 1));
+    RETURN_IF_FAILED(attributes->SetUINT32(MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING, 1));
     RETURN_IF_FAILED(attributes->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, 1));
 
     RETURN_IF_FAILED(MFCreateDXGIDeviceManager(&m_dxgiManagerResetToken, m_dxgiManager.ReleaseAndGetAddressOf()));
@@ -113,139 +93,125 @@ VideoElement::ConfigureVideoReader()
     ComPtr<IUnknown> deviceUnknown;
     RETURN_IF_FAILED(m_device.As(&deviceUnknown));
     RETURN_IF_FAILED(m_dxgiManager->ResetDevice(deviceUnknown.Get(), m_dxgiManagerResetToken));
-    
+
     ComPtr<IUnknown> dxgiManagerUnknown;
     RETURN_IF_FAILED(m_dxgiManager.As(&dxgiManagerUnknown));
     RETURN_IF_FAILED(attributes->SetUnknown(MF_SOURCE_READER_D3D_MANAGER, dxgiManagerUnknown.Get()));
 
-	RETURN_IF_FAILED(MFCreateSourceReaderFromURL(m_source.c_str(), attributes.Get(), m_videoReader.ReleaseAndGetAddressOf()));
-	
-	RETURN_IF_FAILED(ConfigureDecoder(m_videoReader.Get()));
+    RETURN_IF_FAILED(
+        MFCreateSourceReaderFromURL(m_source.c_str(), attributes.Get(), m_videoReader.ReleaseAndGetAddressOf()));
 
-	RETURN_IF_FAILED(m_videoReader->SetStreamSelection(MF_SOURCE_READER_FIRST_VIDEO_STREAM, true));
+    RETURN_IF_FAILED(ConfigureDecoder(m_videoReader.Get()));
 
-	ComPtr<IMFSourceReaderEx> readerEx;
-	RETURN_IF_FAILED(m_videoReader.As(&readerEx));
+    RETURN_IF_FAILED(m_videoReader->SetStreamSelection(MF_SOURCE_READER_FIRST_VIDEO_STREAM, true));
 
-	GUID transformType;
-	DWORD transformIndex = 0;
-	ComPtr<IMFVideoProcessorControl> videoProcessor;
-	while (true)
-	{
-		ComPtr<IMFTransform> transform;
-		const HRESULT hr = readerEx->GetTransformForStream(MF_SOURCE_READER_FIRST_VIDEO_STREAM, transformIndex, &transformType, &transform);
-		RETURN_IF_FAILED(hr);
-		if (transformType == MFT_CATEGORY_VIDEO_PROCESSOR)
-		{
-			RETURN_IF_FAILED(transform.As(&videoProcessor));
-			break;
-		}
+    ComPtr<IMFSourceReaderEx> readerEx;
+    RETURN_IF_FAILED(m_videoReader.As(&readerEx));
 
-		transformIndex++;
-	}
+    GUID transformType;
+    DWORD transformIndex = 0;
+    ComPtr<IMFVideoProcessorControl> videoProcessor;
+    while (true) {
+        ComPtr<IMFTransform> transform;
+        const HRESULT hr = readerEx->GetTransformForStream(
+            MF_SOURCE_READER_FIRST_VIDEO_STREAM, transformIndex, &transformType, &transform);
+        RETURN_IF_FAILED(hr);
+        if (transformType == MFT_CATEGORY_VIDEO_PROCESSOR) {
+            RETURN_IF_FAILED(transform.As(&videoProcessor));
+            break;
+        }
 
-	if (videoProcessor)
-	{
-		RETURN_IF_FAILED(videoProcessor->SetMirror(MIRROR_VERTICAL));
-	}
+        transformIndex++;
+    }
 
-	return true;
+    if (videoProcessor) {
+        RETURN_IF_FAILED(videoProcessor->SetMirror(MIRROR_VERTICAL));
+    }
+
+    return true;
 }
 
-bool
-VideoElement::ConfigureDecoder(
-	IMFSourceReader* reader
-)
+bool VideoElement::ConfigureDecoder(IMFSourceReader* reader)
 {
-	// Find the native format of the stream.
-	ComPtr<IMFMediaType> nativeType;
-	RETURN_IF_FAILED(reader->GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &nativeType));
+    // Find the native format of the stream.
+    ComPtr<IMFMediaType> nativeType;
+    RETURN_IF_FAILED(reader->GetNativeMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &nativeType));
 
-	// Get the media type from the stream.
+    // Get the media type from the stream.
 
-	RETURN_IF_FAILED(MFGetAttributeSize(nativeType.Get(), MF_MT_FRAME_SIZE, &m_width, &m_height));
+    RETURN_IF_FAILED(MFGetAttributeSize(nativeType.Get(), MF_MT_FRAME_SIZE, &m_width, &m_height));
 
-	GUID majorType;
-	RETURN_IF_FAILED(nativeType->GetGUID(MF_MT_MAJOR_TYPE, &majorType));
-	RETURN_IF_FALSE(majorType == MFMediaType_Video);	
+    GUID majorType;
+    RETURN_IF_FAILED(nativeType->GetGUID(MF_MT_MAJOR_TYPE, &majorType));
+    RETURN_IF_FALSE(majorType == MFMediaType_Video);
 
-	// Create an uncompressed video output type
-	ComPtr<IMFMediaType> desiredType;
-	RETURN_IF_FAILED(MFCreateMediaType(&desiredType));
-	RETURN_IF_FAILED(desiredType->SetGUID(MF_MT_MAJOR_TYPE, majorType));
-	RETURN_IF_FAILED(desiredType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32));
+    // Create an uncompressed video output type
+    ComPtr<IMFMediaType> desiredType;
+    RETURN_IF_FAILED(MFCreateMediaType(&desiredType));
+    RETURN_IF_FAILED(desiredType->SetGUID(MF_MT_MAJOR_TYPE, majorType));
+    RETURN_IF_FAILED(desiredType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32));
 
-	// Set the uncompressed format for source output
-	RETURN_IF_FAILED(reader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, NULL, desiredType.Get()));
+    // Set the uncompressed format for source output
+    RETURN_IF_FAILED(reader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, NULL, desiredType.Get()));
 
-	return true;
+    return true;
 }
 
-bool
-VideoElement::StreamAndDecode()
+bool VideoElement::StreamAndDecode()
 {
-	std::function<void()> autoStopStreaming = [this]()  { m_isStreaming = false; };
+    std::function<void()> autoStopStreaming = [this]() { m_isStreaming = false; };
 
-	LONGLONG timestampMs;
-	LONGLONG previousTimestampMs = 0;
-	LONGLONG lastFrameTickCount = 0;
+    LONGLONG timestampMs;
+    LONGLONG previousTimestampMs = 0;
+    LONGLONG lastFrameTickCount = 0;
 
-	DWORD streamIndex;
-	DWORD streamFlags;
-	LONGLONG timestamp100Ns;
+    DWORD streamIndex;
+    DWORD streamFlags;
+    LONGLONG timestamp100Ns;
 
-	RETURN_IF_FAILED(
-		m_videoReader->ReadSample(
-			MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-			0,
-			&streamIndex,
-			&streamFlags,
-			&timestamp100Ns,
-			m_backSample.ReleaseAndGetAddressOf()));
+    RETURN_IF_FAILED(m_videoReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                               0,
+                                               &streamIndex,
+                                               &streamFlags,
+                                               &timestamp100Ns,
+                                               m_backSample.ReleaseAndGetAddressOf()));
 
     SwapBuffers();
 
-	while (!m_stopStreamingRequested)
-	{
-		timestampMs = timestamp100Ns / 10000;
-		LONGLONG waitTime = (timestampMs - previousTimestampMs) - (GetTickCount64() - lastFrameTickCount);
-		if (waitTime > 0)
-		{
-			Sleep(static_cast<DWORD>(waitTime));
-		}
+    while (!m_stopStreamingRequested) {
+        timestampMs = timestamp100Ns / 10000;
+        LONGLONG waitTime = (timestampMs - previousTimestampMs) - (GetTickCount64() - lastFrameTickCount);
+        if (waitTime > 0) {
+            Sleep(static_cast<DWORD>(waitTime));
+        }
 
-		previousTimestampMs = timestampMs;
-		lastFrameTickCount = GetTickCount64();
+        previousTimestampMs = timestampMs;
+        lastFrameTickCount = GetTickCount64();
 
-		RETURN_IF_FAILED(
-			m_videoReader->ReadSample(
-				MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-				0,
-				&streamIndex,
-				&streamFlags,
-				&timestamp100Ns,
-				m_backSample.ReleaseAndGetAddressOf()));
+        RETURN_IF_FAILED(m_videoReader->ReadSample(MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+                                                   0,
+                                                   &streamIndex,
+                                                   &streamFlags,
+                                                   &timestamp100Ns,
+                                                   m_backSample.ReleaseAndGetAddressOf()));
 
         SwapBuffers();
-	}
+    }
 
-	return true;
+    return true;
 }
 
-void
-VideoElement::SwapBuffers()
+void VideoElement::SwapBuffers()
 {
     DWORD maxLength;
-    if (SUCCEEDED(m_backSample->ConvertToContiguousBuffer(m_backMediaBuffer.ReleaseAndGetAddressOf()))
-		&& m_backMediaBuffer
-        && SUCCEEDED(m_backMediaBuffer->Lock(&m_backBufferMemory, &maxLength, &m_backBufferMemorySize)))
-    {
+    if (SUCCEEDED(m_backSample->ConvertToContiguousBuffer(m_backMediaBuffer.ReleaseAndGetAddressOf())) &&
+        m_backMediaBuffer &&
+        SUCCEEDED(m_backMediaBuffer->Lock(&m_backBufferMemory, &maxLength, &m_backBufferMemorySize))) {
         m_frameBufferLock.lock();
 
         m_newFrameAvailable = true;
 
-        if (m_frontBufferMemory != nullptr)
-        {
+        if (m_frontBufferMemory != nullptr) {
             m_frontMediaBuffer->Unlock();
             m_frontBufferMemory = nullptr;
             m_frontBufferMemorySize = 0;
@@ -266,60 +232,49 @@ VideoElement::SwapBuffers()
     }
 }
 
-void
-VideoElement::FireOnLoadEvent()
+void VideoElement::FireOnLoadEvent()
 {
-	if (HasCallback())
-	{
-		vector<JsValueRef> parameters(3);
+    if (HasCallback()) {
+        vector<JsValueRef> parameters(3);
 
-		JsValueRef* typeParam = &parameters[0];
-		EXIT_IF_JS_ERROR(JsPointerToString(L"load", wcslen(L"load"), typeParam));
+        JsValueRef* typeParam = &parameters[0];
+        EXIT_IF_JS_ERROR(JsPointerToString(L"load", wcslen(L"load"), typeParam));
 
-		JsValueRef* widthParam = &parameters[1];
-		EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_width), widthParam));
+        JsValueRef* widthParam = &parameters[1];
+        EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_width), widthParam));
 
-		JsValueRef* heightParam = &parameters[2];
-		EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_height), heightParam));
+        JsValueRef* heightParam = &parameters[2];
+        EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_height), heightParam));
 
-		(void)InvokeCallback(parameters);
-	}
+        (void)InvokeCallback(parameters);
+    }
 }
 
-bool
-VideoElement::LockNextFrame(
-	void** frameData,
-	unsigned int* frameDataLength
-)
+bool VideoElement::LockNextFrame(void** frameData, unsigned int* frameDataLength)
 {
-	if (!m_newFrameAvailable)
-	{
-		return true;
-	}
+    if (!m_newFrameAvailable) {
+        return true;
+    }
 
-	m_frameBufferLock.lock();
+    m_frameBufferLock.lock();
 
-	*frameData = m_frontBufferMemory;
-	*frameDataLength = m_frontBufferMemorySize;
+    *frameData = m_frontBufferMemory;
+    *frameDataLength = m_frontBufferMemorySize;
 
-	return true;
+    return true;
 }
 
-bool
-VideoElement::UnlockFrame()
+bool VideoElement::UnlockFrame()
 {
-	if (m_frontBufferMemory != nullptr)
-	{
-		m_newFrameAvailable = false;
-		m_frameBufferLock.unlock();
-	}
+    if (m_frontBufferMemory != nullptr) {
+        m_newFrameAvailable = false;
+        m_frameBufferLock.unlock();
+    }
 
-	return true;
+    return true;
 }
 
-bool
-VideoElement::InitializeHardwareDecoding(
-    )
+bool VideoElement::InitializeHardwareDecoding()
 {
     static const D3D_FEATURE_LEVEL levels[] = {
         D3D_FEATURE_LEVEL_11_1,
@@ -330,19 +285,16 @@ VideoElement::InitializeHardwareDecoding(
     };
 
     D3D_FEATURE_LEVEL featureLevel;
-    RETURN_IF_FAILED(
-        D3D11CreateDevice(
-            nullptr,
-            D3D_DRIVER_TYPE_HARDWARE,
-            nullptr,
-            D3D11_CREATE_DEVICE_VIDEO_SUPPORT,
-            levels,
-            ARRAYSIZE(levels),
-            D3D11_SDK_VERSION,
-            m_device.ReleaseAndGetAddressOf(),
-            &featureLevel,
-            m_deviceContext.ReleaseAndGetAddressOf()
-    ));
+    RETURN_IF_FAILED(D3D11CreateDevice(nullptr,
+                                       D3D_DRIVER_TYPE_HARDWARE,
+                                       nullptr,
+                                       D3D11_CREATE_DEVICE_VIDEO_SUPPORT,
+                                       levels,
+                                       ARRAYSIZE(levels),
+                                       D3D11_SDK_VERSION,
+                                       m_device.ReleaseAndGetAddressOf(),
+                                       &featureLevel,
+                                       m_deviceContext.ReleaseAndGetAddressOf()));
 
     ComPtr<ID3D10Multithread> multithread;
     RETURN_IF_FAILED(m_device.As(&multithread));

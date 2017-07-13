@@ -1,29 +1,24 @@
 #pragma once
+#include "ChakraForHoloJS.h"
 #include "InputInterface.h"
-namespace HologramJS
-{
-	namespace Input
-	{
-		class KeyboardInput
-		{
-		public:
-			KeyboardInput();
-			~KeyboardInput();
 
-			void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
+namespace HologramJS {
+namespace Input {
+class KeyboardInput {
+   public:
+    KeyboardInput();
+    ~KeyboardInput();
 
-		private:
-			JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
+    void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
-			void CallbackScriptForKeyboardInput(
-				KeyboardInputEventType type,
-				Windows::UI::Core::KeyEventArgs^ args
-			);
+   private:
+    JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
-			Windows::Foundation::EventRegistrationToken m_keyDownToken;
-			Windows::Foundation::EventRegistrationToken m_keyUpToken;
-		};
+    void CallbackScriptForKeyboardInput(KeyboardInputEventType type, Windows::UI::Core::KeyEventArgs ^ args);
 
-	}
-}
+    Windows::Foundation::EventRegistrationToken m_keyDownToken;
+    Windows::Foundation::EventRegistrationToken m_keyUpToken;
+};
 
+}  // namespace Input
+}  // namespace HologramJS

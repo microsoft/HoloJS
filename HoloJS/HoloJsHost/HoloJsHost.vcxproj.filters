@@ -122,6 +122,7 @@
     <ClInclude Include="ScriptErrorHandling.h">
       <Filter>NativeFramework</Filter>
     </ClInclude>
+    <ClInclude Include="ChakraForHoloJS.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

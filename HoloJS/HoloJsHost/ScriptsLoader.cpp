@@ -1,306 +1,246 @@
 #include "pch.h"
 #include "ScriptsLoader.h"
+#include "ScriptErrorHandling.h"
 
 using namespace concurrency;
 using namespace std;
 using namespace Windows::Web;
 using namespace Windows::Foundation;
 
-namespace HologramJS
-{
+namespace HologramJS {
 
-ScriptsLoader::ScriptsLoader()
+ScriptsLoader::ScriptsLoader() {}
+
+ScriptsLoader::~ScriptsLoader() {}
+
+task<bool> ScriptsLoader::DownloadScripts(const std::wstring& uri)
 {
+    if (uri.rfind(L".json") != (uri.length() - wcslen(L".json"))) {
+        return false;
+    }
+
+    wstring rawUri = uri;
+    if (rawUri.find(L"web-ar") == 0) {
+        rawUri.replace(0, wcslen(L"web-ar"), L"http");
+    }
+
+    auto modifiedUri = ref new Windows::Foundation::Uri(Platform::StringReference(rawUri.c_str()));
+
+    auto scriptsJson = await DownloadTextFromURI(modifiedUri);
+
+    auto scriptsList = GetScriptsListFromJSON(scriptsJson);
+
+    // Build base path without the .json file name it in
+    wstring basePath = GetBaseUriForJsonUri(uri);
+
+    for (const auto& scriptRelativeUri : scriptsList) {
+        auto scriptCompleteUri = basePath + L"/" + scriptRelativeUri;
+
+        auto scriptUri = ref new Uri(Platform::StringReference(scriptCompleteUri.c_str()));
+
+        auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
+        wstring scriptText = scriptPlatformText->Data();
+        if (!scriptText.empty()) {
+            std::shared_ptr<Script> script(new Script());
+            script->path = move(scriptUri->AbsoluteUri->Data());
+            script->code = move(scriptText);
+            m_loadedScripts.emplace_back(script);
+        }
+    }
+
+    return true;
 }
 
-
-ScriptsLoader::~ScriptsLoader()
+task<bool> ScriptsLoader::LoadScripts(Windows::Storage::StorageFolder ^ root, const wstring& jsonPath)
 {
+    auto pathElements = SplitPath(jsonPath);
+    if (pathElements.empty()) {
+        return false;
+    }
+
+    auto jsonFileName = pathElements.front();
+    pathElements.erase(pathElements.begin());
+
+    if (jsonFileName.rfind(L".json") != (jsonFileName.length() - wcslen(L".json"))) {
+        return false;
+    }
+
+    auto scriptsJson = await ReadTextFromFile(root, pathElements, jsonFileName);
+
+    auto scriptsList = GetScriptsListFromJSON(scriptsJson);
+
+    for (const auto& scriptPath : scriptsList) {
+        auto scriptPathElements = SplitPath(scriptPath);
+
+        // Allow mixing Web scripts with local scripts
+        // When referencing web scripts in a local app, only absolute URIs are allowed
+        if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"http://") == 0) {
+            auto scriptUri = ref new Uri(Platform::StringReference(scriptPath.c_str()));
+            auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
+            wstring scriptText = scriptPlatformText->Data();
+            if (!scriptText.empty()) {
+                std::shared_ptr<Script> script(new Script());
+                script->path = move(scriptUri->AbsoluteUri->Data());
+                script->code = move(scriptText);
+                m_loadedScripts.emplace_back(script);
+            }
+        } else if (!scriptPathElements.empty()) {
+            auto scriptName = scriptPathElements.front();
+            scriptPathElements.erase(scriptPathElements.begin());
+
+            // Merge JSON path with script path; scripts are relative located from the main JSON
+            scriptPathElements.insert(scriptPathElements.begin(), pathElements.begin(), pathElements.end());
+            auto scriptPlatformString = await ReadTextFromFile(root, scriptPathElements, scriptName);
+            wstring scriptText = scriptPlatformString->Data();
+            if (!scriptText.empty()) {
+                std::shared_ptr<Script> script(new Script());
+                script->path = move(scriptName);
+                script->code = move(scriptText);
+                m_loadedScripts.emplace_back(script);
+            }
+        }
+    }
+
+    return true;
 }
 
-task<bool>
-ScriptsLoader::DownloadScripts(
-	const std::wstring& uri
-)
+list<wstring> ScriptsLoader::GetScriptsListFromJSON(Platform::String ^ json)
 {
-	if (uri.rfind(L".json") != (uri.length() - wcslen(L".json")))
-	{
-		return false;
-	}
+    list<wstring> scriptsList;
+    Windows::Data::Json::JsonObject ^ jsonObj;
+    if (!Windows::Data::Json::JsonObject::TryParse(json, &jsonObj)) {
+        return scriptsList;
+    }
 
-	wstring rawUri = uri;
-	if (rawUri.find(L"web-ar") == 0)
-	{
-		rawUri.replace(0, wcslen(L"web-ar"), L"http");
-	}
+    auto scriptsListInJson = jsonObj->GetNamedArray(L"scripts");
+    for (unsigned int i = 0; i < scriptsListInJson->Size; i++) {
+        scriptsList.push_back(scriptsListInJson->GetStringAt(i)->Data());
+    }
 
-	auto modifiedUri = ref new Windows::Foundation::Uri(Platform::StringReference(rawUri.c_str()));
-
-	auto scriptsJson = await DownloadTextFromURI(modifiedUri);
-
-	auto scriptsList = GetScriptsListFromJSON(scriptsJson);
-
-	// Build base path without the .json file name it in
-	wstring basePath = GetBaseUriForJsonUri(uri);
-	
-	for (const auto& scriptRelativeUri : scriptsList)
-	{
-		auto scriptCompleteUri = basePath + L"/" + scriptRelativeUri;
-		
-		auto scriptUri = ref new Uri(Platform::StringReference(scriptCompleteUri.c_str()));
-
-		auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
-		wstring scriptText = scriptPlatformText->Data();
-		if (!scriptText.empty())
-		{
-			std::shared_ptr<Script> script(new Script());
-			script->path = move(scriptUri->AbsoluteUri->Data());
-			script->code = move(scriptText);
-			m_loadedScripts.emplace_back(script);
-		}
-	}
-
-	return true;
+    return scriptsList;
 }
 
-task<bool>
-ScriptsLoader::LoadScripts(
-	Windows::Storage::StorageFolder^ root,
-	const wstring& jsonPath)
+task<Platform::String ^> ScriptsLoader::ReadTextFromFile(Windows::Storage::StorageFolder ^ rootFolder,
+                                                         std::list<std::wstring>& pathElements,
+                                                         std::wstring& fileName)
 {
-	auto pathElements = SplitPath(jsonPath);
-	if (pathElements.empty())
-	{
-		return false;
-	}
+    auto currentFolder = rootFolder;
+    for (const auto& folder : pathElements) {
+        currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
+    }
 
-	auto jsonFileName = pathElements.front();
-	pathElements.erase(pathElements.begin());
-
-	if (jsonFileName.rfind(L".json") != (jsonFileName.length() - wcslen(L".json")))
-	{
-		return false;
-	}
-
-	auto scriptsJson = await ReadTextFromFile(root, pathElements, jsonFileName);
-
-	auto scriptsList = GetScriptsListFromJSON(scriptsJson);
-
-	for (const auto& scriptPath : scriptsList)
-	{
-		auto scriptPathElements = SplitPath(scriptPath);
-
-		// Allow mixing Web scripts with local scripts
-		// When referencing web scripts in a local app, only absolute URIs are allowed
-		if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"http://") == 0)
-		{
-			auto scriptUri = ref new Uri(Platform::StringReference(scriptPath.c_str()));
-			auto scriptPlatformText = await DownloadTextFromURI(scriptUri);
-			wstring scriptText = scriptPlatformText->Data();
-			if (!scriptText.empty())
-			{
-				std::shared_ptr<Script> script(new Script());
-				script->path = move(scriptUri->AbsoluteUri->Data());
-				script->code = move(scriptText);
-				m_loadedScripts.emplace_back(script);
-			}
-		}
-		else if (!scriptPathElements.empty())
-		{
-			auto scriptName = scriptPathElements.front();
-			scriptPathElements.erase(scriptPathElements.begin());
-
-			// Merge JSON path with script path; scripts are relative located from the main JSON
-			scriptPathElements.insert(scriptPathElements.begin(), pathElements.begin(), pathElements.end());
-			auto scriptPlatformString = await ReadTextFromFile(root, scriptPathElements, scriptName);
-			wstring scriptText = scriptPlatformString->Data();
-			if (!scriptText.empty())
-			{
-				std::shared_ptr<Script> script(new Script());
-				script->path = move(scriptName);
-				script->code = move(scriptText);
-				m_loadedScripts.emplace_back(script);
-			}
-		}
-	}
-
-	return true;
+    auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
+    return await Windows::Storage::FileIO::ReadTextAsync(file);
 }
 
-
-list<wstring>
-ScriptsLoader::GetScriptsListFromJSON(Platform::String^ json)
+task<Windows::Storage::Streams::IBuffer ^> ScriptsLoader::ReadBinaryFromFile(
+    Windows::Storage::StorageFolder ^ rootFolder, std::list<std::wstring>& pathElements, std::wstring& fileName)
 {
-	list<wstring> scriptsList;
-	Windows::Data::Json::JsonObject^ jsonObj;
-	if (!Windows::Data::Json::JsonObject::TryParse(json, &jsonObj))
-	{
-		return scriptsList;
-	}
+    auto currentFolder = rootFolder;
+    for (const auto& folder : pathElements) {
+        currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
+    }
 
-	auto scriptsListInJson = jsonObj->GetNamedArray(L"scripts");
-	for (unsigned int i = 0; i < scriptsListInJson->Size; i++)
-	{
-		scriptsList.push_back(scriptsListInJson->GetStringAt(i)->Data());
-	}
-
-	return scriptsList;
+    auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
+    return await Windows::Storage::FileIO::ReadBufferAsync(file);
 }
 
-task<Platform::String^>
-ScriptsLoader::ReadTextFromFile(
-	Windows::Storage::StorageFolder^ rootFolder,
-	std::list<std::wstring>& pathElements,
-	std::wstring& fileName
-)
+task<Windows::Storage::Streams::IRandomAccessStreamWithContentType ^> ScriptsLoader::GetStreamFromFile(
+    Windows::Storage::StorageFolder ^ rootFolder, std::list<std::wstring>& pathElements, std::wstring& fileName)
 {
-	auto currentFolder = rootFolder;
-	for (const auto& folder : pathElements)
-	{
-		currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
-	}
-	
-	auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
-	return await Windows::Storage::FileIO::ReadTextAsync(file);
+    auto currentFolder = rootFolder;
+    for (const auto& folder : pathElements) {
+        currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
+    }
+
+    auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
+    auto fileStream = await file->OpenReadAsync();
+    return fileStream;
 }
 
-task<Windows::Storage::Streams::IBuffer^>
-ScriptsLoader::ReadBinaryFromFile(
-	Windows::Storage::StorageFolder^ rootFolder,
-	std::list<std::wstring>& pathElements,
-	std::wstring& fileName
-)
+task<Platform::String ^> ScriptsLoader::DownloadTextFromURI(Windows::Foundation::Uri ^ uri)
 {
-	auto currentFolder = rootFolder;
-	for (const auto& folder : pathElements)
-	{
-		currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
-	}
+    Http::HttpClient ^ httpClient = ref new Windows::Web::Http::HttpClient();
+    auto responseMessage = await httpClient->GetAsync(uri);
+    if (responseMessage->IsSuccessStatusCode) {
+        return await responseMessage->Content->ReadAsStringAsync();
+    }
 
-	auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
-	return await Windows::Storage::FileIO::ReadBufferAsync(file);
+    return L"";
 }
 
-task<Windows::Storage::Streams::IRandomAccessStreamWithContentType^>
-ScriptsLoader::GetStreamFromFile(
-	Windows::Storage::StorageFolder^ rootFolder,
-	std::list<std::wstring>& pathElements,
-	std::wstring& fileName
-)
+list<wstring> ScriptsLoader::SplitPath(const std::wstring& path)
 {
-	auto currentFolder = rootFolder;
-	for (const auto& folder : pathElements)
-	{
-		currentFolder = await currentFolder->GetFolderAsync(Platform::StringReference(folder.c_str()));
-	}
+    list<wstring> pathElements;
+    if (path.empty()) {
+        return pathElements;
+    }
 
-	auto file = await currentFolder->GetFileAsync(Platform::StringReference(fileName.c_str()));
-	auto fileStream = await file->OpenReadAsync();
-	return fileStream;
+    std::experimental::filesystem::path parsedPath(path);
+    auto fileName = parsedPath.filename();
+    auto subPath = parsedPath.parent_path();
+
+    while (!subPath.empty()) {
+        auto folderName = subPath.filename();
+        if (!folderName.empty() && (folderName.compare("\\") != 0) && (folderName.compare("/") != 0)) {
+            pathElements.push_back(folderName.c_str());
+        }
+
+        subPath = subPath.parent_path();
+    }
+
+    if (!fileName.empty()) {
+        pathElements.push_back(fileName.c_str());
+    }
+
+    pathElements.reverse();
+
+    return pathElements;
 }
 
-
-task<Platform::String^>
-ScriptsLoader::DownloadTextFromURI(
-	Windows::Foundation::Uri^ uri
-)
+wstring ScriptsLoader::GetFileSystemBasePathForJsonPath(const wstring& jsonFilePath)
 {
-	Http::HttpClient^ httpClient = ref new  Windows::Web::Http::HttpClient();
-	auto responseMessage = await httpClient->GetAsync(uri);
-	if (responseMessage->IsSuccessStatusCode)
-	{
-		return await responseMessage->Content->ReadAsStringAsync();
-	}
+    auto mainPathElements = SplitPath(jsonFilePath);
+    if (mainPathElements.size() == 0) {
+        return L"\\";
+    }
 
-	return L"";
+    auto jsonFileName = mainPathElements.front();
+    ;
+    mainPathElements.erase(mainPathElements.begin());
+    ;
+
+    wstring returnPath = L"";
+    for (const auto& pathElement : mainPathElements) {
+        returnPath += pathElement + L"\\";
+    }
+
+    return returnPath;
 }
 
-list<wstring>
-ScriptsLoader::SplitPath(const std::wstring& path)
+wstring ScriptsLoader::GetBaseUriForJsonUri(const wstring& jsonUri)
 {
-	list<wstring> pathElements;
-	if (path.empty())
-	{
-		return pathElements;
-	}
+    wstring localUri = jsonUri;
+    auto lastSegmentIndex = localUri.rfind('/');
+    if (lastSegmentIndex == wstring::npos || lastSegmentIndex == 0) {
+        return localUri;
+    }
 
-	std::experimental::filesystem::path parsedPath(path);
-	auto fileName = parsedPath.filename();
-	auto subPath = parsedPath.parent_path();
+    if (localUri.find(L"web-ar") == 0) {
+        localUri.replace(0, wcslen(L"web-ar"), L"http");
+    }
 
-	while (!subPath.empty())
-	{
-		auto folderName = subPath.filename();
-		if (!folderName.empty() && (folderName.compare("\\") != 0) && (folderName.compare("/") != 0))
-		{
-			pathElements.push_back(folderName.c_str());
-		}
-
-		subPath = subPath.parent_path();
-	}
-
-	if (!fileName.empty())
-	{
-		pathElements.push_back(fileName.c_str());
-	}
-
-	pathElements.reverse();
-
-	return pathElements;
+    // Build base path without the .json file name it in
+    return localUri.substr(0, lastSegmentIndex - 1);
 }
 
-wstring
-ScriptsLoader::GetFileSystemBasePathForJsonPath(
-	const wstring& jsonFilePath
-)
+void ScriptsLoader::ExecuteScripts()
 {
-	auto mainPathElements = SplitPath(jsonFilePath);
-	if (mainPathElements.size() == 0)
-	{
-		return L"\\";
-	}
-
-	auto jsonFileName = mainPathElements.front();;
-	mainPathElements.erase(mainPathElements.begin());;
-
-	wstring returnPath = L"";
-	for (const auto& pathElement : mainPathElements)
-	{
-		returnPath += pathElement + L"\\";
-	}
-
-	return returnPath;
+    for (const auto& script : m_loadedScripts) {
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(
+            JsRunScript(script->code.c_str(), m_jsSourceContext++, script->path.c_str(), &result));
+    }
 }
 
-wstring
-ScriptsLoader::GetBaseUriForJsonUri(
-	const wstring& jsonUri
-)
-{
-	wstring localUri = jsonUri;
-	auto lastSegmentIndex = localUri.rfind('/');
-	if (lastSegmentIndex == wstring::npos || lastSegmentIndex == 0)
-	{
-		return localUri;
-	}
-
-	if (localUri.find(L"web-ar") == 0)
-	{
-		localUri.replace(0, wcslen(L"web-ar"), L"http");
-	}
-
-	// Build base path without the .json file name it in
-	return localUri.substr(0, lastSegmentIndex - 1);
-}
-
-void
-ScriptsLoader::ExecuteScripts()
-{
-	for (const auto& script : m_loadedScripts)
-	{
-		JsValueRef result;
-		HANDLE_EXCEPTION_IF_JS_ERROR(JsRunScript(script->code.c_str(), m_jsSourceContext++, script->path.c_str(), &result));
-	}
-}
-
-}
+}  // namespace HologramJS
