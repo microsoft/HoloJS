@@ -244,6 +244,7 @@
     <ClCompile Include="HologramJS.cpp" />
     <ClCompile Include="ImageElement.cpp" />
     <ClCompile Include="KeyboardInput.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClCompile Include="MouseInput.cpp" />
     <ClCompile Include="ObjectEvents.cpp" />
     <ClCompile Include="pch.cpp">
