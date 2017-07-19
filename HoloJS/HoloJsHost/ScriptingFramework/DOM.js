@@ -7,16 +7,17 @@ var clearTimeout = nativeInterface.timers.clearTimer;
 var setInterval = nativeInterface.timers.setInterval;
 var clearInterval = nativeInterface.timers.clearTimer;
 
-function Source() {
-
+function Source()
+{
 }
 
-function URL() {
+function URL()
+{
     URL.index = 0;
-    URL.createObjectURL = function (blob) {
-        URL.objects.push({ data: blob, key: URL.index });
+    URL.createObjectURL = function(blob) {
+        URL.objects.push({data: blob, key: URL.index});
         return URL.index++;
-    }
+    };
 
     URL.revokeObjectURL = function(url) {
         for (var index = 0; index < URL.objects.length; index++) {
@@ -25,129 +26,130 @@ function URL() {
                 break;
             }
         }
-    }
+    };
 
     URL.objects = [];
 }
 
 URL();
 
-function HTMLElement() {
-
+function HTMLElement()
+{
 }
 
-function Anchor() {
-
+function Anchor()
+{
 }
 
-(function () {
+(function() {
 
-    function makeConsole() {
-        this.logEntries = [];
-        this.warningEntries = [];
-        this.errorEntries = [];
-        this.log = function (entry) {
-            this.logEntries.push(entry);
-            nativeInterface.system.log("log: " + entry + "\r\n");
-        }.bind(this);
+function makeConsole()
+{
+    this.logEntries = [];
+    this.warningEntries = [];
+    this.errorEntries = [];
+    this.log = function(entry) {
+        this.logEntries.push(entry);
+        nativeInterface.system.log('log: ' + entry + '\r\n');
+    }.bind(this);
 
-        this.warn = function (entry) {
-            this.warningEntries.push(entry);
-            nativeInterface.system.log("warn: " + entry + "\r\n");
-        }
+    this.warn = function(entry) {
+        this.warningEntries.push(entry);
+        nativeInterface.system.log('warn: ' + entry + '\r\n');
+    };
 
-        this.error = function (entry) {
-            this.errorEntries.push(entry);
-            nativeInterface.system.log("error: " + entry + "\r\n");
-        }
-    }
+    this.error = function(entry) {
+        this.errorEntries.push(entry);
+        nativeInterface.system.log('error: ' + entry + '\r\n');
+    };
+}
 
-    function makeDocument() {
-        this.createElement = function (type) {
-            if (type === "canvas3D") {
-                if (!this.canvas) {
-                    this.canvas = new makeCanvas3D();
-                }
-                return this.canvas;
-            } else if (type === "canvas") {
-                return new nativeInterface.Canvas2D();
-            } else if (type === 'a') {
-                return new Anchor();
-            } else if (type === "img") {
-                return new Image();
-            } else if (type === "video") {
-                return new HTMLVideoElement();
-            } else if (type === "source") {
-                return new Source();
-            } else {
-                return null;
+function makeDocument()
+{
+    this.createElement = function(type) {
+        if (type === 'canvas3D') {
+            if (!this.canvas) {
+                this.canvas = new makeCanvas3D();
             }
-        }.bind(this);
-
-        nativeInterface.extendWithEventHandling(this);
-
-        this.getElementById = function (id) {
+            return this.canvas;
+        } else if (type === 'canvas') {
+            return new nativeInterface.Canvas2D();
+        } else if (type === 'a') {
+            return new Anchor();
+        } else if (type === 'img') {
+            return new Image();
+        } else if (type === 'video') {
+            return new HTMLVideoElement();
+        } else if (type === 'source') {
+            return new Source();
+        } else {
             return null;
-        };
+        }
+    }.bind(this);
 
-        this.createElementNS = function (ns, type) {
-            return this.createElement(type);
-        }.bind(this);
-    }
+    nativeInterface.extendWithEventHandling(this);
 
-    function makeCanvas3D() {
-        this.getContext = function (type) {
-            if (type === "experimental-webgl" || type === "webgl") {
-                if (this.context) {
-                    return this.context;
-                } else {
-                    this.context = new nativeInterface.makeWebGLRenderingContext();
-                    return this.context;
-                }
+    this.getElementById = function(id) {
+        return null;
+    };
+
+    this.createElementNS = function(ns, type) {
+        return this.createElement(type);
+    }.bind(this);
+}
+
+function makeCanvas3D()
+{
+    this.getContext = function(type) {
+        if (type === 'experimental-webgl' || type === 'webgl') {
+            if (this.context) {
+                return this.context;
+            } else {
+                this.context = new nativeInterface.makeWebGLRenderingContext();
+                return this.context;
             }
-        }.bind(this);
+        }
+    }.bind(this);
 
-        // Lock the size of the canvas3D to the size of the window
-        nativeInterface.mapNativePropertiesToScripted(
-            this,
-            window,
-            [{ scriptedName: "width", nativeName: "innerWidth" },
-            { scriptedName: "height", nativeName: "innerHeight" },
-            { scriptedName: "clientWidth", nativeName: "innerWidth" },
-            { scriptedName: "clientHeight", nativeName: "innerHeight" }
-            ]);
+    // Lock the size of the canvas3D to the size of the window
+    nativeInterface.mapNativePropertiesToScripted(this, window, [
+        {scriptedName: 'width', nativeName: 'innerWidth'},
+        {scriptedName: 'height', nativeName: 'innerHeight'},
+        {scriptedName: 'clientWidth', nativeName: 'innerWidth'},
+        {scriptedName: 'clientHeight', nativeName: 'innerHeight'}
+    ]);
 
-        nativeInterface.extendWithEventHandling(this);
+    nativeInterface.extendWithEventHandling(this);
 
-        this.getBoundingClientRect = function () {
-            var rect = {};
-            rect.top = 0;
-            rect.bottom = window.innerHeight;
+    this.getBoundingClientRect = function() {
+        var rect = {};
+        rect.top = 0;
+        rect.bottom = window.innerHeight;
 
-            rect.width = window.innerWidth;
-            rect.height = window.innerHeight;
+        rect.width = window.innerWidth;
+        rect.height = window.innerHeight;
 
-            rect.left = 0;
-            rect.right = window.innerWidth;
+        rect.left = 0;
+        rect.right = window.innerWidth;
 
-            rect.x = 0;
-            rect.y = 0;
+        rect.x = 0;
+        rect.y = 0;
 
-            return rect;
-        };
+        return rect;
+    };
 
-        // Stub CSS style
-        this.style = {};
+    // Stub CSS style
+    this.style = {};
 
-        this.releasePointerCapture = function () { };
-        this.setPointerCapture = function () { };
-    }
+    this.releasePointerCapture = function() {};
+    this.setPointerCapture = function() {};
+}
 
-    function makeNavigator() {
+function makeNavigator()
+{
+}
 
-    }
-
-    document = new makeDocument();
-    console = new makeConsole();
-    navigator = new makeNavigator();
+document = new makeDocument();
+console = new makeConsole();
+navigator = new makeNavigator();
 })();

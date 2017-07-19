@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "KeyboardInput.h"
+#include "ScriptErrorHandling.h"
 
 using namespace HologramJS::Input;
 using namespace Windows::UI::Core;

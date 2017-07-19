@@ -1,4 +1,7 @@
 #pragma once
+
+#include "ChakraForHoloJS.h"
+
 namespace HologramJS
 {
 	namespace Utilities

@@ -1,28 +1,30 @@
 #pragma once
 
-namespace HologramJS
-{
-	class ScriptErrorHandling {
-	public:
-		static void PrintException() {
-			// Get error message
-			JsValueRef exception;
-			JsGetAndClearException(&exception);
+#include "ChakraForHoloJS.h"
 
-			JsPropertyIdRef messageName;
-			JsGetPropertyIdFromName(L"stack", &messageName);
+namespace HologramJS {
+class ScriptErrorHandling {
+   public:
+    static void PrintException()
+    {
+        // Get error message
+        JsValueRef exception;
+        JsGetAndClearException(&exception);
 
-			JsValueRef messageValue;
-			JsGetProperty(exception, messageName, &messageValue);
+        JsPropertyIdRef messageName;
+        JsGetPropertyIdFromName(L"stack", &messageName);
 
-			const wchar_t *message;
-			size_t length;
-			JsStringToPointer(messageValue, &message, &length);
+        JsValueRef messageValue;
+        JsGetProperty(exception, messageName, &messageValue);
 
-			std::wstring output = L"";
-			output += message;
-			output += L"\r\n";
-			OutputDebugString(output.c_str());
-		}
-	};
-}
+        const wchar_t *message;
+        size_t length;
+        JsStringToPointer(messageValue, &message, &length);
+
+        std::wstring output = L"";
+        output += message;
+        output += L"\r\n";
+        OutputDebugString(output.c_str());
+    }
+};
+}  // namespace HologramJS

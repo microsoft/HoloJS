@@ -1,5 +1,7 @@
 #pragma once
 
+#include <windows.storage.streams.h>
+
 namespace HologramJS
 {
 	namespace Utilities

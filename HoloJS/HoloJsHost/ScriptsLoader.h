@@ -1,49 +1,32 @@
 #pragma once
 
-namespace HologramJS
-{
-	struct Script {
-		std::wstring path;
-		std::wstring code;
-	};
+#include "ChakraForHoloJS.h"
+#include "FileSystemLoader.h"
+#include "WebLoader.h"
 
-	class ScriptsLoader
-	{
-	public:
-		ScriptsLoader();
-		~ScriptsLoader();
+namespace HologramJS {
+struct Script {
+    std::wstring path;
+    std::wstring code;
+};
 
-		concurrency::task<bool> LoadScripts(Windows::Storage::StorageFolder^ root, const std::wstring& jsonPath);
-		concurrency::task<bool> DownloadScripts(const std::wstring& uri);
+class ScriptsLoader : HologramJS::Loaders::FileSystemLoader, HologramJS::Loaders::WebLoader {
+   public:
+    ScriptsLoader() {}
 
-		static std::list<std::wstring> SplitPath(const std::wstring& path);
+    concurrency::task<bool> LoadScriptsAsync(Windows::Storage::StorageFolder ^ root, const std::wstring& jsonPath);
+    concurrency::task<bool> DownloadScriptsAsync(const std::wstring& uri);
 
-		std::list<std::wstring> GetScriptsListFromJSON(Platform::String^ json);
+    std::list<std::wstring> GetScriptsListFromJSON(Platform::String ^ json);
 
-		static concurrency::task<Platform::String^> ReadTextFromFile(
-			Windows::Storage::StorageFolder^ rootFolder,
-			std::list<std::wstring>& pathElements,
-			std::wstring& fileName);
+    static std::wstring GetFileSystemBasePathForJsonPath(const std::wstring& jsonFilePath);
+    static std::wstring GetBaseUriForJsonUri(const std::wstring& jsonUri);
 
-		static concurrency::task<Platform::String^> DownloadTextFromURI(Windows::Foundation::Uri^ uri);
+    void ExecuteScripts();
 
-		static concurrency::task<Windows::Storage::Streams::IBuffer^> ReadBinaryFromFile(
-			Windows::Storage::StorageFolder^ rootFolder,
-			std::list<std::wstring>& pathElements,
-			std::wstring& fileName);
+   private:
 
-		static concurrency::task<Windows::Storage::Streams::IRandomAccessStreamWithContentType^> GetStreamFromFile(
-			Windows::Storage::StorageFolder^ rootFolder,
-			std::list<std::wstring>& pathElements,
-			std::wstring& fileName);
-
-		static std::wstring GetFileSystemBasePathForJsonPath(const std::wstring& jsonFilePath);
-		static std::wstring GetBaseUriForJsonUri(const std::wstring& jsonUri);
-	
-		void ExecuteScripts();
-
-		std::list<std::shared_ptr<Script>> m_loadedScripts;
-		JsSourceContext m_jsSourceContext = 0;
-
-	};
-}
+    std::list<std::shared_ptr<Script>> m_loadedScripts;
+    JsSourceContext m_jsSourceContext = 0;
+};
+}  // namespace HologramJS

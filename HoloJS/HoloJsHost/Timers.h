@@ -1,142 +1,114 @@
 #pragma once
 
+#include "ChakraForHoloJS.h"
 #include <agents.h>
 
-namespace HologramJS
-{
-	namespace API
-	{
-		class Timers
-		{
-		public:
-			Timers() {}
-			~Timers() {}
+namespace HologramJS {
+namespace API {
+class Timers {
+   public:
+    Timers() {}
+    ~Timers() {}
 
-			bool Initialize();
+    bool Initialize();
 
-		private:
+   private:
+    enum class TimerType { Timeout, Interval };
 
-			enum class TimerType
-			{
-				Timeout,
-				Interval
-			};
+    class TimerDefinition {
+       public:
+        TimerDefinition(TimerType type, int duration);
+        ~TimerDefinition() { ReleaseScriptResources(); }
 
-			class TimerDefinition
-			{
-			public:
+        void Stop() { Timer->stop(); }
 
-				TimerDefinition(TimerType type, int duration);
-				~TimerDefinition() { ReleaseScriptResources(); }
+        // Captures the script callback and parameters to be passed to this callback
+        bool CaptureScriptResources(JsValueRef scriptCallback, const std::vector<JsValueRef>& scriptCallbackParameters);
 
-				void Stop() { Timer->stop(); }
+        // Release captured script resources
+        bool ReleaseScriptResources();
 
-				// Captures the script callback and parameters to be passed to this callback
-				bool CaptureScriptResources(JsValueRef scriptCallback, const std::vector<JsValueRef>& scriptCallbackParameters);
+        // Invokes the script callback
+        bool InvokeScriptCallback();
 
-				// Release captured script resources
-				bool ReleaseScriptResources();
+        TimerType GetType() const { return Type; }
 
-				// Invokes the script callback
-				bool InvokeScriptCallback();
+        // For periodic timers, to keep the timer firing, call this method each time the timer fires
+        void Continue();
 
-				TimerType GetType() const { return Type; }
+        void SetNativeCallback(std::function<void()> lambda)
+        {
+            NativeCallback = lambda;
+            Continuation->then(lambda, concurrency::task_continuation_context::use_current());
+        }
 
-				// For periodic timers, to keep the timer firing, call this method each time the timer fires
-				void Continue();
+        int ID;
 
-				void SetNativeCallback(std::function<void()> lambda)
-				{
-					NativeCallback = lambda;
-					Continuation->then(lambda, concurrency::task_continuation_context::use_current());
-				}
+       private:
+        // Timeout or Interval (periodic)
+        TimerType Type;
 
-				int ID;
-			private:
+        // Script resources
+        JsValueRef ScriptCallback = JS_INVALID_REFERENCE;
+        std::vector<JsValueRef> ScriptCallbackParameters;
 
-				// Timeout or Interval (periodic)
-				TimerType Type;
+        // Internal timer and task structures
+        std::unique_ptr<concurrency::timer<int>> Timer;
+        std::unique_ptr<concurrency::call<int>> InternalCallback;
+        std::unique_ptr<concurrency::task<void>> Continuation;
 
-				// Script resources
-				JsValueRef ScriptCallback = JS_INVALID_REFERENCE;
-				std::vector<JsValueRef> ScriptCallbackParameters;
+        // C++ callback invoked when the timer fires
+        std::function<void()> NativeCallback;
+    };
 
-				// Internal timer and task structures
-				std::unique_ptr<concurrency::timer<int>> Timer;
-				std::unique_ptr<concurrency::call<int>> InternalCallback;
-				std::unique_ptr<concurrency::task<void>> Continuation;
+    // Lock for the list of active timers
+    std::mutex m_timersLock;
 
+    // List of active timers
+    // On timer clear or timer firing, it is removed from this list
+    std::list<std::shared_ptr<TimerDefinition>> m_timers;
 
-				// C++ callback invoked when the timer fires
-				std::function<void()> NativeCallback;
-			};
+    enum class ListOperationType { ProcessTick, Remove };
 
-			// Lock for the list of active timers
-			std::mutex m_timersLock;
+    std::shared_ptr<TimerDefinition> ProcessTimersList(ListOperationType operationType, int id);
+    int InsertInTimersList(std::shared_ptr<TimerDefinition> timer);
 
-			// List of active timers
-			// On timer clear or timer firing, it is removed from this list
-			std::list<std::shared_ptr<TimerDefinition>> m_timers;
+    JsValueRef m_setTimeoutFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK setTimeoutStatic(JsValueRef callee,
+                                                       bool isConstructCall,
+                                                       JsValueRef* arguments,
+                                                       unsigned short argumentCount,
+                                                       PVOID callbackData)
+    {
+        return reinterpret_cast<Timers*>(callbackData)
+            ->CreateTimer(TimerType::Timeout, callee, arguments, argumentCount);
+    }
 
-			enum class ListOperationType
-			{
-				ProcessTick,
-				Remove
-			};
+    JsValueRef m_setIntervalFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK setIntervalStatic(JsValueRef callee,
+                                                        bool isConstructCall,
+                                                        JsValueRef* arguments,
+                                                        unsigned short argumentCount,
+                                                        PVOID callbackData)
+    {
+        return reinterpret_cast<Timers*>(callbackData)
+            ->CreateTimer(TimerType::Interval, callee, arguments, argumentCount);
+    }
 
-			std::shared_ptr<TimerDefinition> ProcessTimersList(ListOperationType operationType, int id);
-			int InsertInTimersList(std::shared_ptr<TimerDefinition> timer);
+    JsValueRef m_clearTimerFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK clearTimerStatic(JsValueRef callee,
+                                                       bool isConstructCall,
+                                                       JsValueRef* arguments,
+                                                       unsigned short argumentCount,
+                                                       PVOID callbackData)
+    {
+        return reinterpret_cast<Timers*>(callbackData)->ClearTimer(callee, arguments, argumentCount);
+    }
 
-			JsValueRef m_setTimeoutFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK setTimeoutStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<Timers*>(callbackData)->CreateTimer(TimerType::Timeout, callee, arguments, argumentCount);
-			}
+    JsValueRef CreateTimer(TimerType type, JsValueRef callee, JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_setIntervalFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK setIntervalStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<Timers*>(callbackData)->CreateTimer(TimerType::Interval, callee, arguments, argumentCount);
-			}
+    JsValueRef ClearTimer(JsValueRef callee, JsValueRef* arguments, unsigned short argumentCount);
+};
 
-			JsValueRef m_clearTimerFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK clearTimerStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<Timers*>(callbackData)->ClearTimer(callee, arguments, argumentCount);
-			}
-
-			JsValueRef CreateTimer(
-				TimerType type,
-				JsValueRef callee,
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
-
-			JsValueRef ClearTimer(
-				JsValueRef callee,
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
-		};
-
-	}
-}
-
+}  // namespace API
+}  // namespace HologramJS
