@@ -365,7 +365,7 @@ void App::InitializeEGLInner(Platform::Object^ windowBasis)
 	{
 		surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mStationaryReferenceFrame);
 		surfaceCreationProperties->Insert(ref new String(EGLAutomaticStereoRenderingProperty), PropertyValue::CreateBoolean(true));
-		surfaceCreationProperties->Insert(ref new String(EGLAutomaticDepthBasedImageStabilizationProperty), PropertyValue::CreateBoolean(true));
+		surfaceCreationProperties->Insert(ref new String(EGLAutomaticDepthBasedImageStabilizationProperty), PropertyValue::CreateBoolean(false));
 	}
 
 	// You can configure the surface to render at a lower resolution and be scaled up to
