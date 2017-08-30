@@ -15,7 +15,7 @@ class HolographicCamera extends THREE.Camera {
     }
 
     update () {
-        this._holographicViewMatrix.elements.set(window.getViewMatrix());
+        this._holographicViewMatrix.fromArray(window.getViewMatrix());
         this._holographicViewMatrix.multiply(this._flipMatrix);
         this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
         this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
