@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "BasicHoloJsApp.h"
+#include "HoloJsApp.h"
 #include <angle_windowsstore.h>
 #include <WindowsNumerics.h>
 
@@ -20,7 +20,7 @@ using namespace Platform;
 
 #define GLEXT_ANGLE_HOLOGRAPHIC_VIEW_MATRIX 0x8FE6
 
-BasicHoloJsApp::BasicHoloJsApp(String^ appUri) :
+HoloJsAppView::HoloJsAppView(String^ appUri) :
     m_WindowClosed(false),
     m_WindowVisible(true),
     m_EglDisplay(EGL_NO_DISPLAY),
@@ -31,12 +31,12 @@ BasicHoloJsApp::BasicHoloJsApp(String^ appUri) :
 }
 
 // The first method called when the IFrameworkView is being created.
-void BasicHoloJsApp::Initialize(CoreApplicationView^ applicationView)
+void HoloJsAppView::Initialize(CoreApplicationView^ applicationView)
 {
     // Register event handlers for app lifecycle. This example includes Activated, so that we
     // can make the CoreWindow active and start rendering on the window.
     applicationView->Activated +=
-        ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &BasicHoloJsApp::OnActivated);
+        ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &HoloJsAppView::OnActivated);
 
     // Logic for other event handlers could go here.
     // Information about the Suspending and Resuming event handlers can be found here:
@@ -44,13 +44,13 @@ void BasicHoloJsApp::Initialize(CoreApplicationView^ applicationView)
 }
 
 // Called when the CoreWindow object is created (or re-created).
-void BasicHoloJsApp::SetWindow(CoreWindow^ window)
+void HoloJsAppView::SetWindow(CoreWindow^ window)
 {
     window->VisibilityChanged +=
-        ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &BasicHoloJsApp::OnVisibilityChanged);
+        ref new TypedEventHandler<CoreWindow^, VisibilityChangedEventArgs^>(this, &HoloJsAppView::OnVisibilityChanged);
 
     window->Closed +=
-        ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &BasicHoloJsApp::OnWindowClosed);
+        ref new TypedEventHandler<CoreWindow^, CoreWindowEventArgs^>(this, &HoloJsAppView::OnWindowClosed);
 
     try
     {
@@ -76,7 +76,7 @@ void BasicHoloJsApp::SetWindow(CoreWindow^ window)
     }
 }
 
-void BasicHoloJsApp::LoadAndExecuteScript()
+void HoloJsAppView::LoadAndExecuteScript()
 {
     // Create a host for the app now that we have a window
     if (m_holoScriptHost != nullptr)
@@ -102,18 +102,18 @@ void BasicHoloJsApp::LoadAndExecuteScript()
 
 
 // Initializes scene resources
-void BasicHoloJsApp::Load(Platform::String^ entryPoint)
+void HoloJsAppView::Load(Platform::String^ entryPoint)
 {
     RecreateRenderer();
 }
 
-void BasicHoloJsApp::RecreateRenderer()
+void HoloJsAppView::RecreateRenderer()
 {
 
 }
 
 // This method is called after the window becomes active.
-void BasicHoloJsApp::Run()
+void HoloJsAppView::Run()
 {
     Windows::Foundation::Numerics::float4x4 holographicViewMatrix;
 
@@ -171,12 +171,12 @@ void BasicHoloJsApp::Run()
 
 // Terminate events do not cause Uninitialize to be called. It will be called if your IFrameworkView
 // class is torn down while the app is in the foreground.
-void BasicHoloJsApp::Uninitialize()
+void HoloJsAppView::Uninitialize()
 {
 }
 
 // Application lifecycle event handler.
-void BasicHoloJsApp::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
+void HoloJsAppView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
     LoadAndExecuteScript();
     // Run() won't start until the CoreWindow is activated.
@@ -184,27 +184,27 @@ void BasicHoloJsApp::OnActivated(CoreApplicationView^ applicationView, IActivate
 }
 
 // Window event handlers.
-void BasicHoloJsApp::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
+void HoloJsAppView::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
 {
     m_WindowVisible = args->Visible;
 }
 
-void BasicHoloJsApp::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
+void HoloJsAppView::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 {
     m_WindowClosed = true;
 }
 
-void BasicHoloJsApp::InitializeEGL(Windows::UI::Core::CoreWindow^ window)
+void HoloJsAppView::InitializeEGL(Windows::UI::Core::CoreWindow^ window)
 {
-    BasicHoloJsApp::InitializeEGLInner(window);
+    HoloJsAppView::InitializeEGLInner(window);
 }
 
-void BasicHoloJsApp::InitializeEGL(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace)
+void HoloJsAppView::InitializeEGL(Windows::Graphics::Holographic::HolographicSpace^ holographicSpace)
 {
-    BasicHoloJsApp::InitializeEGLInner(holographicSpace);
+    HoloJsAppView::InitializeEGLInner(holographicSpace);
 }
 
-void BasicHoloJsApp::InitializeEGLInner(Platform::Object^ windowBasis)
+void HoloJsAppView::InitializeEGLInner(Platform::Object^ windowBasis)
 {
     const EGLint configAttributes[] =
     {
@@ -373,7 +373,7 @@ void BasicHoloJsApp::InitializeEGLInner(Platform::Object^ windowBasis)
     eglSurfaceAttrib(m_EglDisplay, m_EglSurface, EGLEXT_WAIT_FOR_VBLANK_ANGLE, false);
 }
 
-void BasicHoloJsApp::CleanupEGL()
+void HoloJsAppView::CleanupEGL()
 {
     if (m_EglDisplay != EGL_NO_DISPLAY && m_EglSurface != EGL_NO_SURFACE)
     {

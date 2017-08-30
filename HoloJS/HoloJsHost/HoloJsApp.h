@@ -3,11 +3,12 @@
 #include "HologramJS.h"
 
 namespace HologramJS {
+
     [Windows::Foundation::Metadata::WebHostHidden]
-    public ref class BasicHoloJsApp sealed : public Windows::ApplicationModel::Core::IFrameworkView
+    public ref class HoloJsAppView sealed : public Windows::ApplicationModel::Core::IFrameworkView
     {
     public:
-        BasicHoloJsApp(Platform::String^ appUri);
+        HoloJsAppView(Platform::String^ appUri);
 
         // IFrameworkView Methods.
         virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
@@ -51,5 +52,19 @@ namespace HologramJS {
 
         HologramScriptHost^ m_holoScriptHost;
         void LoadAndExecuteScript();
+    };
+
+    [Windows::Foundation::Metadata::WebHostHidden]
+    public ref class HoloJsAppSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
+    {
+    public:
+        HoloJsAppSource(Platform::String^ appUri) :
+            m_appUri(appUri) {}
+
+        virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView() {
+            return ref new HologramJS::HoloJsAppView(m_appUri);
+        }
+    private:
+        Platform::String^ m_appUri;
     };
 }

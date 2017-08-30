@@ -210,7 +210,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BasicHoloJsApp.h" />
+    <ClInclude Include="HoloJsApp.h" />
     <ClInclude Include="ChakraForHoloJS.h" />
     <ClInclude Include="ErrorHandling.h" />
     <ClInclude Include="ExternalObject.h" />
@@ -242,7 +242,7 @@
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BasicHoloJsApp.cpp" />
+    <ClCompile Include="HoloJsApp.cpp" />
     <ClCompile Include="FileSystemLoader.cpp" />
     <ClCompile Include="HologramJS.cpp" />
     <ClCompile Include="ImageElement.cpp" />
