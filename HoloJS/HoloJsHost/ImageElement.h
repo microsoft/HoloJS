@@ -37,6 +37,7 @@ namespace HologramJS
 
 			concurrency::task<void> ReadFromPackageAsync();
 			concurrency::task<void> DownloadAsync();
+			concurrency::task<void> GetFromCameraAsync();
 
 			void LoadImageFromBuffer(Windows::Storage::Streams::IBuffer^ imageStream);
 

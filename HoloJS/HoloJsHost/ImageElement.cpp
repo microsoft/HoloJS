@@ -4,12 +4,16 @@
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "ScriptsLoader.h"
+#include "IBufferOnMemory.h"
 
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
 using namespace std;
 using namespace concurrency;
 using namespace Windows::Graphics::Imaging;
+using namespace Windows::Media::Capture;
+using namespace Windows::Media::MediaProperties;
+using namespace Windows::Storage::Streams;
 
 bool ImageElement::UseFileSystem = false;
 wstring ImageElement::BaseUrl = L"";
@@ -73,15 +77,51 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK ImageElement::getImageData(
 
 void ImageElement::LoadAsync()
 {
-    if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0) ||
-        (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0) || !UseFileSystem) {
-        DownloadAsync();
-    } else {
-        ReadFromPackageAsync();
-    }
+	if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0)
+		|| (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0)
+		|| !UseFileSystem)
+	{
+		DownloadAsync();
+	}
+	else if (_wcsicmp(m_source.c_str(), L"camera://local/default") == 0)
+	{
+		GetFromCameraAsync();
+	}
+	else
+	{
+		ReadFromPackageAsync();
+	}
 }
 
-task<void> ImageElement::ReadFromPackageAsync()
+task<void>
+ImageElement::GetFromCameraAsync()
+{
+	auto mediaCapture = ref new MediaCapture();
+	
+	await mediaCapture->InitializeAsync();
+
+	auto captureFormat = ImageEncodingProperties::CreateJpeg();
+
+	auto captureStream = ref new InMemoryRandomAccessStream();
+	
+	// take photo
+	await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
+	captureStream->Seek(0);
+
+	std::vector<byte> rawBuffer(static_cast<unsigned int>(captureStream->Size));
+
+	Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
+	Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(&imageBuffer, rawBuffer.data(), rawBuffer.size());
+	auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
+	IBuffer^ imageIBuffer = reinterpret_cast<IBuffer^>(iinspectable);
+
+	await captureStream->ReadAsync(imageIBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
+
+	LoadImageFromBuffer(imageIBuffer);
+}
+
+task<void>
+ImageElement::ReadFromPackageAsync()
 {
     wstring completePath = BasePath + m_source;
 

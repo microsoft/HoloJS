@@ -24,6 +24,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-	<uap2:Capability Name="spatialPerception" />
+    <uap2:Capability Name="spatialPerception" />
   </Capabilities>
 </Package>

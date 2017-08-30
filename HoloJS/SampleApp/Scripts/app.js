@@ -313,7 +313,7 @@ function initTextures() {
     cubeTexture = gl.createTexture();
     cubeImage = new Image();
     cubeImage.onload = function () { handleTextureLoaded(cubeImage, cubeTexture); }
-    cubeImage.src = "texture.png";
+    cubeImage.src = "camera://local/default";
 }
 
 function handleTextureLoaded(image, texture) {
