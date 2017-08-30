@@ -20,8 +20,7 @@ namespace HologramJS {
     bool EnableHolographicExperimental(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
                                        frameOfReference);
 
-    Windows::Foundation::IAsyncOperation<bool> ^ RunLocalScriptAppAsync(Platform::String ^ jsonFilePath);
-    Windows::Foundation::IAsyncOperation<bool> ^ RunWebScriptAppAsync(Platform::String ^ jsonUri);
+    Windows::Foundation::IAsyncOperation<bool> ^ RunApp(Platform::String ^ jsonUri);
 
     void ResizeWindow(int width, int height) { m_window.Resize(width, height); }
     void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix) { m_window.VSync(viewMatrix); }

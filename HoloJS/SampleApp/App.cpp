@@ -123,8 +123,7 @@ void App::LoadAndExecuteScript()
 
 	m_holoScriptHost->ResizeWindow(mPanelWidth, mPanelHeight);
 
-	auto builtInApp = ref new String(L"scripts\\app.json");
-	m_holoScriptHost->RunLocalScriptAppAsync(builtInApp);
+	m_holoScriptHost->RunApp(ref new String(L"scripts\\app.json"));
 }
 
 

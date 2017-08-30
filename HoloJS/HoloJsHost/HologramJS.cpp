@@ -62,9 +62,18 @@ bool HologramScriptHost::Initialize()
     return true;
 }
 
-IAsyncOperation<bool> ^ HologramScriptHost::RunLocalScriptAppAsync(Platform::String ^ jsonFilePath)
+IAsyncOperation<bool> ^ HologramScriptHost::RunApp(Platform::String ^ appUri)
 {
-    return create_async([this, jsonFilePath]() -> task<bool> { return RunLocalScriptApp(jsonFilePath->Data()); });
+    wstring appUriString = appUri->Data();
+
+    if (ScriptsLoader::IsAppUriLocal(appUriString))
+    {
+        return create_async([this, appUri]() -> task<bool> { return RunLocalScriptApp(appUri->Data()); });
+    }
+    else
+    {
+        return create_async([this, appUri]() -> task<bool> { return RunWebScriptApp(appUri->Data()); });
+    }
 }
 
 task<bool> HologramScriptHost::RunLocalScriptApp(wstring jsonFilePath)
@@ -94,11 +103,6 @@ task<bool> HologramScriptHost::RunLocalScriptApp(wstring jsonFilePath)
     }
 
     return true;
-}
-
-IAsyncOperation<bool> ^ HologramScriptHost::RunWebScriptAppAsync(Platform::String ^ jsonUri)
-{
-    return create_async([this, jsonUri]() -> task<bool> { return RunWebScriptApp(jsonUri->Data()); });
 }
 
 task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)

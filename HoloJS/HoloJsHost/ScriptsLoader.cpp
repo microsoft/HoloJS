@@ -166,4 +166,12 @@ void ScriptsLoader::ExecuteScripts()
     }
 }
 
+bool ScriptsLoader::IsAppUriLocal(std::wstring appUri)
+{
+    return !(
+        (appUri.find(L"https://") == 0) ||
+        (appUri.find(L"http://") == 0) ||
+        (appUri.find(L"web-ar://") == 0));
+}
+
 }  // namespace HologramJS
