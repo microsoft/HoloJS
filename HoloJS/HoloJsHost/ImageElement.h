@@ -1,4 +1,9 @@
 #pragma once
+
+#include "IRelease.h"
+#include "ChakraForHoloJS.h"
+#include "ObjectEvents.h"
+
 namespace HologramJS
 {
 	namespace API

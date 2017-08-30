@@ -1,219 +1,191 @@
 #include "pch.h"
 #include "WindowElement.h"
-
-#include <WindowsNumerics.h>
 #include "InputInterface.h"
+#include <WindowsNumerics.h>
+#include "ScriptHostUtilities.h"
+#include "ScriptErrorHandling.h"
 
 using namespace HologramJS::API;
 using namespace HologramJS::Utilities;
 using namespace HologramJS::Input;
 
-WindowElement::WindowElement()
+WindowElement::WindowElement() {}
+
+WindowElement::~WindowElement() { Close(); }
+
+void WindowElement::Close()
 {
+    if (m_callbackFunction != JS_INVALID_REFERENCE) {
+        unsigned int refCount;
+        JsRelease(m_callbackFunction, &refCount);
+        m_callbackFunction = JS_INVALID_REFERENCE;
+    }
 }
 
-WindowElement::~WindowElement()
+bool WindowElement::Initialize()
 {
-	Close();
+    RETURN_IF_FALSE(
+        ScriptHostUtilities::ProjectFunction(L"getWidth", L"window", getWidthStatic, this, &m_getWidthFunction));
+    RETURN_IF_FALSE(
+        ScriptHostUtilities::ProjectFunction(L"getHeight", L"window", getHeightStatic, this, &m_getHeightFunction));
+    RETURN_IF_FALSE(
+        ScriptHostUtilities::ProjectFunction(L"getBaseUrl", L"window", getBaseUrlStatic, this, &m_getBaseUrlFunction));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
+        L"setCallback", L"window", setCallbackStatic, this, &m_setCallbackFunction));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
+        L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
+
+    RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
+
+    return true;
 }
 
-void
-WindowElement::Close()
+JsValueRef WindowElement::getBaseUrl(JsValueRef* arguments, unsigned short argumentCount)
 {
-	if (m_callbackFunction != JS_INVALID_REFERENCE)
-	{
-		unsigned int refCount;
-		JsRelease(m_callbackFunction, &refCount);
-		m_callbackFunction = JS_INVALID_REFERENCE;
-	}
+    JsValueRef baseUrlValue;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(m_baseUrl.c_str(), m_baseUrl.length(), &baseUrlValue));
+    return baseUrlValue;
 }
 
-bool
-WindowElement::Initialize()
+JsValueRef WindowElement::setCallback(JsValueRef* arguments, unsigned short argumentCount)
 {
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getWidth", L"window", getWidthStatic, this, &m_getWidthFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getHeight", L"window", getHeightStatic, this, &m_getHeightFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getBaseUrl", L"window", getBaseUrlStatic, this, &m_getBaseUrlFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setCallback", L"window", setCallbackStatic, this, &m_setCallbackFunction));
-	RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
 
-	RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
+    JsValueRef callback = arguments[1];
 
-	return true;
+    unsigned int refCount;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, &refCount));
+
+    m_callbackFunction = callback;
+
+    m_keyboardInput.SetScriptCallback(callback);
+    m_mouseInput.SetScriptCallback(callback);
+    m_spatialInput.SetScriptCallback(callback);
+    m_spatialMapping.SetScriptCallback(callback);
+
+    return JS_INVALID_REFERENCE;
 }
 
-JsValueRef
-WindowElement::getBaseUrl(
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
+JsValueRef WindowElement::getWidth(JsValueRef* arguments, unsigned short argumentCount)
 {
-	JsValueRef baseUrlValue;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(m_baseUrl.c_str(), m_baseUrl.length(), &baseUrlValue));
-	return baseUrlValue;
+    JsValueRef widthValue;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(m_width, &widthValue));
+    return widthValue;
 }
 
-JsValueRef
-WindowElement::setCallback(
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
+JsValueRef WindowElement::getHeight(JsValueRef* arguments, unsigned short argumentCount)
 {
-	RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
-
-	JsValueRef callback = arguments[1];
-	
-	unsigned int refCount;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, &refCount));
-
-	m_callbackFunction = callback;
-
-	m_keyboardInput.SetScriptCallback(callback);
-	m_mouseInput.SetScriptCallback(callback);
-	m_spatialInput.SetScriptCallback(callback);
-	m_spatialMapping.SetScriptCallback(callback);
-
-	return JS_INVALID_REFERENCE;
+    JsValueRef heightValue;
+    RETURN_NULL_IF_JS_ERROR(JsIntToNumber(m_height, &heightValue));
+    return heightValue;
 }
 
-
-JsValueRef
-WindowElement::getWidth(
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
+void WindowElement::Resize(int width, int height)
 {
-	JsValueRef widthValue;
-	RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(m_width, &widthValue));
-	return widthValue;
+    static std::wstring resizeEventName(L"resize");
+    const bool shouldFireResize = (m_width != width || m_height != height);
+
+    if (shouldFireResize) {
+        m_width = width;
+        m_height = height;
+
+        if (m_callbackFunction != JS_INVALID_REFERENCE) {
+            std::vector<JsValueRef> parameters(2);
+            parameters[0] = m_callbackFunction;
+            JsValueRef* eventTypeParam = &parameters[1];
+
+            EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), eventTypeParam));
+
+            JsValueRef result;
+            HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+                m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+        }
+    }
 }
 
-
-JsValueRef
-WindowElement::getHeight(
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
+void WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
 {
-	JsValueRef heightValue;
-	RETURN_NULL_IF_JS_ERROR(JsIntToNumber(m_height, &heightValue));
-	return heightValue;
+    // Workaround for RS1: spatial input events can be delivered on non-UI threads; in this case m_spatialInput
+    // queued events internally and since now we're on the UI thread we drain them
+    m_spatialInput.DrainQueuedSpatialInputEvents();
+
+    m_spatialMapping.ProcessOneSpatialMappingDataUpdate();
+
+    if (m_callbackFunction != JS_INVALID_REFERENCE) {
+        if (m_viewMatrixStoragePointer != nullptr) {
+            // Update the view matrix inside the JSVM
+            CopyMemory(m_viewMatrixStoragePointer, &viewMatrix.m11, 16 * sizeof(float));
+        }
+
+        if (m_cameraPositionStoragePointer != nullptr) {
+            // Inverse the view matrix in order to find back the translation equivalent to the position
+            // in the last column.
+            bool success = invert(viewMatrix, &m_inverseViewMatrix);
+            if (success) {
+                // Update the camera Position inside the JSVM
+                CopyMemory(m_cameraPositionStoragePointer, &m_inverseViewMatrix.m41, 4 * sizeof(float));
+            }
+        }
+
+        std::vector<JsValueRef> parameters(1);
+        parameters[0] = m_callbackFunction;
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+    }
 }
 
-void
-WindowElement::Resize(int width, int height)
+bool WindowElement::CreateViewMatrixStorageAndScriptProjection()
 {
-	static std::wstring resizeEventName(L"resize");
-	const bool shouldFireResize = (m_width != width || m_height != height);
+    if (m_viewMatrixScriptProjection == JS_INVALID_REFERENCE) {
+        RETURN_IF_JS_ERROR(
+            JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixScriptProjection));
+        RETURN_IF_JS_ERROR(
+            JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionScriptProjection));
 
-	if (shouldFireResize)
-	{
-		m_width = width;
-		m_height = height;
+        JsValueRef globalObject;
+        RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
 
-		if (m_callbackFunction != JS_INVALID_REFERENCE)
-		{
-			std::vector<JsValueRef> parameters(2);
-			parameters[0] = m_callbackFunction;
-			JsValueRef* eventTypeParam = &parameters[1];
+        JsValueRef nativeInterface;
+        RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(globalObject, L"nativeInterface", &nativeInterface));
 
-			EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), eventTypeParam));
+        JsValueRef windowObject;
+        RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(nativeInterface, L"window", &windowObject));
 
-			JsValueRef result;
-			HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-		}
-	}
+        JsPropertyIdRef viewMatrixId;
+        RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrix", &viewMatrixId));
+        RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixScriptProjection, true));
+
+        JsPropertyIdRef cameraPositionId;
+        RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPosition", &cameraPositionId));
+        RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionScriptProjection, true));
+
+        unsigned int bufferLength;
+        JsTypedArrayType type;
+        int elementSize;
+        RETURN_IF_JS_ERROR(JsGetTypedArrayStorage(m_viewMatrixScriptProjection,
+                                                  (ChakraBytePtr*)&m_viewMatrixStoragePointer,
+                                                  &bufferLength,
+                                                  &type,
+                                                  &elementSize));
+        RETURN_IF_JS_ERROR(JsGetTypedArrayStorage(m_cameraPositionScriptProjection,
+                                                  (ChakraBytePtr*)&m_cameraPositionStoragePointer,
+                                                  &bufferLength,
+                                                  &type,
+                                                  &elementSize));
+    }
+
+    return true;
 }
 
-void
-WindowElement::VSync(Windows::Foundation::Numerics::float4x4 viewMatrix)
+JsValueRef WindowElement::requestSpatialMapping(JsValueRef* arguments, unsigned short argumentCount)
 {
-	// Workaround for RS1: spatial input events can be delivered on non-UI threads; in this case m_spatialInput
-	// queued events internally and since now we're on the UI thread we drain them
-	m_spatialInput.DrainQueuedSpatialInputEvents();
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
 
-	m_spatialMapping.ProcessOneSpatialMappingDataUpdate();
+    const auto extentX = ScriptHostUtilities::GLfloatFromJsRef(arguments[1]);
+    const auto extentY = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
+    const auto extentZ = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
+    const auto trianglesPerCubicMeter = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
 
-	if (m_callbackFunction != JS_INVALID_REFERENCE)
-	{
-		if (m_viewMatrixStoragePointer != nullptr)
-		{
-			// Update the view matrix inside the JSVM
-			CopyMemory(m_viewMatrixStoragePointer, &viewMatrix.m11, 16 * sizeof(float));
-		}
-
-		if (m_cameraPositionStoragePointer != nullptr)
-		{
-			// Inverse the view matrix in order to find back the translation equivalent to the position
-			// in the last column.
-			bool success = invert(viewMatrix, &m_inverseViewMatrix);
-			if (success)
-			{
-				// Update the camera Position inside the JSVM
-				CopyMemory(m_cameraPositionStoragePointer, &m_inverseViewMatrix.m41, 4 * sizeof(float));
-			}
-		}
-
-		std::vector<JsValueRef> parameters(1);
-		parameters[0] = m_callbackFunction;
-		JsValueRef result;
-		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-	}
-}
-
-bool
-WindowElement::CreateViewMatrixStorageAndScriptProjection()
-{
-	if (m_viewMatrixScriptProjection == JS_INVALID_REFERENCE)
-	{
-		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 16, &m_viewMatrixScriptProjection));
-		RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 4, &m_cameraPositionScriptProjection));
-
-		JsValueRef globalObject;
-		RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
-
-		JsValueRef nativeInterface;
-		RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(globalObject, L"nativeInterface", &nativeInterface));
-
-		JsValueRef windowObject;
-		RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(nativeInterface, L"window", &windowObject));
-
-		JsPropertyIdRef viewMatrixId;
-		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicViewMatrix", &viewMatrixId));
-		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, viewMatrixId, m_viewMatrixScriptProjection, true));
-
-		JsPropertyIdRef cameraPositionId;
-		RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"holographicCameraPosition", &cameraPositionId));
-		RETURN_IF_JS_ERROR(JsSetProperty(windowObject, cameraPositionId, m_cameraPositionScriptProjection, true));
-
-		unsigned int bufferLength;
-		JsTypedArrayType type;
-		int elementSize;
-		RETURN_IF_JS_ERROR(
-			JsGetTypedArrayStorage(
-				m_viewMatrixScriptProjection,
-				(ChakraBytePtr*)&m_viewMatrixStoragePointer, &bufferLength, &type, &elementSize));
-		RETURN_IF_JS_ERROR(
-			JsGetTypedArrayStorage(
-				m_cameraPositionScriptProjection,
-				(ChakraBytePtr*)&m_cameraPositionStoragePointer, &bufferLength, &type, &elementSize));
-	}
-
-	return true;
-}
-
-JsValueRef
-WindowElement::requestSpatialMapping(
-	JsValueRef* arguments,
-	unsigned short argumentCount
-)
-{
-	RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
-
-	const auto extentX = ScriptHostUtilities::GLfloatFromJsRef(arguments[1]);
-	const auto extentY = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
-	const auto extentZ = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
-	const auto trianglesPerCubicMeter = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
-
-	return m_spatialMapping.GetSpatialData(extentX, extentY, extentZ, trianglesPerCubicMeter);
+    return m_spatialMapping.GetSpatialData(extentX, extentY, extentZ, trianglesPerCubicMeter);
 }

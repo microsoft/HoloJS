@@ -1,48 +1,50 @@
-﻿function HTMLImageElement() { }
+﻿function HTMLImageElement()
+{
+}
 
-function Image() {
-
+function Image()
+{
     this.native = new nativeInterface.image.createImage();
 
-    this.nativeCallback = function (type) {
-        if (type === "load" && arguments.length > 2) {
+    this.nativeCallback = function(type) {
+        if (type === 'load' && arguments.length > 2) {
             this.width = arguments[1];
             this.height = arguments[2];
         }
-        
+
         this.fireHandlersByType(type);
     };
 
     nativeInterface.extendWithEventHandling(this);
 
-    this.stubOnLoad = function () {
+    this.stubOnLoad = function() {
         if (this.loadEvent) {
             this.loadEvent();
         }
-    }
+    };
 
-    Object.defineProperty(this, "onload", {
-        get: function () {
+    Object.defineProperty(this, 'onload', {
+        get: function() {
             return this.loadEvent;
         },
-        set: function (value) {
+        set: function(value) {
             if (!value && this.loadEvent) {
                 this.loadEvent = value;
-                this.removeEventListener("load", this.stubOnLoad);
+                this.removeEventListener('load', this.stubOnLoad);
             } else if (value && !this.loadEvent) {
                 this.loadEvent = value;
-                this.addEventListener("load", this.stubOnLoad);
+                this.addEventListener('load', this.stubOnLoad);
             } else {
                 this.loadEvent = value;
             }
         }
     });
 
-    Object.defineProperty(this, "src", {
-        get: function () {
+    Object.defineProperty(this, 'src', {
+        get: function() {
             return this.source;
         },
-        set: function (value) {
+        set: function(value) {
             this.source = value;
             var isBlob = false;
             for (var index = 0; index < URL.objects.length; index++) {

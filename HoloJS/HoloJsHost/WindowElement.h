@@ -1,146 +1,117 @@
 #pragma once
 
-#include "SpatialInput.h"
-#include "MouseInput.h"
 #include "KeyboardInput.h"
+#include "MouseInput.h"
+#include "SpatialInput.h"
 #include "SpatialMapping.h"
 
-namespace HologramJS
-{
-	namespace API
-	{
-		class WindowElement
-		{
-		public:
+namespace HologramJS {
+namespace API {
+class WindowElement {
+   public:
+    WindowElement();
+    ~WindowElement();
 
-			WindowElement();
-			~WindowElement();
+    void Close();
 
-			void Close();
+    bool Initialize();
 
-			bool Initialize();
+    void Resize(int width, int height);
+    void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix);
 
-			void Resize(int width, int height);
-			void VSync(Windows::Foundation::Numerics::float4x4 viewMatrix);
+    Input::KeyboardInput& KeyboardRouter() { return m_keyboardInput; }
+    Input::MouseInput& MouseRouter() { return m_mouseInput; }
 
-			Input::KeyboardInput& KeyboardRouter() { return m_keyboardInput; }
-			Input::MouseInput& MouseRouter() { return m_mouseInput; }
+    void SetBaseUrl(const std::wstring& baseUrl) { m_baseUrl.assign(baseUrl); }
 
-			void SetBaseUrl(const std::wstring& baseUrl) { m_baseUrl.assign(baseUrl); }
+    void SetStationaryFrameOfReference(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
+                                       frameOfReference)
+    {
+        m_spatialInput.SetStationaryFrameOfReference(frameOfReference);
+        m_spatialMapping.EnableSpatialMapping(frameOfReference);
+    }
 
-			void SetStationaryFrameOfReference(Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ frameOfReference)
-			{
-				m_spatialInput.SetStationaryFrameOfReference(frameOfReference);
-				m_spatialMapping.EnableSpatialMapping(frameOfReference);
-			}
+   private:
+    std::wstring m_baseUrl;
 
-		private:
+    Input::KeyboardInput m_keyboardInput;
+    Input::MouseInput m_mouseInput;
+    Input::SpatialInput m_spatialInput;
+    Input::SpatialMapping m_spatialMapping;
 
-			std::wstring m_baseUrl;
+    int m_width;
+    int m_height;
 
-			Input::KeyboardInput m_keyboardInput;
-			Input::MouseInput m_mouseInput;
-			Input::SpatialInput m_spatialInput;
-			Input::SpatialMapping m_spatialMapping;
+    JsValueRef m_callbackFunction = JS_INVALID_REFERENCE;
 
-			int m_width;
-			int m_height;
+    JsValueRef m_getWidthFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK getWidthStatic(JsValueRef callee,
+                                                     bool isConstructCall,
+                                                     JsValueRef* arguments,
+                                                     unsigned short argumentCount,
+                                                     PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->getWidth(arguments, argumentCount);
+    }
 
-			JsValueRef m_callbackFunction = JS_INVALID_REFERENCE;
+    JsValueRef getWidth(JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_getWidthFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK getWidthStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<WindowElement*>(callbackData)->getWidth(arguments, argumentCount);
-			}
+    JsValueRef m_getHeightFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK getHeightStatic(JsValueRef callee,
+                                                      bool isConstructCall,
+                                                      JsValueRef* arguments,
+                                                      unsigned short argumentCount,
+                                                      PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->getHeight(arguments, argumentCount);
+    }
 
-			JsValueRef getWidth(
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
+    JsValueRef getHeight(JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_getHeightFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK getHeightStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<WindowElement*>(callbackData)->getHeight(arguments, argumentCount);
-			}
+    JsValueRef m_getBaseUrlFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK getBaseUrlStatic(JsValueRef callee,
+                                                       bool isConstructCall,
+                                                       JsValueRef* arguments,
+                                                       unsigned short argumentCount,
+                                                       PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->getBaseUrl(arguments, argumentCount);
+    }
 
-			JsValueRef getHeight(
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
+    JsValueRef getBaseUrl(JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_getBaseUrlFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK getBaseUrlStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<WindowElement*>(callbackData)->getBaseUrl(arguments, argumentCount);
-			}
+    JsValueRef m_setCallbackFunction = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK setCallbackStatic(JsValueRef callee,
+                                                        bool isConstructCall,
+                                                        JsValueRef* arguments,
+                                                        unsigned short argumentCount,
+                                                        PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->setCallback(arguments, argumentCount);
+    }
 
-			JsValueRef getBaseUrl(
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
+    JsValueRef setCallback(JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_setCallbackFunction = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK setCallbackStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<WindowElement*>(callbackData)->setCallback(arguments, argumentCount);
-			}
+    JsValueRef m_requestSpatialMapping = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK requestSpatialMappingStatic(JsValueRef callee,
+                                                                  bool isConstructCall,
+                                                                  JsValueRef* arguments,
+                                                                  unsigned short argumentCount,
+                                                                  PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->requestSpatialMapping(arguments, argumentCount);
+    }
 
-			JsValueRef setCallback(
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
+    JsValueRef requestSpatialMapping(JsValueRef* arguments, unsigned short argumentCount);
 
-			JsValueRef m_requestSpatialMapping = JS_INVALID_REFERENCE;
-			static JsValueRef CHAKRA_CALLBACK requestSpatialMappingStatic(
-				JsValueRef callee,
-				bool isConstructCall,
-				JsValueRef* arguments,
-				unsigned short argumentCount,
-				PVOID callbackData
-			)
-			{
-				return reinterpret_cast<WindowElement*>(callbackData)->requestSpatialMapping(arguments, argumentCount);
-			}
+    float* m_viewMatrixStoragePointer = nullptr;
+    JsValueRef m_viewMatrixScriptProjection = JS_INVALID_REFERENCE;
 
-			JsValueRef requestSpatialMapping(
-				JsValueRef* arguments,
-				unsigned short argumentCount
-			);
+    Windows::Foundation::Numerics::float4x4 m_inverseViewMatrix;
+    float* m_cameraPositionStoragePointer = nullptr;
+    JsValueRef m_cameraPositionScriptProjection = JS_INVALID_REFERENCE;
 
-			float* m_viewMatrixStoragePointer = nullptr;
-			JsValueRef m_viewMatrixScriptProjection = JS_INVALID_REFERENCE;
-
-			Windows::Foundation::Numerics::float4x4 m_inverseViewMatrix;
-			float* m_cameraPositionStoragePointer = nullptr;
-			JsValueRef m_cameraPositionScriptProjection = JS_INVALID_REFERENCE;
-
-			bool CreateViewMatrixStorageAndScriptProjection();
-		};
-	}
-}
+    bool CreateViewMatrixStorageAndScriptProjection();
+};
+}  // namespace API
+}  // namespace HologramJS
