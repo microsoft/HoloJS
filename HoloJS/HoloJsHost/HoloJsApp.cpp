@@ -28,6 +28,9 @@ HoloJsAppView::HoloJsAppView(String^ appUri) :
     m_EglSurface(EGL_NO_SURFACE),
     m_appUri(appUri)
 {
+    AutoStereoEnabled = true;
+    ImageStabilizationEnabled = false;
+    WorldOriginRelativePosition = float3(0, 0, -2);
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -61,7 +64,7 @@ void HoloJsAppView::SetWindow(CoreWindow^ window)
         SpatialLocator^ mLocator = SpatialLocator::GetDefault();
 
         // Create a stationary frame of reference.
-        mStationaryReferenceFrame = mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(float3(0, 0, -2));
+        mStationaryReferenceFrame = mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
 
         // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
         InitializeEGL(mHolographicSpace);
@@ -335,8 +338,8 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object^ windowBasis)
     if (mStationaryReferenceFrame != nullptr)
     {
         surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mStationaryReferenceFrame);
-        surfaceCreationProperties->Insert(ref new String(EGLAutomaticStereoRenderingProperty), PropertyValue::CreateBoolean(true));
-        surfaceCreationProperties->Insert(ref new String(EGLAutomaticDepthBasedImageStabilizationProperty), PropertyValue::CreateBoolean(false));
+        surfaceCreationProperties->Insert(ref new String(EGLAutomaticStereoRenderingProperty), PropertyValue::CreateBoolean(AutoStereoEnabled));
+        surfaceCreationProperties->Insert(ref new String(EGLAutomaticDepthBasedImageStabilizationProperty), PropertyValue::CreateBoolean(ImageStabilizationEnabled));
     }
 
     // You can configure the surface to render at a lower resolution and be scaled up to

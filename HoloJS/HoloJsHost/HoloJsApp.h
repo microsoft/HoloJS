@@ -17,6 +17,15 @@ namespace HologramJS {
         virtual void Run();
         virtual void Uninitialize();
 
+        // Enable auto stereo rendering
+        property bool AutoStereoEnabled;
+
+        // Enable depth based image stabilization
+        property bool ImageStabilizationEnabled;
+
+        // The location of the world coordinate system to use; the default location is 2 meters infront of the camera
+        property Windows::Foundation::Numerics::float3 WorldOriginRelativePosition;
+
     private:
         void RecreateRenderer();
 
@@ -42,7 +51,7 @@ namespace HologramJS {
         // The holographic space the app will use for rendering.
         Windows::Graphics::Holographic::HolographicSpace^ mHolographicSpace = nullptr;
 
-        // The world coordinate system. In this example, a reference frame placed in the environment.
+        
         Windows::Perception::Spatial::SpatialStationaryFrameOfReference^ mStationaryReferenceFrame = nullptr;
 
         EGLint m_PanelWidth = 0;
@@ -59,12 +68,21 @@ namespace HologramJS {
     {
     public:
         HoloJsAppSource(Platform::String^ appUri) :
-            m_appUri(appUri) {}
+            m_appUri(appUri),
+            m_appView(nullptr) {}
+
+        // The default overload is meaningless - only useful for JavaScript but the whole class is WebHostHidden.
+        // It makes the compiler happy though
+        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
+        HoloJsAppSource(Windows::ApplicationModel::Core::IFrameworkView^ appView) :
+            m_appView(appView),
+            m_appUri(nullptr) {}
 
         virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView() {
-            return ref new HologramJS::HoloJsAppView(m_appUri);
+            return (m_appView ? m_appView : ref new HologramJS::HoloJsAppView(m_appUri));
         }
     private:
         Platform::String^ m_appUri;
+        Windows::ApplicationModel::Core::IFrameworkView^ m_appView;
     };
 }
