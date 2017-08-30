@@ -77,9 +77,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK ImageElement::getImageData(
 
 void ImageElement::LoadAsync()
 {
-	if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0)
-		|| (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0)
-		|| !UseFileSystem)
+	if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem)
 	{
 		DownloadAsync();
 	}
@@ -135,8 +133,7 @@ task<void> ImageElement::DownloadAsync()
 {
     Windows::Foundation::Uri ^ uri;
 
-    if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0) ||
-        (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0)) {
+    if (ScriptsLoader::IsAbsoluteWebUri(m_source)) {
         uri = ref new Windows::Foundation::Uri(Platform::StringReference(m_source.c_str()));
     } else {
         wstring completeUrl = BaseUrl + L"/" + m_source;

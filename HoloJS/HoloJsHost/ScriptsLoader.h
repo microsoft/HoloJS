@@ -22,7 +22,7 @@ class ScriptsLoader : HologramJS::Loaders::FileSystemLoader, HologramJS::Loaders
     static std::wstring GetFileSystemBasePathForJsonPath(const std::wstring& jsonFilePath);
     static std::wstring GetBaseUriForJsonUri(const std::wstring& jsonUri);
 
-    static bool IsAppUriLocal(std::wstring appUri);
+    static bool IsAbsoluteWebUri(std::wstring appUri);
 
     void ExecuteScripts();
 

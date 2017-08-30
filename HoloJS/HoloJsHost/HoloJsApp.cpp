@@ -181,6 +181,20 @@ void HoloJsAppView::Uninitialize()
 // Application lifecycle event handler.
 void HoloJsAppView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
+    // On protocol activation, use the URI from the activation as the app URI
+    if (args->Kind == ActivationKind::Protocol)
+    {
+        ProtocolActivatedEventArgs^ eventArgs = dynamic_cast<ProtocolActivatedEventArgs^>(args);
+
+        std::wstring appUri = eventArgs->Uri->RawUri->Data();
+        if (appUri.find(L"web-ar://") == 0)
+        {
+            appUri.replace(0, wcslen(L"web-ar"), L"http");
+        }
+
+        m_appUri = ref new String(appUri.data());
+    }
+
     LoadAndExecuteScript();
     // Run() won't start until the CoreWindow is activated.
     CoreWindow::GetForCurrentThread()->Activate();

@@ -66,13 +66,13 @@ IAsyncOperation<bool> ^ HologramScriptHost::RunApp(Platform::String ^ appUri)
 {
     wstring appUriString = appUri->Data();
 
-    if (ScriptsLoader::IsAppUriLocal(appUriString))
+    if (ScriptsLoader::IsAbsoluteWebUri(appUriString))
     {
-        return create_async([this, appUri]() -> task<bool> { return RunLocalScriptApp(appUri->Data()); });
+        return create_async([this, appUri]() -> task<bool> { return RunWebScriptApp(appUri->Data()); });
     }
     else
     {
-        return create_async([this, appUri]() -> task<bool> { return RunWebScriptApp(appUri->Data()); });
+        return create_async([this, appUri]() -> task<bool> { return RunLocalScriptApp(appUri->Data()); });
     }
 }
 
