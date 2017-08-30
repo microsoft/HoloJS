@@ -9,14 +9,14 @@ using namespace Windows::ApplicationModel::Core;
 using namespace Platform;
 using namespace HologramJS;
 
-void RunSimple()
+void RunLocalSimple()
 {
     // Run a basic HoloJS app
-    auto holoJsAppSource = ref new HoloJsAppSource(ref new String(L"http://holojs.azurewebsites.net/fbxloader/app.json"));
+    auto holoJsAppSource = ref new HoloJsAppSource(ref new String(L"scripts/app.json"));
     CoreApplication::Run(holoJsAppSource);
 }
 
-void RunWithOptions()
+void RunWebWithOptions()
 {
     // Run with some custom options for the app
 
@@ -35,7 +35,7 @@ void RunWithOptions()
 [Platform::MTAThread]
 int main(Array<Platform::String^>^)
 {
-    // RunSimple();
-    RunWithOptions();
+    RunLocalSimple();
+    //RunWebWithOptions();
 	return 0;
 }
