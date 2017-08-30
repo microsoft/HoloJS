@@ -9,17 +9,6 @@ using namespace Windows::ApplicationModel::Core;
 using namespace Platform;
 using namespace HologramJS;
 
-// Implementation of the IFrameworkViewSource interface, necessary to run our app.
-ref class SimpleApplicationSource sealed : IFrameworkViewSource
-{
-public:
-	virtual IFrameworkView^ CreateView()
-	{
-        
-		return ref new HologramJS::HoloJsAppView(ref new String(L"http://holojs.azurewebsites.net/fbxloader/app.json"));
-	}
-};
-
 void RunSimple()
 {
     // Run a basic HoloJS app
