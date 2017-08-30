@@ -1,0 +1,9 @@
+﻿<Application
+    x:Class="HoloJsWebViewer.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HoloJsWebViewer"
+    RequestedTheme="Light">
+
+</Application>
+

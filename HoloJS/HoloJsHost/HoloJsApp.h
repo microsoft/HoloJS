@@ -23,6 +23,9 @@ namespace HologramJS {
         // Enable depth based image stabilization
         property bool ImageStabilizationEnabled;
 
+        // Handle web-ar protocol activations; will execute scripts navigated to on the web-ar protocol
+        property bool EnableWebArProtocolHandler;
+
         // The location of the world coordinate system to use; the default location is 2 meters infront of the camera
         property Windows::Foundation::Numerics::float3 WorldOriginRelativePosition;
 

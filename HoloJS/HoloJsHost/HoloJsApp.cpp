@@ -31,6 +31,7 @@ HoloJsAppView::HoloJsAppView(String^ appUri) :
     AutoStereoEnabled = true;
     ImageStabilizationEnabled = false;
     WorldOriginRelativePosition = float3(0, 0, -2);
+    EnableWebArProtocolHandler = false;
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -182,7 +183,7 @@ void HoloJsAppView::Uninitialize()
 void HoloJsAppView::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)
 {
     // On protocol activation, use the URI from the activation as the app URI
-    if (args->Kind == ActivationKind::Protocol)
+    if (args->Kind == ActivationKind::Protocol && EnableWebArProtocolHandler)
     {
         ProtocolActivatedEventArgs^ eventArgs = dynamic_cast<ProtocolActivatedEventArgs^>(args);
 
