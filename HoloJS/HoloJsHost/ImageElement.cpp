@@ -4,6 +4,7 @@
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "ScriptsLoader.h"
+#include "IBufferOnMemory.h"
 
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
@@ -107,14 +108,14 @@ ImageElement::GetFromCameraAsync()
 	await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
 	captureStream->Seek(0);
 
-	std::vector<byte> rawBuffer(captureStream->Size);
+	std::vector<byte> rawBuffer(static_cast<unsigned int>(captureStream->Size));
 
 	Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
 	Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(&imageBuffer, rawBuffer.data(), rawBuffer.size());
 	auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
 	IBuffer^ imageIBuffer = reinterpret_cast<IBuffer^>(iinspectable);
 
-	await captureStream->ReadAsync(imageIBuffer, captureStream->Size, InputStreamOptions::None);
+	await captureStream->ReadAsync(imageIBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
 
 	LoadImageFromBuffer(imageIBuffer);
 }
