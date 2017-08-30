@@ -153,8 +153,8 @@ wstring ScriptsLoader::GetBaseUriForJsonUri(const wstring& jsonUri)
         localUri.replace(0, wcslen(L"web-ar"), L"http");
     }
 
-    // Build base path without the .json file name it in
-    return localUri.substr(0, lastSegmentIndex - 1);
+    // Build base path without the json file name it in
+    return localUri.substr(0, lastSegmentIndex);
 }
 
 void ScriptsLoader::ExecuteScripts()
