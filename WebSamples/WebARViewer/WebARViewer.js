@@ -41,7 +41,7 @@ scene.add(directionalLight);
 scene.add(pointLight);
 
 let fontLoader = new THREE.FontLoader();
-fontLoader.load('threejs/fonts/helvetiker_regular.typeface.json', function (font) {
+fontLoader.load('../threejs/fonts/helvetiker_regular.typeface.json', function (font) {
     var textGeometry = new THREE.TextGeometry("Please load content from a browser", {
         font: font,
         size: 0.2,
