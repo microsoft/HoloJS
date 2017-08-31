@@ -18,6 +18,7 @@ int main(Array<Platform::String^>^)
 
     // This app handles activations on the web-ar protocol; it is invoked by the web browser when a web-ar:// link is navigated to
     // The app will execute any script navigated to on the web-ar protocol
+    // NB: in order for this option to work, the app's manifest must declare the web-ar protocol
     holoJsAppView->EnableWebArProtocolHandler = true;
 
     holoJsAppView->ImageStabilizationEnabled = false;
