@@ -164,8 +164,7 @@ void XmlHttpRequest::SendRequest(const std::wstring& method, const std::wstring&
         return;
     }
 
-    if ((_wcsnicmp(m_url.c_str(), L"http://", wcslen(L"http://")) == 0) ||
-        (_wcsnicmp(m_url.c_str(), L"https://", wcslen(L"https://")) == 0) || !UseFileSystem) {
+    if (ScriptsLoader::IsAbsoluteWebUri(m_url) || !UseFileSystem) {
         DownloadAsync();
     } else {
         ReadFromPackageAsync();
@@ -204,7 +203,7 @@ task<void> XmlHttpRequest::DownloadAsync()
         (_wcsnicmp(m_url.c_str(), L"https://", wcslen(L"https://")) == 0)) {
         uri = ref new Windows::Foundation::Uri(Platform::StringReference(m_url.c_str()));
     } else {
-        wstring completeUrl = BaseUrl + m_url;
+        wstring completeUrl = BaseUrl + L"/" + m_url;
         uri = ref new Windows::Foundation::Uri(Platform::StringReference(completeUrl.c_str()));
     }
 

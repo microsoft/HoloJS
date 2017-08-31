@@ -192,7 +192,6 @@
     <Image Include="Scripts\texture.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

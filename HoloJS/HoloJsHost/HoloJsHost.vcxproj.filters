@@ -68,6 +68,7 @@
     <ClCompile Include="Log.cpp">
       <Filter>Runtime\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="HoloJsApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="ErrorHandling.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="HoloJsApp.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

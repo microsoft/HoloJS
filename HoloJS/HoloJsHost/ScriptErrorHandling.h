@@ -9,20 +9,19 @@ class ScriptErrorHandling {
     {
         // Get error message
         JsValueRef exception;
-        JsGetAndClearException(&exception);
+        EXIT_IF_JS_ERROR(JsGetAndClearException(&exception));
 
         JsPropertyIdRef messageName;
-        JsGetPropertyIdFromName(L"stack", &messageName);
+        EXIT_IF_JS_ERROR(JsGetPropertyIdFromName(L"stack", &messageName));
 
         JsValueRef messageValue;
-        JsGetProperty(exception, messageName, &messageValue);
+        EXIT_IF_JS_ERROR(JsGetProperty(exception, messageName, &messageValue));
 
         const wchar_t *message;
         size_t length;
-        JsStringToPointer(messageValue, &message, &length);
+        EXIT_IF_JS_ERROR(JsStringToPointer(messageValue, &message, &length));
 
-        std::wstring output = L"";
-        output += message;
+        std::wstring output = (message != nullptr ? message : L"No exception message available");
         output += L"\r\n";
         OutputDebugString(output.c_str());
     }

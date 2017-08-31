@@ -4,6 +4,7 @@
 #include "ExternalObject.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
+#include "ScriptsLoader.h"
 
 using namespace HologramJS::API;
 using namespace std;
@@ -53,8 +54,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK VideoElement::setVideoSource(
 
 task<bool> VideoElement::LoadAsync()
 {
-    if ((_wcsnicmp(m_source.c_str(), L"http://", wcslen(L"http://")) == 0) ||
-        (_wcsnicmp(m_source.c_str(), L"https://", wcslen(L"https://")) == 0) || !UseFileSystem) {
+    if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem) {
         auto videoReaderConfigResult = await create_task([this]() -> bool { return ConfigureVideoReader(); });
         if (videoReaderConfigResult) {
             FireOnLoadEvent();

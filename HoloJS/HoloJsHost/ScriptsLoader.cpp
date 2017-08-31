@@ -36,7 +36,7 @@ task<bool> ScriptsLoader::LoadScriptsAsync(StorageFolder ^ root, const wstring& 
 
         // Allow mixing Web scripts with local scripts
         // When referencing web scripts in a local app, only absolute URIs are allowed
-        if (scriptPath.find(L"https://") == 0 || scriptPath.find(L"http://") == 0) {
+        if (IsAbsoluteWebUri(scriptPath)) {
             auto scriptUri = ref new Uri(Platform::StringReference(scriptPath.c_str()));
             auto scriptPlatformText = await DownloadTextAsync(scriptUri);
             wstring scriptText = scriptPlatformText->Data();
@@ -72,12 +72,7 @@ task<bool> ScriptsLoader::DownloadScriptsAsync(const std::wstring& uri)
         return false;
     }
 
-    wstring rawUri = uri;
-    if (rawUri.find(L"web-ar") == 0) {
-        rawUri.replace(0, wcslen(L"web-ar"), L"http");
-    }
-
-    auto modifiedUri = ref new Uri(Platform::StringReference(rawUri.c_str()));
+    auto modifiedUri = ref new Uri(Platform::StringReference(uri.c_str()));
 
     auto scriptsJson = await DownloadTextAsync(modifiedUri);
 
@@ -144,17 +139,14 @@ wstring ScriptsLoader::GetFileSystemBasePathForJsonPath(const wstring& jsonFileP
 wstring ScriptsLoader::GetBaseUriForJsonUri(const wstring& jsonUri)
 {
     wstring localUri = jsonUri;
+
     auto lastSegmentIndex = localUri.rfind('/');
     if (lastSegmentIndex == wstring::npos || lastSegmentIndex == 0) {
         return localUri;
     }
 
-    if (localUri.find(L"web-ar") == 0) {
-        localUri.replace(0, wcslen(L"web-ar"), L"http");
-    }
-
-    // Build base path without the .json file name it in
-    return localUri.substr(0, lastSegmentIndex - 1);
+    // Build base path without the json file name it in
+    return localUri.substr(0, lastSegmentIndex);
 }
 
 void ScriptsLoader::ExecuteScripts()
@@ -164,6 +156,12 @@ void ScriptsLoader::ExecuteScripts()
         HANDLE_EXCEPTION_IF_JS_ERROR(
             JsRunScript(script->code.c_str(), m_jsSourceContext++, script->path.c_str(), &result));
     }
+}
+
+bool ScriptsLoader::IsAbsoluteWebUri(std::wstring appUri)
+{
+    return (_wcsnicmp(appUri.c_str(), L"http://", wcslen(L"http://")) == 0) ||
+        (_wcsnicmp(appUri.c_str(), L"https://", wcslen(L"https://")) == 0);
 }
 
 }  // namespace HologramJS

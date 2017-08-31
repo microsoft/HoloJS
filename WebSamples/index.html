@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HoloJS samples</title>
+    <script src="jquery-3.2.1.js"></script>
+    <script>
+        // Build the links with web-ar protocol instead of HTTP: 'web-ar://<absolute_url_to_this_page>/<original_href>'
+        $(function () {
+            $(".webar-link").attr("href", function (i, href) {
+                let root = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/'));
+                return 'web-ar://' + window.location.host + root + '/' + href;
+            });
+        });
+        
+    </script>
+</head>
+<body>
+    <p><a href="photosphere/photosphere.json" class="webar-link">Photosphere (HoloLens-WebAR)</a></p>
+    <p><a href="photosphere/photosphere.html">Photosphere (Web)</a></p>
+    <p><a href="fbxloader/fbxloader.json" class="webar-link">FBX Loader (HoloLens-WebAR)</a></p>
+    <p><a href="fbxloader/fbxloader.html">FBX Loader (Web)</a></p>
+</body>
+</html>
