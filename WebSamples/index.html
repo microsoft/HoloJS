@@ -8,7 +8,7 @@
         $(function () {
             $(".webar-link").attr("href", function (i, href) {
                 let root = window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/'));
-                return 'web-ar://' + window.location.host + '/' + root + '/' + href;
+                return 'web-ar://' + window.location.host + root + '/' + href;
             });
         });
         
