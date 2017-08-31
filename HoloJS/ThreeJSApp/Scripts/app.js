@@ -36,7 +36,7 @@ let pointLight = new THREE.PointLight(0xFFFFFF, 0.5);
 let cube = new THREE.Mesh(new THREE.BoxBufferGeometry(0.2, 0.2, 0.2), material.clone());
 let sphere = new THREE.Mesh(initColors(new THREE.SphereBufferGeometry(0.1, 20, 20)), material.clone());
 let cone = new THREE.Mesh(initColors(new THREE.ConeBufferGeometry(0.1, 0.2, 20, 20)), material.clone());
-let torus = new THREE.Mesh(initColors(new THREE.TorusKnotBufferGeometry(0.2, 0.02, 100, 100)), material.clone());
+let torus = new THREE.Mesh(initColors(new THREE.TorusKnotBufferGeometry(0.2, 0.02, 100, 100)), new THREE.MeshPhysicalMaterial({ color: 0x00ff00, roughness: 0.5, metalness: 1.0 }));
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 loader.setCrossOrigin('anonymous');
