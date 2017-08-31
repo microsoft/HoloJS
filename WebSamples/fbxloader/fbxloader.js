@@ -58,7 +58,7 @@ window.Zlib = Zlib;
 //   2. Content is "yes"
 // Alternatively, host the FBX file online and use the URL here.
 var fbxLoader = new THREE.FBXLoader();
-var path = 'fbxloader/green.fbx';
+var path = 'green.fbx';
 fbxLoader.load(path, function (object) {
     object.frustumCulled = false;
     scene.add(object);
