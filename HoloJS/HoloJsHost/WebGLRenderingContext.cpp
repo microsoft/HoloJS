@@ -317,7 +317,7 @@ void WebGLRenderingContext::uniformMatrix2fv(WebGLUniformLocation* location,
                                              GLsizei count,
                                              const GLfloat* value)
 {
-    glUniformMatrix2fv(location->location, 1, transpose, value);
+    glUniformMatrix2fv(location->location, count, transpose, value);
 }
 
 void WebGLRenderingContext::uniformMatrix3fv(WebGLUniformLocation* location,
@@ -325,7 +325,7 @@ void WebGLRenderingContext::uniformMatrix3fv(WebGLUniformLocation* location,
                                              GLsizei count,
                                              const GLfloat* value)
 {
-    glUniformMatrix3fv(location->location, 1, transpose, value);
+    glUniformMatrix3fv(location->location, count, transpose, value);
 }
 
 void WebGLRenderingContext::uniformMatrix4fv(WebGLUniformLocation* location,
@@ -333,7 +333,7 @@ void WebGLRenderingContext::uniformMatrix4fv(WebGLUniformLocation* location,
                                              GLsizei count,
                                              const GLfloat* value)
 {
-    glUniformMatrix4fv(location->location, 1, transpose, value);
+    glUniformMatrix4fv(location->location, count, transpose, value);
 }
 
 void WebGLRenderingContext::drawArrays(GLenum mode, GLint first, GLsizei count) { glDrawArrays(mode, first, count); }
