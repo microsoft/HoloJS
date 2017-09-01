@@ -34,7 +34,7 @@ cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from(
     0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // top - green
     1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, // bottom - yellow
     0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, // back - cyan
-    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, // front - purple
+    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0 // front - purple
 ]), 3));
 loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
 
@@ -100,21 +100,21 @@ function SpatialMappingMeshes(scene) {
         for (var meshIndex in self.meshObjects) {
             self.scene.remove(self.meshObjects[meshIndex].Mesh);
         }
-    };
+    }
 
     function showMeshData() {
         for (var meshIndex in self.meshObjects) {
             self.scene.add(self.meshObjects[meshIndex].Mesh);
         }
-    };
+    }
 
     function idEquals(id1, id2) {
-        if (id1.length != id2.length) {
+        if (id1.length !== id2.length) {
             return false;
         }
 
         for (var i = 0; i < id1.length; i++) {
-            if (id1[i] != id2[i]) {
+            if (id1[i] !== id2[i]) {
                 return false;
             }
         }
@@ -123,7 +123,7 @@ function SpatialMappingMeshes(scene) {
     }
 
     this.clearMeshData = function (id) {
-        if (id != undefined) {
+        if (id !== undefined) {
             for (var meshIndex in self.meshObjects) {
                 if (idEquals(self.meshObjects[meshIndex].id, id)) {
                     self.scene.remove(self.meshObjects[meshIndex].mesh);
@@ -143,7 +143,7 @@ function SpatialMappingMeshes(scene) {
 
         self.scene.add(newMeshObject.mesh);
         self.meshObjects.push(newMeshObject);
-    }
+    };
 
     // This method is faster to render the mesh, but does not allow easy
     // manipulation of the surface; the buffers are passed through directly to the

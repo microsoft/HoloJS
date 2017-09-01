@@ -69,12 +69,12 @@ function makeConsole()
     this.info = function (entry) {
         this.infoEntries.push("info: " + entry);
         nativeInterface.system.log("info: " + entry + "\r\n");
-    }
+    };
  
     this.dir = function (entry) {
         this.dirEntries.push("dir: " + entry);
         nativeInterface.system.log("dir: " + entry + "\r\n");
-    }
+    };
 }
 
 function makeDocument()

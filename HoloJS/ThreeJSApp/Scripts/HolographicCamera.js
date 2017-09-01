@@ -1,6 +1,6 @@
 THREE.HolographicCamera = class HolographicCamera extends THREE.Camera {
 
-    constructor () {
+    constructor() {
         super();
 
         this.type = 'HolographicCamera';
@@ -32,7 +32,7 @@ THREE.HolographicCamera = class HolographicCamera extends THREE.Camera {
         this.add(this._postrender);
     }
 
-    update () {
+    update() {
         if (!window.experimentalHolographic) return;
 
         let params = window.getHolographicCameraParameters();
@@ -47,4 +47,4 @@ THREE.HolographicCamera = class HolographicCamera extends THREE.Camera {
         this._holographicProjectionMatrix.fromArray(params.mid.projectionMatrix);
         this.projectionMatrix.copy(this._holographicProjectionMatrix);
     }
-}
+};
