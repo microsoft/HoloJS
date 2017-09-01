@@ -219,9 +219,6 @@
     <None Include="Scripts\app.json">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Scripts\polyfills.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="Scripts\three-patches.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

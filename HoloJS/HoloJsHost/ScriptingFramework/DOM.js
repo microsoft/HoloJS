@@ -48,6 +48,9 @@ function makeConsole()
     this.logEntries = [];
     this.warningEntries = [];
     this.errorEntries = [];
+    this.infoEntries = [];
+    this.dirEntries = [];
+
     this.log = function(entry) {
         this.logEntries.push(entry);
         nativeInterface.system.log('log: ' + entry + '\r\n');
@@ -62,6 +65,16 @@ function makeConsole()
         this.errorEntries.push(entry);
         nativeInterface.system.log('error: ' + entry + '\r\n');
     };
+
+    this.info = function (entry) {
+        this.infoEntries.push("info: " + entry);
+        nativeInterface.system.log("info: " + entry + "\r\n");
+    }
+ 
+    this.dir = function (entry) {
+        this.dirEntries.push("dir: " + entry);
+        nativeInterface.system.log("dir: " + entry + "\r\n");
+    }
 }
 
 function makeDocument()
@@ -149,7 +162,15 @@ function makeNavigator()
 {
 }
 
+function makePerformance() {
+    var start = Date.now();
+    this.now = function () {
+        return Date.now() - start;
+    };
+}
+
 document = new makeDocument();
 console = new makeConsole();
 navigator = new makeNavigator();
+performance = new makePerformance();
 })();
