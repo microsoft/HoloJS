@@ -18,7 +18,12 @@ using namespace Windows::Perception::Spatial;
 using namespace Microsoft::WRL;
 using namespace Platform;
 
-#define GLEXT_ANGLE_HOLOGRAPHIC_VIEW_MATRIX 0x8FE6
+#define GLEXT_ANGLE_HOLOGRAPHIC_MONO_VIEW_MATRIX 0x8FE6
+#define GLEXT_ANGLE_HOLOGRAPHIC_MONO_PROJECTION_MATRIX 0x8FE9
+#define GLEXT_ANGLE_HOLOGRAPHIC_LEFT_VIEW_MATRIX 0x8FEA
+#define GLEXT_ANGLE_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX 0x8FEB
+#define GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_VIEW_MATRIX 0x8FEC
+#define GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX 0x8FED
 
 HoloJsAppView::HoloJsAppView(String^ appUri) :
     m_WindowClosed(false),
@@ -119,7 +124,12 @@ void HoloJsAppView::RecreateRenderer()
 // This method is called after the window becomes active.
 void HoloJsAppView::Run()
 {
-    Windows::Foundation::Numerics::float4x4 holographicViewMatrix;
+    Windows::Foundation::Numerics::float4x4 holographicViewMatrixMid;
+    Windows::Foundation::Numerics::float4x4 holographicProjectionMatrixMid;
+    Windows::Foundation::Numerics::float4x4 holographicViewMatrixLeft;
+    Windows::Foundation::Numerics::float4x4 holographicProjectionMatrixLeft;
+    Windows::Foundation::Numerics::float4x4 holographicViewMatrixRight;
+    Windows::Foundation::Numerics::float4x4 holographicProjectionMatrixRight;
 
     while (!m_WindowClosed)
     {
@@ -140,10 +150,14 @@ void HoloJsAppView::Run()
             }
 
             glClear(GL_COLOR_BUFFER_BIT);
-            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_VIEW_MATRIX, &holographicViewMatrix.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_MONO_VIEW_MATRIX, &holographicViewMatrixMid.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_MONO_PROJECTION_MATRIX, &holographicProjectionMatrixMid.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_LEFT_VIEW_MATRIX, &holographicViewMatrixLeft.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_LEFT_PROJECTION_MATRIX, &holographicProjectionMatrixLeft.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_VIEW_MATRIX, &holographicViewMatrixRight.m11);
+            glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX, &holographicProjectionMatrixRight.m11);
 
-            m_holoScriptHost->VSync(holographicViewMatrix);
-
+            m_holoScriptHost->VSync(holographicViewMatrixMid, holographicProjectionMatrixMid, holographicViewMatrixLeft, holographicProjectionMatrixLeft, holographicViewMatrixRight, holographicProjectionMatrixRight);
 
             // The call to eglSwapBuffers might not be successful (e.g. due to Device Lost)
             // If the call fails, then we must reinitialize EGL and the GL resources.
