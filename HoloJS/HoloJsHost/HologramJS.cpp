@@ -42,7 +42,9 @@ bool HologramScriptHost::Initialize()
 
     RETURN_IF_JS_ERROR(JsSetCurrentContext(m_jsContext));
 
+#ifdef _DEBUG
     JsStartDebugging();
+#endif
 
     RETURN_IF_FALSE(m_scriptEventsManager.Initialize());
 
