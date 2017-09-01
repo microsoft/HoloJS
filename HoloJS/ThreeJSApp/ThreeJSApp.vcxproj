@@ -209,6 +209,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Scripts\HolographicCamera.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\OrbitControls.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

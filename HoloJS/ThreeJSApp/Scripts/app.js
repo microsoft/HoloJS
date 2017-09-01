@@ -5,26 +5,9 @@ if (!window.getViewMatrix) {
     canvas.style.width = canvas.style.height = "100%";
 }
 
-class HolographicCamera extends THREE.Camera {
-
-    constructor () {
-        super();
-        this._holographicViewMatrix = new THREE.Matrix4();
-        this._holographicTransformMatrix = new THREE.Matrix4();
-        this._flipMatrix = new THREE.Matrix4().makeScale(-1, 1, 1);
-    }
-
-    update () {
-        this._holographicViewMatrix.fromArray(window.getViewMatrix());
-        this._holographicViewMatrix.multiply(this._flipMatrix);
-        this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
-        this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
-    }
-}
-
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -77,12 +60,7 @@ scene.add(cube);
 scene.add(sphere);
 scene.add(cone);
 scene.add(torus);
-scene.add(camera);
-
-cube.frustumCulled = false;
-sphere.frustumCulled = false;
-cone.frustumCulled = false;
-torus.frustumCulled = false;
+scene.add(camera); // this is required for HolographicCamera to function correctly
 
 var controls;
 

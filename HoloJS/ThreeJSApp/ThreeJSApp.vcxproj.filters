@@ -62,15 +62,15 @@
     <None Include="Scripts\three-patches.js">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="Scripts\polyfills.js">
-      <Filter>Scripts</Filter>
-    </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="Scripts\OrbitControls.js">
       <Filter>Scripts</Filter>
     </None>
     <None Include="..\prebuilt\angle\win32\debug\libEGL.dll" />
     <None Include="..\prebuilt\angle\win32\debug\libGLESv2.dll" />
+    <None Include="Scripts\HolographicCamera.js">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
