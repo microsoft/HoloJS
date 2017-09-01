@@ -1,4 +1,4 @@
 [submodule "angle"]
 	path = angle
-	url = https://github.com/Microsoft/angle.git
-	branch = ms-holographic-experimental
+	url = https://github.com/Almost-Done/angle.git
+	branch = holojs/master
