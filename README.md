@@ -2,7 +2,7 @@
 
 HoloJS is a framework for creating UWP applications using JavaScript and WebGL. 
 
-HoloJS is a C++ library that hosts Chakra to run JavaScript code, and also hosts ANGLE to
+HoloJS is a C++ library that hosts [ChakraCore](https://github.com/microsoft/chakracore) to run JavaScript code, and also hosts ANGLE to
 handle OpenGL ES graphics calls. OpenGL ES calls are translated from WebGL calls by the
 JavaScript app. When running on a Microsoft HoloLens, HoloJS supports holographic rendering.
 
@@ -48,7 +48,7 @@ Visual Studio 2015 Update 3 and the Microsoft HoloLens Emulator, go to [Install 
 The following Windows Universal APIs are used to demonstrate spatial locations, and holographic 
 rendering in this code sample:
 
-* [Chakra official site](https://github.com/microsoft/ChakraCore)
+* [ChakraCore official site](https://github.com/microsoft/ChakraCore)
 * [Chakra samples repo](https://github.com/Microsoft/Chakra-Samples)
 * [ANGLE Experimental for Windows Holographic](https://github.com/Microsoft/angle/tree/ms-holographic-experimental)
 
