@@ -5,26 +5,9 @@ if (!window.getViewMatrix) {
     canvas.style.width = canvas.style.height = "100%";
 }
 
-class HolographicCamera extends THREE.Camera {
-
-    constructor () {
-        super();
-        this._holographicViewMatrix = new THREE.Matrix4();
-        this._holographicTransformMatrix = new THREE.Matrix4();
-        this._flipMatrix = new THREE.Matrix4().makeScale(-1, 1, 1);
-    }
-
-    update () {
-        this._holographicViewMatrix.fromArray(window.getViewMatrix());
-        this._holographicViewMatrix.multiply(this._flipMatrix);
-        this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
-        this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
-    }
-}
-
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors });
@@ -39,6 +22,7 @@ directionalLight.position.set(0, 2, 0);
 scene.add(ambientLight);
 scene.add(directionalLight);
 scene.add(pointLight);
+scene.add(camera); // this is required for HolographicCamera to function correctly
 
 let fontLoader = new THREE.FontLoader();
 fontLoader.load('../threejs/fonts/helvetiker_regular.typeface.json', function (font) {
@@ -52,7 +36,6 @@ fontLoader.load('../threejs/fonts/helvetiker_regular.typeface.json', function (f
     let textMesh = new THREE.Mesh(textGeometry, material);
     textMesh.position.z = -3;
     textMesh.position.x = -2;
-    textMesh.frustumCulled = false;
     scene.add(textMesh);
 }); //end load function
 
