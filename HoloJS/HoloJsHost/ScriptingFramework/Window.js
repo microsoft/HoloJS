@@ -1,4 +1,4 @@
-﻿var window = (window ? window : {});
+﻿var window = window ? window : {};
 
 (function() {
 
@@ -29,7 +29,7 @@ window.requestSpatialMappingData = function(callback, options) {
         extentZ = 10;
     }
 
-    var trianglesPerCubicMeter = (options && options.trianglesPerCubicMeter ? options.trianglesPerCubicMeter : 1000);
+    var trianglesPerCubicMeter = options && options.trianglesPerCubicMeter ? options.trianglesPerCubicMeter : 1000;
     return nativeInterface.window.requestSpatialMappingData(extentX, extentY, extentZ, trianglesPerCubicMeter);
 };
 
@@ -111,7 +111,7 @@ Object.defineProperty(window, 'innerWidth', {
 
 Object.defineProperty(window, 'innerHeight', {
     get: function() {
-        return nativeInterface.window.getHeight()
+        return nativeInterface.window.getHeight();
     }
 });
 
@@ -123,7 +123,7 @@ Object.defineProperty(window, 'width', {
 
 Object.defineProperty(window, 'height', {
     get: function() {
-        return nativeInterface.window.getHeight()
+        return nativeInterface.window.getHeight();
     }
 });
 
@@ -141,9 +141,9 @@ window.nativeCallback = function(type) {
     } else if (type === window.nativeEvents.keyboard) {
         onKeyboardEvent(arguments[1], arguments[2]);
     } else if (type === window.nativeEvents.spatialinput) {
-        onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6])
+        onSpatialInputEvent(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6]);
     } else if (type === window.nativeEvents.spatialmapping) {
-        onSpatialMappingEvent(arguments[1])
+        onSpatialMappingEvent(arguments[1]);
     } else {
         window.fireHandlersByType(type);
     }
@@ -154,10 +154,34 @@ nativeInterface.extendWithEventHandling(window);
 nativeInterface.window.setCallback(window.nativeCallback);
 
 window.getViewMatrix = function() {
-    return nativeInterface.window.holographicViewMatrix;
+    return nativeInterface.window.holographicViewMatrixMid;
+};
+
+window.getProjectionMatrix = function () {
+    return nativeInterface.window.holographicProjectionMatrixMid;
 };
 
 window.getCameraPositionVector = function() {
-    return nativeInterface.window.holographicCameraPosition;
+    return nativeInterface.window.holographicCameraPositionMid;
+};
+
+window.getHolographicCameraParameters = function () {
+    return {
+        mid: {
+            viewMatrix: nativeInterface.window.holographicViewMatrixMid,
+            projectionMatrix: nativeInterface.window.holographicProjectionMatrixMid,
+            cameraPosition: nativeInterface.window.holographicCameraPositionMid
+        },
+        left: {
+            viewMatrix: nativeInterface.window.holographicViewMatrixLeft,
+            projectionMatrix: nativeInterface.window.holographicProjectionMatrixLeft,
+            cameraPosition: nativeInterface.window.holographicCameraPositionLeft
+        },
+        right: {
+            viewMatrix: nativeInterface.window.holographicViewMatrixRight,
+            projectionMatrix: nativeInterface.window.holographicProjectionMatrixRight,
+            cameraPosition: nativeInterface.window.holographicCameraPositionRight
+        }
+    };
 };
 })();

@@ -4,6 +4,8 @@
 
 namespace HologramJS {
 
+    using float4x4 = Windows::Foundation::Numerics::float4x4;
+
     [Windows::Foundation::Metadata::WebHostHidden]
     public ref class HoloJsAppView sealed : public Windows::ApplicationModel::Core::IFrameworkView
     {

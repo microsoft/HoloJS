@@ -5,26 +5,9 @@ if (!window.getViewMatrix) {
     canvas.style.width = canvas.style.height = "100%";
 }
 
-class HolographicCamera extends THREE.Camera {
-
-    constructor () {
-        super();
-        this._holographicViewMatrix = new THREE.Matrix4();
-        this._holographicTransformMatrix = new THREE.Matrix4();
-        this._flipMatrix = new THREE.Matrix4().makeScale(-1, 1, 1);
-    }
-
-    update () {
-        this._holographicViewMatrix.fromArray(window.getViewMatrix());
-        this._holographicViewMatrix.multiply(this._flipMatrix);
-        this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
-        this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
-    }
-}
-
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -51,7 +34,7 @@ cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from(
     0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // top - green
     1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, // bottom - yellow
     0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, // back - cyan
-    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, // front - purple
+    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0 // front - purple
 ]), 3));
 loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
 
@@ -77,12 +60,7 @@ scene.add(cube);
 scene.add(sphere);
 scene.add(cone);
 scene.add(torus);
-scene.add(camera);
-
-cube.frustumCulled = false;
-sphere.frustumCulled = false;
-cone.frustumCulled = false;
-torus.frustumCulled = false;
+scene.add(camera); // this is required for HolographicCamera to function correctly
 
 var controls;
 
@@ -122,21 +100,21 @@ function SpatialMappingMeshes(scene) {
         for (var meshIndex in self.meshObjects) {
             self.scene.remove(self.meshObjects[meshIndex].Mesh);
         }
-    };
+    }
 
     function showMeshData() {
         for (var meshIndex in self.meshObjects) {
             self.scene.add(self.meshObjects[meshIndex].Mesh);
         }
-    };
+    }
 
     function idEquals(id1, id2) {
-        if (id1.length != id2.length) {
+        if (id1.length !== id2.length) {
             return false;
         }
 
         for (var i = 0; i < id1.length; i++) {
-            if (id1[i] != id2[i]) {
+            if (id1[i] !== id2[i]) {
                 return false;
             }
         }
@@ -145,7 +123,7 @@ function SpatialMappingMeshes(scene) {
     }
 
     this.clearMeshData = function (id) {
-        if (id != undefined) {
+        if (id !== undefined) {
             for (var meshIndex in self.meshObjects) {
                 if (idEquals(self.meshObjects[meshIndex].id, id)) {
                     self.scene.remove(self.meshObjects[meshIndex].mesh);
@@ -165,7 +143,7 @@ function SpatialMappingMeshes(scene) {
 
         self.scene.add(newMeshObject.mesh);
         self.meshObjects.push(newMeshObject);
-    }
+    };
 
     // This method is faster to render the mesh, but does not allow easy
     // manipulation of the surface; the buffers are passed through directly to the

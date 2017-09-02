@@ -209,6 +209,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="Scripts\HolographicCamera.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\OrbitControls.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -217,9 +220,6 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\app.json">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\polyfills.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\three-patches.js">

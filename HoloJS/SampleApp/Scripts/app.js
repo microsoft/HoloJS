@@ -63,11 +63,7 @@ function start() {
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-        if (window.experimentalHolographic === true) {
-            // When running in Holographic mode (HoloLens), use an identity projection matrix
-            // The correct projection matrix will be automatically swaped by the JavaScript host
-            projectionMatrix = new Float32Array(identityMatrix());
-        } else {
+        if (window.experimentalHolographic !== true) {
             // When running non-holographic (desktop etc.), use a proper projection matrix
             projectionMatrix = new Float32Array(
                 makePerspectiveMatrixForNonHolographic(40, window.innerWidth / window.innerHeight, 1, 10));
@@ -351,11 +347,11 @@ function drawScene() {
 
     // Draw the cube.
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
-    gl.uniformMatrix4fv(pUniform, false, projectionMatrix);
     gl.uniformMatrix4fv(mUniform, false, new Float32Array(modelMatrix));
-    // When running holographic, use the host provided projection matrix which ensures rendering is world locked;
-    // When running non-holographic, use the app (script) provided view matrix
+    // When running holographic, use the host provided view/projection matrices which ensures rendering is world locked;
+    // When running non-holographic, use the app (script) provided view/projection matrices
     gl.uniformMatrix4fv(vUniform, false, (window.experimentalHolographic === true ? window.getViewMatrix() : viewMatrix));
+    gl.uniformMatrix4fv(pUniform, false, (window.experimentalHolographic === true ? window.getProjectionMatrix() : projectionMatrix));
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
     // Present the frame.
