@@ -1,1 +1,1 @@
-{ "scripts" : [ "../threejs/polyfills.js", "../threejs/three.js", "../threejs/three-patches.js", "../threejs/OrbitControls.js", "inflate.min.js", "../threejs/loaders/FBXLoader.js", "fbxloader.js" ] }
+{ "scripts" : [ "../threejs/three.js", "../threejs/three-patches.js",  "../threejs/OrbitControls.js", "../threejs/holographicCamera.js", "inflate.min.js", "../threejs/loaders/FBXLoader.js", "fbxloader.js" ] }

@@ -5,26 +5,9 @@ if (!window.getViewMatrix) {
     canvas.style.width = canvas.style.height = "100%";
 }
 
-class HolographicCamera extends THREE.Camera {
-
-    constructor () {
-        super();
-        this._holographicViewMatrix = new THREE.Matrix4();
-        this._holographicTransformMatrix = new THREE.Matrix4();
-        this._flipMatrix = new THREE.Matrix4().makeScale(-1, 1, 1);
-    }
-
-    update () {
-        this._holographicViewMatrix.fromArray(window.getViewMatrix());
-        this._holographicViewMatrix.multiply(this._flipMatrix);
-        this._holographicTransformMatrix.getInverse(this._holographicViewMatrix);
-        this._holographicTransformMatrix.decompose(this.position, this.quaternion, this.scale);
-    }
-}
-
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 
 let ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
@@ -60,7 +43,6 @@ window.Zlib = Zlib;
 var fbxLoader = new THREE.FBXLoader();
 var path = 'green.fbx';
 fbxLoader.load(path, function (object) {
-    object.frustumCulled = false;
     scene.add(object);
 }, onProgressModel, onErrorModel);
 
