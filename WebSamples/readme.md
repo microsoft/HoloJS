@@ -1,6 +1,6 @@
 ﻿## Samples website
 
-To accommodate the increasing number of samples - and to showcase HoloJs's web loading capabilities - we checked in a website for samples. A live instance of this website can be found at [http://holojs.azurewebsites.net/samples/index.html](http://holojs.azurewebsites.net/samples/index.html).
+To accommodate the increasing number of samples - and to showcase HoloJs's web loading capabilities - we checked in a website for samples. A live instance of this website can be found at [http://holojs.azurewebsites.net/samples/index.html](http://holojs.azurewebsites.net/v1/samples/index.html).
 
 Sample apps run in any WebGL capable browser (flat view) or in the provided viewer app (immersive view).
 
