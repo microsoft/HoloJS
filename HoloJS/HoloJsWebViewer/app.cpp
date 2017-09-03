@@ -16,7 +16,7 @@ int main(Array<Platform::String^>^)
     // If the app is launched without protocol invocation, run the bellow script that shows a canned message
     auto holoJsAppView = ref new HoloJsAppView(ref new String(L"http://holojs.azurewebsites.net/samples/webarviewer/webarviewer.json"));
 
-    // This app handles activations on the web-ar protocol; it is invoked by the web browser when a web-ar:// link is navigated to
+    // This app handles activations on the web-ar protocol; it is invoked by the web browser when a web-ar: link is navigated to
     // The app will execute any script navigated to on the web-ar protocol
     // NB: in order for this option to work, the app's manifest must declare the web-ar protocol
     holoJsAppView->EnableWebArProtocolHandler = true;

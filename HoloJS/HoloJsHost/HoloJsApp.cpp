@@ -202,9 +202,9 @@ void HoloJsAppView::OnActivated(CoreApplicationView^ applicationView, IActivated
         ProtocolActivatedEventArgs^ eventArgs = dynamic_cast<ProtocolActivatedEventArgs^>(args);
 
         std::wstring appUri = eventArgs->Uri->RawUri->Data();
-        if (appUri.find(L"web-ar://") == 0)
+        if (appUri.find(L"web-ar:") == 0)
         {
-            appUri.replace(0, wcslen(L"web-ar"), L"http");
+            appUri.replace(0, wcslen(L"web-ar:"), L"");
         }
 
         m_appUri = ref new String(appUri.data());
