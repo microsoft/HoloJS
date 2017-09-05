@@ -51,29 +51,29 @@ function makeConsole()
     this.infoEntries = [];
     this.dirEntries = [];
 
-    this.log = function(entry) {
-        this.logEntries.push(entry);
-        nativeInterface.system.log('log: ' + entry + '\r\n');
+    this.log = function(...entries) {
+        this.logEntries.push(...entries);
+        nativeInterface.system.log('log: ' + entries.join(" ") + '\r\n');
     }.bind(this);
 
-    this.warn = function(entry) {
-        this.warningEntries.push(entry);
-        nativeInterface.system.log('warn: ' + entry + '\r\n');
+    this.warn = function (...entries) {
+        this.warningEntries.push(...entries);
+        nativeInterface.system.log('warn: ' + entries.join(" ") + '\r\n');
     };
 
-    this.error = function(entry) {
-        this.errorEntries.push(entry);
-        nativeInterface.system.log('error: ' + entry + '\r\n');
+    this.error = function (...entries) {
+        this.errorEntries.push(...entries);
+        nativeInterface.system.log('error: ' + entries.join(" ") + '\r\n');
     };
 
-    this.info = function (entry) {
-        this.infoEntries.push("info: " + entry);
-        nativeInterface.system.log("info: " + entry + "\r\n");
+    this.info = function (...entries) {
+        this.infoEntries.push(...entries);
+        nativeInterface.system.log("info: " + entries.join(" ") + "\r\n");
     };
  
-    this.dir = function (entry) {
-        this.dirEntries.push("dir: " + entry);
-        nativeInterface.system.log("dir: " + entry + "\r\n");
+    this.dir = function (...entries) {
+        this.dirEntries.push(...entries);
+        nativeInterface.system.log("dir: " + entries.join(" ") + "\r\n");
     };
 }
 
