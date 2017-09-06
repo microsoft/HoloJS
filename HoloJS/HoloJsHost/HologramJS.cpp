@@ -160,3 +160,42 @@ bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfR
 
     return true;
 }
+
+bool HologramScriptHost::ProjectHolographicSettings(bool autoStereo, bool imageStabilization, Windows::Foundation::Numerics::float3 worldOriginRelativePosition)
+{
+    // Get the window object
+    JsValueRef globalObject;
+    RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
+    JsValueRef windowRef;
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::GetJsProperty(globalObject, L"window", &windowRef));
+
+    // Create settings object
+    JsPropertyIdRef holographicSettingsRef;
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::GetJsProperty(windowRef, L"holographicSettings", &holographicSettingsRef));
+    JsValueRef holographicSettingsValue;
+    RETURN_IF_JS_ERROR(JsCreateObject(&holographicSettingsValue));
+    RETURN_IF_JS_ERROR(JsSetProperty(windowRef, holographicSettingsRef, holographicSettingsValue, true));
+
+    // Set auto stereo
+    JsValueRef autoStereoValue;
+    RETURN_IF_JS_ERROR(JsBoolToBoolean(autoStereo, &autoStereoValue));
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::SetJsProperty(holographicSettingsRef, L"autoStereoEnabled", autoStereoValue));
+
+    // Set image stabilization
+    JsValueRef imageStabilizationValue;
+    RETURN_IF_JS_ERROR(JsBoolToBoolean(imageStabilization, &imageStabilizationValue));
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::SetJsProperty(holographicSettingsRef, L"imageStabilizationEnabled", imageStabilizationValue));
+    
+    // Set world origin
+    JsValueRef originValue;
+    unsigned int bufferLength;
+    JsTypedArrayType type;
+    int elementSize;
+    float* originStoragePointer = nullptr;
+    RETURN_IF_JS_ERROR(JsCreateTypedArray(JsTypedArrayType::JsArrayTypeFloat32, nullptr, 0, 3, &originValue));
+    RETURN_IF_JS_ERROR(JsGetTypedArrayStorage(originValue, (ChakraBytePtr*)&originStoragePointer, &bufferLength, &type, &elementSize));
+    CopyMemory(originStoragePointer, &worldOriginRelativePosition.x, 3 * sizeof(float));
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::SetJsProperty(holographicSettingsRef, L"worldOriginRelativePosition", originValue));
+
+    return true;
+}
