@@ -1,8 +1,31 @@
 ﻿(function() {
 
+function AngleInstancedArraysExtension(extension) {
+    this.glExtension = extension;
+
+    this.drawArraysInstancedANGLE = function (mode, first, count, primcount) {
+        return nativeInterface.angle_instanced_arrays.drawArraysInstancedANGLE(this.glExtension, mode, first, count, primcount);
+    };
+
+    this.drawElementsInstancedANGLE = function (mode, count, type, offset, primcount) {
+        return nativeInterface.angle_instanced_arrays.drawElementsInstancedANGLE(this.glExtension, mode, count, type, offset, primcount);
+    };
+
+    this.vertexAttribDivisorANGLE = function (index, divisor) {
+        return nativeInterface.angle_instanced_arrays.vertexAttribDivisorANGLE(this.glExtension, index, divisor);
+    };
+}
+
+function makeExtension(name, extension) {
+    if (!extension) return null;
+    if (name === 'ANGLE_instanced_arrays') return new AngleInstancedArraysExtension(extension);
+    else return null;
+}
+
 nativeInterface.makeWebGLRenderingContext = function() {
 
     this.glContext = nativeInterface.webgl.createContext();
+    this.glExtensions = {};
 
     this.getError = function() {
         return 0;
@@ -12,8 +35,8 @@ nativeInterface.makeWebGLRenderingContext = function() {
         return nativeInterface.webgl.getShaderPrecisionFormat(this.glContext, shadertype, precisiontype);
     };
 
-    this.getExtension = function(name) {
-        return nativeInterface.webgl.getExtension(this.glContext, name);
+    this.getExtension = function (name) {
+        return this.glExtensions[name] || (this.glExtensions[name] = makeExtension(name, nativeInterface.webgl.getExtension(this.glContext, name)));
     };
 
     this.getParameter = function(pname) {

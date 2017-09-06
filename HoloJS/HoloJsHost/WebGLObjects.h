@@ -116,9 +116,11 @@ class WebGLProgram : public HologramJS::Utilities::IRelease {
     GLuint id;
 };
 
-class ANGLE_instanced_arrays {
+class ANGLE_instanced_arrays : public HologramJS::Utilities::IRelease {
    public:
     ANGLE_instanced_arrays();
+    void Release() {};
+    virtual ~ANGLE_instanced_arrays() {}
     void drawArraysInstancedANGLE(GLenum mode, GLint first, GLsizei count, GLsizei primcount);
     void drawElementsInstancedANGLE(GLenum mode, GLsizei count, GLenum type, GLint indices, GLsizei primcount);
     void vertexAttribDivisorANGLE(GLuint index, GLuint divisor);

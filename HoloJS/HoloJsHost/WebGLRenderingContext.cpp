@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "WebGLRenderingContext.h"
+#include "ScriptResourceTracker.h"
 
 using namespace HologramJS::WebGL;
+using namespace HologramJS::Utilities;
 using namespace Platform;
 using namespace std;
 using namespace Windows::Graphics::Imaging;
@@ -396,6 +398,14 @@ void WebGLRenderingContext::framebufferTexture2D(
     } else {
         texture->framebufferTexture2D(target, attachment, textarget, level);
     }
+}
+
+JsValueRef WebGLRenderingContext::getExtension(std::wstring *pname)
+{
+    if (pname->compare(L"ANGLE_instanced_arrays") == 0) {
+        return ScriptResourceTracker::ObjectToDirectExternal(&angle_instanced_arrays);
+    }
+    else return JS_INVALID_REFERENCE;
 }
 
 JsValueRef WebGLRenderingContext::getParameter(GLenum pname)
