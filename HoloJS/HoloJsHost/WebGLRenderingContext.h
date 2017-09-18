@@ -8,13 +8,13 @@ namespace HologramJS {
 namespace WebGL {
 class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
    public:
-    WebGLRenderingContext() {}
+    WebGLRenderingContext() : angle_instanced_arrays() {}
 
     void Release() {}
 
     WebGLShaderPrecisionFormat* getShaderPrecisionFormat(GLenum shadertype, GLenum precisiontype);
 
-    // Object^ getExtension(Platform::String^ name);
+    JsValueRef getExtension(std::wstring *pname);
     JsValueRef getParameter(GLenum pname);
 
 #pragma region Frame and render buffers
@@ -201,6 +201,7 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
     const GLenum UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
 
     bool FlipYEnabled = false;
+    ANGLE_instanced_arrays angle_instanced_arrays;
 };
 }  // namespace WebGL
 }  // namespace HologramJS

@@ -122,6 +122,11 @@ bool WebGLProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage3", L"canvas2d", drawImage3));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getImageData", L"canvas2d", getImageData));
 
+    // ANGLE_instanced_arrays extension projections
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawArraysInstancedANGLE", L"angle_instanced_arrays", drawArraysInstancedANGLE));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawElementsInstancedANGLE", L"angle_instanced_arrays", drawElementsInstancedANGLE));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"vertexAttribDivisorANGLE", L"angle_instanced_arrays", vertexAttribDivisorANGLE));
+
     return true;
 }
 
@@ -179,7 +184,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::getExtension(
 
     std::wstring name;
     RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], name));
-    return JS_INVALID_REFERENCE;
+    return context->getExtension(&name);
 }
 
 JsValueRef CHAKRA_CALLBACK WebGLProjections::getParameter(
@@ -1829,6 +1834,80 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::lineWidth(
 
     GLfloat width = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
     context->lineWidth(width);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::drawArraysInstancedANGLE(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
+
+    ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(extension);
+
+    GLenum mode = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLint first = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
+    GLsizei count = ScriptHostUtilities::GLsizeiFromJsRef(arguments[4]);
+    GLsizei primcount = ScriptHostUtilities::GLsizeiFromJsRef(arguments[5]);
+
+    extension->drawArraysInstancedANGLE(mode, first, count, primcount);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::drawElementsInstancedANGLE(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 7);
+
+    ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(extension);
+
+    GLenum mode = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLsizei count = ScriptHostUtilities::GLsizeiFromJsRef(arguments[3]);
+    GLenum type = ScriptHostUtilities::GLenumFromJsRef(arguments[4]);
+    GLintptr offset = ScriptHostUtilities::GLsizeiptrFromJsRef(arguments[5]);
+    GLsizei primcount = ScriptHostUtilities::GLsizeiFromJsRef(arguments[6]);
+
+    extension->drawElementsInstancedANGLE(mode, count, type, offset, primcount);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef
+CHAKRA_CALLBACK
+WebGLProjections::vertexAttribDivisorANGLE(
+    JsValueRef callee,
+    bool isConstructCall,
+    JsValueRef* arguments,
+    unsigned short argumentCount,
+    PVOID callbackData
+)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
+
+    ANGLE_instanced_arrays* extension = ScriptResourceTracker::ExternalToObject<ANGLE_instanced_arrays>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(extension);
+
+    GLuint index = ScriptHostUtilities::GLuintFromJsRef(arguments[2]);
+    GLuint divisor = ScriptHostUtilities::GLuintFromJsRef(arguments[3]);
+
+    extension->vertexAttribDivisorANGLE(index, divisor);
 
     return JS_INVALID_REFERENCE;
 }

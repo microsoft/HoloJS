@@ -6,8 +6,9 @@ if (!window.getViewMatrix) {
 }
 
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+let effect = new THREE_HOLO.HolographicEffect(renderer);
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = window.experimentalHolographic === true ? new THREE_HOLO.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -60,7 +61,6 @@ scene.add(cube);
 scene.add(sphere);
 scene.add(cone);
 scene.add(torus);
-scene.add(camera); // this is required for HolographicCamera to function correctly
 
 var controls;
 
@@ -78,9 +78,7 @@ function update (delta, elapsed) {
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
 
-    if (camera.update) camera.update();
-
-    renderer.render(scene, camera);
+    effect.render(scene, camera);
 }
 
 function start () {

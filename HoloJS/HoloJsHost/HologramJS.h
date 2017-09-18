@@ -9,7 +9,7 @@
 
 namespace HologramJS {
 
-using float4x4 = Windows::Foundation::Numerics::float4x4;
+using namespace Windows::Foundation::Numerics;
 
 [Windows::Foundation::Metadata::WebHostHidden] public ref class HologramScriptHost sealed {
    public:
@@ -22,6 +22,7 @@ using float4x4 = Windows::Foundation::Numerics::float4x4;
 
     bool EnableHolographicExperimental(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
                                        frameOfReference);
+    bool ProjectHolographicSettings(bool autoStereo, bool imageStabilization, float3 worldOriginRelativePosition);
 
     Windows::Foundation::IAsyncOperation<bool> ^ RunApp(Platform::String ^ jsonUri);
 

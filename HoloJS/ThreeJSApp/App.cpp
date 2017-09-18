@@ -37,5 +37,6 @@ int main(Array<Platform::String^>^)
 {
     RunLocalSimple();
     //RunWebWithOptions();
+
 	return 0;
 }

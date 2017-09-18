@@ -27,9 +27,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2EA1228F-38D2-481E-AF6E-87BAED33D906}</ProjectGuid>
+    <ProjectGuid>{76143FD7-7828-4474-900C-E777CB2F108B}</ProjectGuid>
     <Keyword>DirectXApp</Keyword>
-    <RootNamespace>SampleApp</RootNamespace>
+    <RootNamespace>AdvancedApp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -101,7 +101,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>ThreeJSApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>AdvancedApp_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -209,20 +209,11 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Scripts\OrbitControls.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\three-holographic.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ThreeJSApp_TemporaryKey.pfx" />
+    <None Include="AdvancedApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\app.json">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Scripts\three.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>

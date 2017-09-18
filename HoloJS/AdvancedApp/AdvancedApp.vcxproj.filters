@@ -26,6 +26,9 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="ANGLE">
+      <UniqueIdentifier>{e8aa61c6-7d4a-4a77-8060-ce0983dd0548}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Native">
       <UniqueIdentifier>{d8ed9e64-2c5e-4b23-bf57-63b0f89d250e}</UniqueIdentifier>
     </Filter>
@@ -50,24 +53,15 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\app.js">
-      <Filter>Scripts</Filter>
-    </None>
+    <None Include="AdvancedApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.json">
       <Filter>Scripts</Filter>
     </None>
-    <None Include="Scripts\three.js">
-      <Filter>Scripts</Filter>
-    </None>
-    <None Include="ThreeJSApp_TemporaryKey.pfx" />
-    <None Include="Scripts\OrbitControls.js">
+    <None Include="Scripts\app.js">
       <Filter>Scripts</Filter>
     </None>
     <None Include="..\prebuilt\angle\win32\debug\libEGL.dll" />
     <None Include="..\prebuilt\angle\win32\debug\libGLESv2.dll" />
-    <None Include="Scripts\three-holographic.js">
-      <Filter>Scripts</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
