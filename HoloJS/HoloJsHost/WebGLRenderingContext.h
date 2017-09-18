@@ -48,7 +48,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
                     GLint border,
                     GLenum format,
                     GLenum type,
-                    void* pixels);
+                    void* pixels,
+					GLsizei stride = 0);
     void texImage2DNoFlip(GLenum target,
                           GLint level,
                           GLenum internalformat,

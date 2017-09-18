@@ -24,7 +24,7 @@ namespace HologramJS
 
 			IWICBitmapSource* GetBitmapSource() { return m_bitmapSource.Get(); }
 			IWICBitmap* GetBitmap() { return m_bitmap.Get(); }
-			bool GetPixelsPointer(WICInProcPointer* pixels, unsigned int* pixelsSize, unsigned int* stride);
+			HRESULT GetPixelsPointer(const GUID& format, WICInProcPointer* pixels, unsigned int* pixelsSize, unsigned int* stride);
 
 			int Width() { return m_width; }
 			int Height() { return m_height; }
@@ -56,6 +56,9 @@ namespace HologramJS
 
 			unsigned int m_width;
 			unsigned int m_height;
+
+			WICPixelFormatGUID m_sourceFormat;
+			WICPixelFormatGUID m_decodedFormat;
 
 			static JsValueRef m_createImageFunction;
 			static JsValueRef CHAKRA_CALLBACK createImage(

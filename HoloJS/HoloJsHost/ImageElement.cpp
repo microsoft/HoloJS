@@ -178,21 +178,10 @@ void ImageElement::LoadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imag
 
     EXIT_IF_FAILED(m_decoder->GetFrame(0, &bitmapFrameDecode));
 
-    Microsoft::WRL::ComPtr<IWICBitmapSource> source;
-    EXIT_IF_FAILED(bitmapFrameDecode.As(&source));
+    EXIT_IF_FAILED(bitmapFrameDecode.As(&m_bitmapSource));
 
-    EXIT_IF_FAILED(source->GetSize(&m_width, &m_height));
-
-    WICPixelFormatGUID pixelFormat;
-    EXIT_IF_FAILED(source->GetPixelFormat(&pixelFormat));
-
-    Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
-    if (!IsEqualGUID(pixelFormat, GUID_WICPixelFormat32bppRGBA)) {
-        EXIT_IF_FAILED(WICConvertBitmapSource(GUID_WICPixelFormat32bppRGBA, source.Get(), &converter));
-        EXIT_IF_FAILED(converter.As(&m_bitmapSource));
-    }
-
-    EXIT_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
+    EXIT_IF_FAILED(m_bitmapSource->GetSize(&m_width, &m_height));
+    EXIT_IF_FAILED(m_bitmapSource->GetPixelFormat(&m_sourceFormat));
 
     FireOnLoadEvent();
 }
@@ -215,9 +204,23 @@ void ImageElement::FireOnLoadEvent()
     }
 }
 
-bool ImageElement::GetPixelsPointer(WICInProcPointer* pixels, unsigned int* pixelsSize, unsigned int* stride)
+HRESULT ImageElement::GetPixelsPointer(const GUID &format, WICInProcPointer* pixels, unsigned int* pixelsSize, unsigned int* stride)
 {
     if (!m_bitmapLock) {
+		// Do format conversion if required
+		if (!IsEqualGUID(m_sourceFormat, format)) {
+			Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
+			RETURN_IF_FAILED(WICConvertBitmapSource(format, m_bitmapSource.Get(), &converter));
+			RETURN_IF_FAILED(converter.As(&m_bitmapSource));
+		}
+
+		Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
+		RETURN_IF_FAILED(
+			CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &factory));
+
+		RETURN_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
+
+		// Lock the pixels
         WICRect allBitmapRect;
         allBitmapRect.X = 0;
         allBitmapRect.Y = 0;
@@ -233,14 +236,22 @@ bool ImageElement::GetPixelsPointer(WICInProcPointer* pixels, unsigned int* pixe
 
         RETURN_IF_FAILED(m_bitmapLock->GetDataPointer(&localPixelsSize, &localPixels));
 
-        *pixels = localPixels;
+		m_decodedFormat = format;
+		m_pixels = localPixels;
+
+		*pixels = m_pixels;
         *pixelsSize = localPixelsSize;
         *stride = localStride;
     } else {
-        *pixels = m_pixels;
+		// The already decoded format does not match the requested format
+		// TODO: re-decoding the image would be possible if we create a 'release pixels pointer' method
+		if (!IsEqualGUID(format, m_decodedFormat)) {
+			return E_FAIL;
+		}
+		*pixels = m_pixels;
         *pixelsSize = m_pixelsSize;
         *stride = m_stride;
     }
 
-    return true;
+    return S_OK;
 }

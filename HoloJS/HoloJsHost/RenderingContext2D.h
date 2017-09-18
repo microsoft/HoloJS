@@ -43,7 +43,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                     unsigned int dWidth,
                     unsigned int dHeight);
 
-    Platform::Array<unsigned char> ^ getImageData(int sx, int sy, int sw, int sh);
+    Platform::Array<unsigned char> ^ getImageData(int sx, int sy, int sw, int sh, unsigned int *stride);
 
     void SetSize(unsigned int width, unsigned int height)
     {
@@ -57,7 +57,9 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
 
     std::vector<byte> m_optimizedBitmap;
     bool m_isOptimizedBitmap = false;
-    ;
+
+	Windows::Graphics::DirectX::DirectXPixelFormat m_nativePixelFormat = Windows::Graphics::DirectX::DirectXPixelFormat::R8G8B8A8UIntNormalized;
+	unsigned int m_bpp = 4;
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
 };
