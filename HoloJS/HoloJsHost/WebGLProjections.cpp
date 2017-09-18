@@ -389,8 +389,8 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D2(
     GLint level = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
     GLenum internalformat = ScriptHostUtilities::GLenumFromJsRef(arguments[4]);
 
-	// Only RGB  and RGBA supported for now
-	RETURN_INVALID_REF_IF_TRUE((internalformat == GL_RGBA) && (internalformat == GL_RGB));
+    // Only RGB  and RGBA supported for now
+    RETURN_INVALID_REF_IF_TRUE((internalformat == GL_RGBA) && (internalformat == GL_RGB));
 
     GLsizei width = ScriptHostUtilities::GLsizeiFromJsRef(arguments[5]);
     GLsizei height = ScriptHostUtilities::GLsizeiFromJsRef(arguments[6]);
@@ -405,8 +405,9 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D2(
     WICInProcPointer imageMemory = nullptr;
     unsigned int stride;
 
-	GUID imageDecodeFormat = (internalformat == GL_RGB ? GUID_WICPixelFormat24bppRGB : GUID_WICPixelFormat32bppRGBA);
-    RETURN_INVALID_REF_IF_FAILED(imageElement->GetPixelsPointer(imageDecodeFormat, &imageMemory, &imageBufferSize, &stride));
+    GUID imageDecodeFormat = (internalformat == GL_RGB ? GUID_WICPixelFormat24bppRGB : GUID_WICPixelFormat32bppRGBA);
+    RETURN_INVALID_REF_IF_FAILED(
+        imageElement->GetPixelsPointer(imageDecodeFormat, &imageMemory, &imageBufferSize, &stride));
 
     context->texImage2D(target, level, internalformat, width, height, 0, format, type, imageMemory, stride);
     return JS_INVALID_REFERENCE;
@@ -433,10 +434,11 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D3(
     RenderingContext2D* context2D = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[9]);
     RETURN_INVALID_REF_IF_NULL(context2D);
 
-	unsigned int canvasStride;
+    unsigned int canvasStride;
     auto canvasPixels = context2D->getImageData(0, 0, width, height, &canvasStride);
 
-    context->texImage2D(target, level, internalformat, width, height, 0, format, type, canvasPixels->Data, canvasStride);
+    context->texImage2D(
+        target, level, internalformat, width, height, 0, format, type, canvasPixels->Data, canvasStride);
     return JS_INVALID_REFERENCE;
 }
 
@@ -1758,7 +1760,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::getImageData(
             JsGetTypedArrayStorage(jsArray, &jsArrayPointer, &jsArrayLength, &jsArrayType, &jsArrayElementSize));
         context->CopyOptimizedBitmapToBuffer(jsArrayPointer);
     } else {
-		unsigned int canvasStride;
+        unsigned int canvasStride;
         auto pixelsArray = context->getImageData(sx, sy, sw, sh, &canvasStride);
 
         RETURN_NULL_IF_JS_ERROR(

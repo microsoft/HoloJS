@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "IRelease.h"
 #include "ChakraForHoloJS.h"
+#include "IRelease.h"
 #include "WebGLObjects.h"
 
 namespace HologramJS {
@@ -49,7 +49,7 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
                     GLenum format,
                     GLenum type,
                     void* pixels,
-					GLsizei stride = 0);
+                    GLsizei stride = 0);
     void texImage2DNoFlip(GLenum target,
                           GLint level,
                           GLenum internalformat,

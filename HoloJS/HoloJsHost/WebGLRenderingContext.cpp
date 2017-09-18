@@ -31,7 +31,7 @@ void WebGLRenderingContext::texImage2D(GLenum target,
                                        GLenum format,
                                        GLenum type,
                                        void* pixels,
-									   GLsizei stride)
+                                       GLsizei stride)
 {
     static std::vector<unsigned char> flipBuffer;
     if (type == UNSIGNED_BYTE) {

@@ -35,7 +35,8 @@ void RenderingContext2D::drawImage3(HologramJS::API::ImageElement *imageElement,
     unsigned int imageBufferSize = 0;
     WICInProcPointer imageMemory = nullptr;
     unsigned int stride;
-    EXIT_IF_FALSE(imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
+    EXIT_IF_FALSE(
+        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
 
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
     Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
@@ -69,7 +70,8 @@ void RenderingContext2D::drawImage1(HologramJS::API::ImageElement *imageElement,
     unsigned int imageBufferSize = 0;
     WICInProcPointer imageMemory = nullptr;
     unsigned int stride;
-    EXIT_IF_FALSE(imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
+    EXIT_IF_FALSE(
+        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
 
     m_optimizedBitmap.resize(m_width * m_height * m_bpp);
     m_isOptimizedBitmap = true;
@@ -110,7 +112,8 @@ void RenderingContext2D::drawImage2(HologramJS::API::ImageElement *imageElement,
     unsigned int imageBufferSize = 0;
     WICInProcPointer imageMemory = nullptr;
     unsigned int stride;
-    EXIT_IF_FALSE(imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
+    EXIT_IF_FALSE(
+        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
 
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
     Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
@@ -134,7 +137,7 @@ void RenderingContext2D::drawImage2(HologramJS::API::ImageElement *imageElement,
 Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(int sx, int sy, int sw, int sh, unsigned int *stride)
 {
     if (!m_isOptimizedBitmap) {
-		*stride = sw * m_bpp;
+        *stride = sw * m_bpp;
         return m_canvasRenderTarget->GetPixelBytes(sx, sy, sw, sh);
     } else {
         return nullptr;
