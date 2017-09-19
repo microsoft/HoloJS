@@ -30,14 +30,15 @@ void WebGLRenderingContext::texImage2D(GLenum target,
                                        GLint border,
                                        GLenum format,
                                        GLenum type,
-                                       void* pixels)
+                                       void* pixels,
+                                       GLsizei stride)
 {
     static std::vector<unsigned char> flipBuffer;
     if (type == UNSIGNED_BYTE) {
-        if (FlipYEnabled) {
-            flipBuffer.reserve(width * height * 4);
+        if (FlipYEnabled && (stride != 0) && (pixels != nullptr)) {
+            flipBuffer.reserve(height * stride);
             unsigned char* pixelsBuffer = reinterpret_cast<unsigned char*>(pixels);
-            const size_t line_size = width * 4;
+            const size_t line_size = stride;
             const int half_height = height / 2;
             for (int i = 0; i < half_height; i++) {
                 unsigned char* top_line_source = pixelsBuffer + i * line_size;

@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "ImageElement.h"
 #include "ExternalObject.h"
+#include "IBufferOnMemory.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "ScriptsLoader.h"
-#include "IBufferOnMemory.h"
 
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
@@ -77,49 +77,44 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK ImageElement::getImageData(
 
 void ImageElement::LoadAsync()
 {
-	if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem)
-	{
-		DownloadAsync();
-	}
-	else if (_wcsicmp(m_source.c_str(), L"camera://local/default") == 0)
-	{
-		GetFromCameraAsync();
-	}
-	else
-	{
-		ReadFromPackageAsync();
-	}
+    if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem) {
+        DownloadAsync();
+    } else if (_wcsicmp(m_source.c_str(), L"camera://local/default") == 0) {
+        GetFromCameraAsync();
+    } else {
+        ReadFromPackageAsync();
+    }
 }
 
-task<void>
-ImageElement::GetFromCameraAsync()
+task<void> ImageElement::GetFromCameraAsync()
 {
-	auto mediaCapture = ref new MediaCapture();
-	
-	await mediaCapture->InitializeAsync();
+    auto mediaCapture = ref new MediaCapture();
 
-	auto captureFormat = ImageEncodingProperties::CreateJpeg();
+    await mediaCapture->InitializeAsync();
 
-	auto captureStream = ref new InMemoryRandomAccessStream();
-	
-	// take photo
-	await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
-	captureStream->Seek(0);
+    auto captureFormat = ImageEncodingProperties::CreateJpeg();
 
-	std::vector<byte> rawBuffer(static_cast<unsigned int>(captureStream->Size));
+    auto captureStream = ref new InMemoryRandomAccessStream();
 
-	Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
-	Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(&imageBuffer, rawBuffer.data(), rawBuffer.size());
-	auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
-	IBuffer^ imageIBuffer = reinterpret_cast<IBuffer^>(iinspectable);
+    // take photo
+    await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
+    captureStream->Seek(0);
 
-	await captureStream->ReadAsync(imageIBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
+    std::vector<byte> rawBuffer(static_cast<unsigned int>(captureStream->Size));
 
-	LoadImageFromBuffer(imageIBuffer);
+    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
+    Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
+        &imageBuffer, rawBuffer.data(), rawBuffer.size());
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
+    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+    await captureStream->ReadAsync(
+        imageIBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
+
+    LoadImageFromBuffer(imageIBuffer);
 }
 
-task<void>
-ImageElement::ReadFromPackageAsync()
+task<void> ImageElement::ReadFromPackageAsync()
 {
     wstring completePath = BasePath + m_source;
 
@@ -178,21 +173,10 @@ void ImageElement::LoadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imag
 
     EXIT_IF_FAILED(m_decoder->GetFrame(0, &bitmapFrameDecode));
 
-    Microsoft::WRL::ComPtr<IWICBitmapSource> source;
-    EXIT_IF_FAILED(bitmapFrameDecode.As(&source));
+    EXIT_IF_FAILED(bitmapFrameDecode.As(&m_bitmapSource));
 
-    EXIT_IF_FAILED(source->GetSize(&m_width, &m_height));
-
-    WICPixelFormatGUID pixelFormat;
-    EXIT_IF_FAILED(source->GetPixelFormat(&pixelFormat));
-
-    Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
-    if (!IsEqualGUID(pixelFormat, GUID_WICPixelFormat32bppRGBA)) {
-        EXIT_IF_FAILED(WICConvertBitmapSource(GUID_WICPixelFormat32bppRGBA, source.Get(), &converter));
-        EXIT_IF_FAILED(converter.As(&m_bitmapSource));
-    }
-
-    EXIT_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
+    EXIT_IF_FAILED(m_bitmapSource->GetSize(&m_width, &m_height));
+    EXIT_IF_FAILED(m_bitmapSource->GetPixelFormat(&m_sourceFormat));
 
     FireOnLoadEvent();
 }
@@ -215,9 +199,26 @@ void ImageElement::FireOnLoadEvent()
     }
 }
 
-bool ImageElement::GetPixelsPointer(WICInProcPointer* pixels, unsigned int* pixelsSize, unsigned int* stride)
+HRESULT ImageElement::GetPixelsPointer(const GUID& format,
+                                       WICInProcPointer* pixels,
+                                       unsigned int* pixelsSize,
+                                       unsigned int* stride)
 {
     if (!m_bitmapLock) {
+        // Do format conversion if required
+        if (!IsEqualGUID(m_sourceFormat, format)) {
+            Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
+            RETURN_IF_FAILED(WICConvertBitmapSource(format, m_bitmapSource.Get(), &converter));
+            RETURN_IF_FAILED(converter.As(&m_bitmapSource));
+        }
+
+        Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
+        RETURN_IF_FAILED(
+            CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &factory));
+
+        RETURN_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
+
+        // Lock the pixels
         WICRect allBitmapRect;
         allBitmapRect.X = 0;
         allBitmapRect.Y = 0;
@@ -233,14 +234,22 @@ bool ImageElement::GetPixelsPointer(WICInProcPointer* pixels, unsigned int* pixe
 
         RETURN_IF_FAILED(m_bitmapLock->GetDataPointer(&localPixelsSize, &localPixels));
 
-        *pixels = localPixels;
+        m_decodedFormat = format;
+        m_pixels = localPixels;
+
+        *pixels = m_pixels;
         *pixelsSize = localPixelsSize;
         *stride = localStride;
     } else {
+        // The already decoded format does not match the requested format
+        // TODO: re-decoding the image would be possible if we create a 'release pixels pointer' method
+        if (!IsEqualGUID(format, m_decodedFormat)) {
+            return E_FAIL;
+        }
         *pixels = m_pixels;
         *pixelsSize = m_pixelsSize;
         *stride = m_stride;
     }
 
-    return true;
+    return S_OK;
 }
