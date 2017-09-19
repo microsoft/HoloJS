@@ -235,18 +235,22 @@ void VideoElement::SwapBuffers()
 void VideoElement::FireOnLoadEvent()
 {
     if (HasCallback()) {
-        vector<JsValueRef> parameters(3);
+        vector<JsValueRef> parameters(4);
 
-        JsValueRef* typeParam = &parameters[0];
+        parameters[0] = m_scriptCallbackContext;
+
+        JsValueRef* typeParam = &parameters[1];
         EXIT_IF_JS_ERROR(JsPointerToString(L"load", wcslen(L"load"), typeParam));
 
-        JsValueRef* widthParam = &parameters[1];
+        JsValueRef* widthParam = &parameters[2];
         EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_width), widthParam));
 
-        JsValueRef* heightParam = &parameters[2];
+        JsValueRef* heightParam = &parameters[3];
         EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_height), heightParam));
 
-        (void)InvokeCallback(parameters);
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
     }
 }
 

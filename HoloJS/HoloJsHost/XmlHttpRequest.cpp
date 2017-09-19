@@ -252,22 +252,27 @@ task<void> XmlHttpRequest::DownloadAsync()
 void XmlHttpRequest::FireStateChanged()
 {
     if (HasCallback()) {
-        vector<JsValueRef> parameters(5);
-        JsValueRef* typeParam = &parameters[0];
+        vector<JsValueRef> parameters(6);
+
+        parameters[0] = m_scriptCallbackContext;
+
+        JsValueRef* typeParam = &parameters[1];
         EXIT_IF_JS_ERROR(JsPointerToString(L"change", wcslen(L"change"), typeParam));
 
-        JsValueRef* stateParam = &parameters[1];
+        JsValueRef* stateParam = &parameters[2];
         EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_state), stateParam));
 
-        JsValueRef* statusParam = &parameters[2];
+        JsValueRef* statusParam = &parameters[3];
         EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_status), statusParam));
 
-        JsValueRef* statusTextParam = &parameters[3];
+        JsValueRef* statusTextParam = &parameters[4];
         EXIT_IF_JS_ERROR(JsPointerToString(m_statusText.c_str(), m_statusText.length(), statusTextParam));
 
-        JsValueRef* responesTypeParam = &parameters[4];
+        JsValueRef* responesTypeParam = &parameters[5];
         EXIT_IF_JS_ERROR(JsPointerToString(m_responseType.c_str(), m_responseType.length(), responesTypeParam));
 
-        (void)InvokeCallback(parameters);
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
     }
 }
