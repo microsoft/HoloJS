@@ -3,6 +3,7 @@
 #include "ChakraForHoloJS.h"
 #include "IRelease.h"
 #include "WebGLObjects.h"
+#include "ImageElement.h"
 
 namespace HologramJS {
 namespace WebGL {
@@ -48,8 +49,19 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
                     GLint border,
                     GLenum format,
                     GLenum type,
+                    HologramJS::API::ImageElement* image);
+
+    void texImage2D(GLenum target,
+                    GLint level,
+                    GLenum internalformat,
+                    GLsizei width,
+                    GLsizei height,
+                    GLint border,
+                    GLenum format,
+                    GLenum type,
                     void* pixels,
                     GLsizei stride = 0);
+
     void texImage2DNoFlip(GLenum target,
                           GLint level,
                           GLenum internalformat,
