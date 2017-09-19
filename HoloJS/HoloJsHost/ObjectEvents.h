@@ -35,19 +35,9 @@ class ElementWithEvents {
         }
     }
 
-    bool InvokeCallback(std::vector<JsValueRef> &parameters)
-    {
-        JsValueRef result;
-        parameters.insert(parameters.begin(), m_scriptCallbackContext);
-        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-            m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-
-        return true;
-    }
-
     bool HasCallback() { return m_scriptCallback != JS_INVALID_REFERENCE; }
 
-   private:
+   protected:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
     JsValueRef m_scriptCallbackContext = JS_INVALID_REFERENCE;
 };
