@@ -60,8 +60,6 @@ class ImageElement : public HologramJS::Utilities::ElementWithEvents, public Hol
     unsigned int m_width;
     unsigned int m_height;
 
-    bool m_flipY = false;
-
     WICPixelFormatGUID m_sourceFormat;
     WICPixelFormatGUID m_decodedFormat;
 

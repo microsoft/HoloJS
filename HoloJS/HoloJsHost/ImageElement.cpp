@@ -88,7 +88,7 @@ void ImageElement::LoadAsync()
 
 task<void> ImageElement::GetFromCameraAsync()
 {
-    auto mediaCapture = ref new MediaCapture();
+	auto mediaCapture = ref new MediaCapture();
 
     await mediaCapture->InitializeAsync();
 

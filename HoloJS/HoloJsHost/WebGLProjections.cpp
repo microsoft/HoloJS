@@ -404,6 +404,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D2(
     RETURN_INVALID_REF_IF_NULL(imageElement);
 
     context->texImage2D(target, level, internalformat, width, height, 0, format, type, imageElement);
+
     return JS_INVALID_REFERENCE;
 }
 
