@@ -2,6 +2,7 @@
 #include "WebGLRenderingContext.h"
 
 using namespace HologramJS::WebGL;
+using namespace HologramJS::API;
 using namespace Platform;
 using namespace std;
 using namespace Windows::Graphics::Imaging;
@@ -20,6 +21,32 @@ void WebGLRenderingContext::bindTexture(GLenum target, WebGLTexture* texture)
 void WebGLRenderingContext::texParameteri(GLenum target, GLenum pname, GLint param)
 {
     glTexParameteri(target, pname, param);
+}
+
+void WebGLRenderingContext::texImage2D(GLenum target,
+                                       GLint level,
+                                       GLenum internalformat,
+                                       GLsizei width,
+                                       GLsizei height,
+                                       GLint border,
+                                       GLenum format,
+                                       GLenum type,
+                                       ImageElement* image)
+{
+    unsigned int imageBufferSize = 0;
+    WICInProcPointer imageBuffer = nullptr;
+    unsigned int stride;
+
+    GUID imageDecodeFormat = (internalformat == GL_RGB ? GUID_WICPixelFormat24bppRGB : GUID_WICPixelFormat32bppRGBA);
+    ImageElement::ImageFlipRotation imageFlip =
+        FlipYEnabled ? ImageElement::ImageFlipRotation::FlipY : ImageElement::ImageFlipRotation::None;
+    EXIT_IF_FAILED(image->GetPixelsPointer(imageDecodeFormat, &imageBuffer, &imageBufferSize, &stride, imageFlip));
+
+    if (type == UNSIGNED_BYTE) {
+        glTexImage2D(target, level, internalformat, width, height, border, format, type, imageBuffer);
+    } else {
+        throw ref new InvalidArgumentException();
+    }
 }
 
 void WebGLRenderingContext::texImage2D(GLenum target,

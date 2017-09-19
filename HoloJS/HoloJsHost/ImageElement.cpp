@@ -88,7 +88,7 @@ void ImageElement::LoadAsync()
 
 task<void> ImageElement::GetFromCameraAsync()
 {
-    auto mediaCapture = ref new MediaCapture();
+	auto mediaCapture = ref new MediaCapture();
 
     await mediaCapture->InitializeAsync();
 
@@ -202,7 +202,8 @@ void ImageElement::FireOnLoadEvent()
 HRESULT ImageElement::GetPixelsPointer(const GUID& format,
                                        WICInProcPointer* pixels,
                                        unsigned int* pixelsSize,
-                                       unsigned int* stride)
+                                       unsigned int* stride,
+                                       ImageFlipRotation flipRotation)
 {
     if (!m_bitmapLock) {
         // Do format conversion if required
@@ -215,6 +216,15 @@ HRESULT ImageElement::GetPixelsPointer(const GUID& format,
         Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
         RETURN_IF_FAILED(
             CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &factory));
+
+        // Flip image if needed
+        Microsoft::WRL::ComPtr<IWICBitmapFlipRotator> flipRotator;
+        if (flipRotation == ImageFlipRotation::FlipY) {
+            RETURN_IF_FAILED(factory->CreateBitmapFlipRotator(&flipRotator));
+
+            RETURN_IF_FAILED(flipRotator->Initialize(m_bitmapSource.Get(), WICBitmapTransformFlipVertical));
+            RETURN_IF_FAILED(flipRotator.As(&m_bitmapSource));
+        }
 
         RETURN_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
 

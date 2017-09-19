@@ -21,10 +21,14 @@ class ImageElement : public HologramJS::Utilities::ElementWithEvents, public Hol
 
     IWICBitmapSource* GetBitmapSource() { return m_bitmapSource.Get(); }
     IWICBitmap* GetBitmap() { return m_bitmap.Get(); }
+
+    enum class ImageFlipRotation { None, FlipY };
+
     HRESULT GetPixelsPointer(const GUID& format,
                              WICInProcPointer* pixels,
                              unsigned int* pixelsSize,
-                             unsigned int* stride);
+                             unsigned int* stride,
+                             ImageFlipRotation flipRotation = ImageFlipRotation::None);
 
     int Width() { return m_width; }
     int Height() { return m_height; }

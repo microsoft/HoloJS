@@ -360,6 +360,8 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D1(
     GLenum format = ScriptHostUtilities::GLenumFromJsRef(arguments[8]);
     GLenum type = ScriptHostUtilities::GLenumFromJsRef(arguments[9]);
 
+    unsigned int imageStride = 0;  // unknown stride; flipY will not work
+
     JsValueType arrayRefType;
     RETURN_NULL_IF_JS_ERROR(JsGetValueType(arguments[10], &arrayRefType));
     if (arrayRefType != JsValueType::JsNull) {
@@ -369,9 +371,9 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D1(
         JsTypedArrayType arrayType;
         RETURN_NULL_IF_JS_ERROR(
             JsGetTypedArrayStorage(arguments[10], &pixels, &pixelsLength, &arrayType, &arrayElementSize));
-        context->texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+        context->texImage2D(target, level, internalformat, width, height, border, format, type, pixels, imageStride);
     } else {
-        context->texImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
+        context->texImage2D(target, level, internalformat, width, height, border, format, type, nullptr, imageStride);
     }
 
     return JS_INVALID_REFERENCE;
@@ -401,15 +403,8 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D2(
     auto imageElement = ScriptResourceTracker::ExternalToObject<API::ImageElement>(arguments[9]);
     RETURN_INVALID_REF_IF_NULL(imageElement);
 
-    unsigned int imageBufferSize = 0;
-    WICInProcPointer imageMemory = nullptr;
-    unsigned int stride;
+    context->texImage2D(target, level, internalformat, width, height, 0, format, type, imageElement);
 
-    GUID imageDecodeFormat = (internalformat == GL_RGB ? GUID_WICPixelFormat24bppRGB : GUID_WICPixelFormat32bppRGBA);
-    RETURN_INVALID_REF_IF_FAILED(
-        imageElement->GetPixelsPointer(imageDecodeFormat, &imageMemory, &imageBufferSize, &stride));
-
-    context->texImage2D(target, level, internalformat, width, height, 0, format, type, imageMemory, stride);
     return JS_INVALID_REFERENCE;
 }
 
