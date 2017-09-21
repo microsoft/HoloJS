@@ -1,6 +1,6 @@
 function run() {
 
-    let canvas = document.createElement(holographic ? 'exp-holo-canvas' : 'canvas');
+    let canvas = document.createElement(typeof holographic !== undefined ? 'exp-holo-canvas' : 'canvas');
     if (!holographic) {
         document.body.appendChild(canvas);
         document.body.style.margin = document.body.style.padding = 0;

@@ -279,13 +279,10 @@
     <None Include="ScriptingFramework\2d-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\DOM.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="ScriptingFramework\console.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\domjs.js">
+    <None Include="ScriptingFramework\DOM.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\framework.json">

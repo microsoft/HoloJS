@@ -160,9 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ScriptingFramework\DOM.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\Image.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
@@ -173,9 +170,6 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\framework.json">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\domjs.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
@@ -197,10 +191,13 @@
       <Filter>Interface\ScriptSide\Input</Filter>
     </None>
     <None Include="ScriptingFramework\webgl-context.js">
-      <Filter>Interface\ScriptSide\RenderingContext</Filter>
+      <Filter>Interface\ScriptSide\RenderingContexts</Filter>
     </None>
     <None Include="ScriptingFramework\2d-context.js">
-      <Filter>Interface\ScriptSide\RenderingContext</Filter>
+      <Filter>Interface\ScriptSide\RenderingContexts</Filter>
+    </None>
+    <None Include="ScriptingFramework\DOM.js">
+      <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -243,7 +240,7 @@
     <Filter Include="Interface\ScriptSide\Input">
       <UniqueIdentifier>{91dd0f74-8d05-4bfd-88bf-916a8d350f43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interface\ScriptSide\RenderingContext">
+    <Filter Include="Interface\ScriptSide\RenderingContexts">
       <UniqueIdentifier>{190c791a-c5f5-4275-accc-861d5411565e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
