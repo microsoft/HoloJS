@@ -1,81 +1,81 @@
 ﻿(function() {
 
-nativeInterface.makeWebGLRenderingContext = function() {
+holographic.nativeInterface.makeWebGLRenderingContext = function() {
 
-    this.glContext = nativeInterface.webgl.createContext();
+    this.glContext = holographic.nativeInterface.webgl.createContext();
 
     this.getError = function() {
         return 0;
     };
 
     this.getShaderPrecisionFormat = function(shadertype, precisiontype) {
-        return nativeInterface.webgl.getShaderPrecisionFormat(this.glContext, shadertype, precisiontype);
+        return holographic.nativeInterface.webgl.getShaderPrecisionFormat(this.glContext, shadertype, precisiontype);
     };
 
     this.getExtension = function(name) {
-        return nativeInterface.webgl.getExtension(this.glContext, name);
+        return holographic.nativeInterface.webgl.getExtension(this.glContext, name);
     };
 
     this.getParameter = function(pname) {
-        return nativeInterface.webgl.getParameter(this.glContext, pname);
+        return holographic.nativeInterface.webgl.getParameter(this.glContext, pname);
     };
 
     this.createRenderbuffer = function() {
-        return nativeInterface.webgl.createRenderbuffer(this.glContext);
+        return holographic.nativeInterface.webgl.createRenderbuffer(this.glContext);
     };
 
     this.bindRenderbuffer = function(target, renderbuffer) {
         if (renderbuffer) {
-            return nativeInterface.webgl.bindRenderbuffer(this.glContext, target, renderbuffer.external);
+            return holographic.nativeInterface.webgl.bindRenderbuffer(this.glContext, target, renderbuffer.external);
         } else {
-            return nativeInterface.webgl.bindRenderbuffer(this.glContext, target, null);
+            return holographic.nativeInterface.webgl.bindRenderbuffer(this.glContext, target, null);
         }
     };
 
     this.renderbufferStorage = function(target, internalformat, width, height) {
-        return nativeInterface.webgl.renderbufferStorage(this.glContext, target, internalformat, width, height);
+        return holographic.nativeInterface.webgl.renderbufferStorage(this.glContext, target, internalformat, width, height);
     };
 
     this.createFramebuffer = function() {
-        return nativeInterface.webgl.createFramebuffer(this.glContext);
+        return holographic.nativeInterface.webgl.createFramebuffer(this.glContext);
     };
 
     this.bindFramebuffer = function(target, framebuffer) {
         if (framebuffer) {
-            return nativeInterface.webgl.bindFramebuffer(this.glContext, target, framebuffer.external);
+            return holographic.nativeInterface.webgl.bindFramebuffer(this.glContext, target, framebuffer.external);
         } else {
-            return nativeInterface.webgl.bindFramebuffer(this.glContext, target, null);
+            return holographic.nativeInterface.webgl.bindFramebuffer(this.glContext, target, null);
         }
     };
 
     this.framebufferRenderbuffer = function(target, attachment, renderbuffertarget, renderbuffer) {
-        return nativeInterface.webgl.framebufferRenderbuffer(
+        return holographic.nativeInterface.webgl.framebufferRenderbuffer(
             this.glContext, target, attachment, renderbuffertarget, renderbuffer.external);
     };
 
     this.framebufferTexture2D = function(target, attachment, textarget, texture, level) {
-        return nativeInterface.webgl.framebufferTexture2D(
+        return holographic.nativeInterface.webgl.framebufferTexture2D(
             this.glContext, target, attachment, textarget, texture.external, level);
     };
 
     this.createTexture = function() {
-        return nativeInterface.webgl.createTexture(this.glContext);
+        return holographic.nativeInterface.webgl.createTexture(this.glContext);
     };
 
     this.bindTexture = function(target, texture) {
         if (texture) {
-            return nativeInterface.webgl.bindTexture(this.glContext, target, texture.external);
+            return holographic.nativeInterface.webgl.bindTexture(this.glContext, target, texture.external);
         } else {
-            return nativeInterface.webgl.bindTexture(this.glContext, target, null);
+            return holographic.nativeInterface.webgl.bindTexture(this.glContext, target, null);
         }
     };
 
     this.texParameteri = function(target, pname, param) {
-        return nativeInterface.webgl.texParameteri(this.glContext, target, pname, param);
+        return holographic.nativeInterface.webgl.texParameteri(this.glContext, target, pname, param);
     };
 
     this.texImage2D = function(target, level, internalformat, width, height, border, format, type, pixels) {
-        return nativeInterface.webgl.texImage2D(
+        return holographic.nativeInterface.webgl.texImage2D(
             this.glContext, target, level, internalformat, width, height, border, format, type, pixels.external);
     };
 
@@ -83,7 +83,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
         if (arguments.length === 9) {
             // GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum
             // format, GLenum type, ArrayBufferView? pixels
-            nativeInterface.webgl.texImage2D1(this.glContext,
+            holographic.nativeInterface.webgl.texImage2D1(this.glContext,
                                               arguments[0],
                                               arguments[1],
                                               arguments[2],
@@ -96,7 +96,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
         } else if (arguments.length === 6 && (arguments[5] instanceof Image)) {
             var image = arguments[5];
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
-            nativeInterface.webgl.texImage2D2(this.glContext,
+            holographic.nativeInterface.webgl.texImage2D2(this.glContext,
                                               arguments[0],
                                               arguments[1],
                                               arguments[2],
@@ -109,7 +109,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
                    arguments[5].context.context2d) {
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
             var canvas = arguments[5];
-            nativeInterface.webgl.texImage2D3(this.glContext,
+            holographic.nativeInterface.webgl.texImage2D3(this.glContext,
                                               arguments[0],
                                               arguments[1],
                                               arguments[2],
@@ -120,7 +120,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
                                               canvas.context.context2d);
         } else if (arguments.length === 6 && (arguments[5] instanceof HTMLVideoElement)) {
             var video = arguments[5];
-            nativeInterface.webgl.texImage2D4(this.glContext,
+            holographic.nativeInterface.webgl.texImage2D4(this.glContext,
                                               arguments[0],
                                               arguments[1],
                                               arguments[2],
@@ -135,307 +135,307 @@ nativeInterface.makeWebGLRenderingContext = function() {
     };
 
     this.activeTexture = function(texture) {
-        return nativeInterface.webgl.activeTexture(this.glContext, texture);
+        return holographic.nativeInterface.webgl.activeTexture(this.glContext, texture);
     };
 
     this.generateMipmap = function(target) {
-        return nativeInterface.webgl.generateMipmap(this.glContext, target);
+        return holographic.nativeInterface.webgl.generateMipmap(this.glContext, target);
     };
 
     this.pixelStorei = function(pname, param) {
-        return nativeInterface.webgl.pixelStorei(this.glContext, pname, param);
+        return holographic.nativeInterface.webgl.pixelStorei(this.glContext, pname, param);
     };
 
     this.clearDepth = function(depth) {
-        return nativeInterface.webgl.clearDepth(this.glContext, depth);
+        return holographic.nativeInterface.webgl.clearDepth(this.glContext, depth);
     };
 
     this.clearStencil = function(s) {
-        return nativeInterface.webgl.clearStencil(this.glContext, s);
+        return holographic.nativeInterface.webgl.clearStencil(this.glContext, s);
     };
 
     this.enable = function(cap) {
-        return nativeInterface.webgl.enable(this.glContext, cap);
+        return holographic.nativeInterface.webgl.enable(this.glContext, cap);
     };
 
     this.disable = function(cap) {
-        return nativeInterface.webgl.disable(this.glContext, cap);
+        return holographic.nativeInterface.webgl.disable(this.glContext, cap);
     };
 
     this.depthFunc = function(func) {
-        return nativeInterface.webgl.depthFunc(this.glContext, func);
+        return holographic.nativeInterface.webgl.depthFunc(this.glContext, func);
     };
 
     this.depthMask = function(flag) {
-        return nativeInterface.webgl.depthMask(this.glContext, flag);
+        return holographic.nativeInterface.webgl.depthMask(this.glContext, flag);
     };
 
     this.depthRange = function(zNear, zFar) {
-        return nativeInterface.webgl.depthRange(this.glContext, zNear, zFar);
+        return holographic.nativeInterface.webgl.depthRange(this.glContext, zNear, zFar);
     };
 
     this.frontFace = function(mode) {
-        return nativeInterface.webgl.frontFace(this.glContext, mode);
+        return holographic.nativeInterface.webgl.frontFace(this.glContext, mode);
     };
 
     this.cullFace = function(mode) {
-        return nativeInterface.webgl.cullFace(this.glContext, mode);
+        return holographic.nativeInterface.webgl.cullFace(this.glContext, mode);
     };
 
     this.blendColor = function(red, green, blue, alpha) {
-        return nativeInterface.webgl.blendColor(this.glContext, red, green, blue, alpha);
+        return holographic.nativeInterface.webgl.blendColor(this.glContext, red, green, blue, alpha);
     };
 
     this.blendEquation = function(mode) {
-        return nativeInterface.webgl.blendEquation(this.glContext, mode);
+        return holographic.nativeInterface.webgl.blendEquation(this.glContext, mode);
     };
 
     this.blendEquationSeparate = function(modeRGB, modeAlpha) {
-        return nativeInterface.webgl.blendEquationSeparate(this.glContext, modeRGB, modeAlpha);
+        return holographic.nativeInterface.webgl.blendEquationSeparate(this.glContext, modeRGB, modeAlpha);
     };
 
     this.blendFunc = function(sfactor, dfactor) {
-        return nativeInterface.webgl.blendFunc(this.glContext, sfactor, dfactor);
+        return holographic.nativeInterface.webgl.blendFunc(this.glContext, sfactor, dfactor);
     };
 
     this.blendFuncSeparate = function(srcRGB, dstRGB, srcAlpha, dstAlpha) {
-        return nativeInterface.webgl.blendFuncSeparate(this.glContext, srcRGB, dstRGB, srcAlpha, dstAlpha);
+        return holographic.nativeInterface.webgl.blendFuncSeparate(this.glContext, srcRGB, dstRGB, srcAlpha, dstAlpha);
     };
 
     this.scissor = function(x, y, width, height) {
-        return nativeInterface.webgl.scissor(this.glContext, x, y, width, height);
+        return holographic.nativeInterface.webgl.scissor(this.glContext, x, y, width, height);
     };
 
     this.viewport = function(x, y, width, height) {
-        return nativeInterface.webgl.viewport(this.glContext, x, y, width, height);
+        return holographic.nativeInterface.webgl.viewport(this.glContext, x, y, width, height);
     };
 
     this.clearColor = function(red, green, blue, alpha) {
-        return nativeInterface.webgl.clearColor(this.glContext, red, green, blue, alpha);
+        return holographic.nativeInterface.webgl.clearColor(this.glContext, red, green, blue, alpha);
     };
 
     this.clear = function(mask) {
-        return nativeInterface.webgl.clear(this.glContext, mask);
+        return holographic.nativeInterface.webgl.clear(this.glContext, mask);
     };
 
     this.createBuffer = function() {
-        return nativeInterface.webgl.createBuffer(this.glContext);
+        return holographic.nativeInterface.webgl.createBuffer(this.glContext);
     };
 
     this.bindBuffer = function(target, buffer) {
         if (buffer) {
-            return nativeInterface.webgl.bindBuffer(this.glContext, target, buffer.external);
+            return holographic.nativeInterface.webgl.bindBuffer(this.glContext, target, buffer.external);
         } else {
-            return nativeInterface.webgl.bindBuffer(this.glContext, target, null);
+            return holographic.nativeInterface.webgl.bindBuffer(this.glContext, target, null);
         }
     };
 
     this.bufferData = function(target, size, usage) {
         if (typeof size === 'number') {
-            return nativeInterface.webgl.bufferData1(this.glContext, target, size, usage);
+            return holographic.nativeInterface.webgl.bufferData1(this.glContext, target, size, usage);
         } else {
             // size is data
-            return nativeInterface.webgl.bufferData2(this.glContext, target, size, usage);
+            return holographic.nativeInterface.webgl.bufferData2(this.glContext, target, size, usage);
         }
     };
 
     this.deleteBuffer = function(buffer) {
-        return nativeInterface.webgl.deleteBuffer(this.glContext, buffer.external);
+        return holographic.nativeInterface.webgl.deleteBuffer(this.glContext, buffer.external);
     };
 
     this.colorMask = function(red, green, blue, alpha) {
-        return nativeInterface.webgl.colorMask(this.glContext, red, green, blue, alpha);
+        return holographic.nativeInterface.webgl.colorMask(this.glContext, red, green, blue, alpha);
     };
 
     this.drawArrays = function(mode, first, count) {
-        return nativeInterface.webgl.drawArrays(this.glContext, mode, first, count);
+        return holographic.nativeInterface.webgl.drawArrays(this.glContext, mode, first, count);
     };
 
     this.drawElements = function(mode, count, type, offset) {
-        return nativeInterface.webgl.drawElements(this.glContext, mode, count, type, offset);
+        return holographic.nativeInterface.webgl.drawElements(this.glContext, mode, count, type, offset);
     };
 
     this.enableVertexAttribArray = function(index) {
-        return nativeInterface.webgl.enableVertexAttribArray(this.glContext, index);
+        return holographic.nativeInterface.webgl.enableVertexAttribArray(this.glContext, index);
     };
 
     this.disableVertexAttribArray = function(index) {
-        return nativeInterface.webgl.disableVertexAttribArray(this.glContext, index);
+        return holographic.nativeInterface.webgl.disableVertexAttribArray(this.glContext, index);
     };
 
     this.vertexAttribPointer = function(indx, size, type, normalized, stride, offset) {
-        return nativeInterface.webgl.vertexAttribPointer(this.glContext, indx, size, type, normalized, stride, offset);
+        return holographic.nativeInterface.webgl.vertexAttribPointer(this.glContext, indx, size, type, normalized, stride, offset);
     };
 
     this.createProgram = function() {
-        return nativeInterface.webgl.createProgram(this.glContext);
+        return holographic.nativeInterface.webgl.createProgram(this.glContext);
     };
 
     this.useProgram = function(program) {
-        return nativeInterface.webgl.useProgram(this.glContext, program.external);
+        return holographic.nativeInterface.webgl.useProgram(this.glContext, program.external);
     };
 
     this.validateProgram = function(program) {
-        return nativeInterface.webgl.validateProgram(this.glContext, program.external);
+        return holographic.nativeInterface.webgl.validateProgram(this.glContext, program.external);
     };
 
     this.linkProgram = function(program) {
-        return nativeInterface.webgl.linkProgram(this.glContext, program.external);
+        return holographic.nativeInterface.webgl.linkProgram(this.glContext, program.external);
     };
 
     this.getProgramParameter = function(program, pname) {
-        return nativeInterface.webgl.getProgramParameter(this.glContext, program.external, pname);
+        return holographic.nativeInterface.webgl.getProgramParameter(this.glContext, program.external, pname);
     };
 
     this.getProgramInfoLog = function(program) {
-        return nativeInterface.webgl.getProgramInfoLog(this.glContext, program.external);
+        return holographic.nativeInterface.webgl.getProgramInfoLog(this.glContext, program.external);
     };
 
     this.deleteProgram = function(program) {
-        return nativeInterface.webgl.deleteProgram(this.glContext, program.external);
+        return holographic.nativeInterface.webgl.deleteProgram(this.glContext, program.external);
     };
 
     this.bindAttribLocation = function(program, index, name) {
-        return nativeInterface.webgl.bindAttribLocation(this.glContext, program.external, index, name);
+        return holographic.nativeInterface.webgl.bindAttribLocation(this.glContext, program.external, index, name);
     };
 
     this.getActiveUniform = function(program, index) {
-        return nativeInterface.webgl.getActiveUniform(this.glContext, program.external, index);
+        return holographic.nativeInterface.webgl.getActiveUniform(this.glContext, program.external, index);
     };
 
     this.getActiveAttrib = function(program, index) {
-        return nativeInterface.webgl.getActiveAttrib(this.glContext, program.external, index);
+        return holographic.nativeInterface.webgl.getActiveAttrib(this.glContext, program.external, index);
     };
 
     this.getAttribLocation = function(program, name) {
-        return nativeInterface.webgl.getAttribLocation(this.glContext, program.external, name);
+        return holographic.nativeInterface.webgl.getAttribLocation(this.glContext, program.external, name);
     };
 
     this.createShader = function(type) {
-        return nativeInterface.webgl.createShader(this.glContext, type);
+        return holographic.nativeInterface.webgl.createShader(this.glContext, type);
     };
 
     this.shaderSource = function(shader, source) {
-        return nativeInterface.webgl.shaderSource(this.glContext, shader.external, source);
+        return holographic.nativeInterface.webgl.shaderSource(this.glContext, shader.external, source);
     };
 
     this.compileShader = function(shader) {
-        return nativeInterface.webgl.compileShader(this.glContext, shader.external);
+        return holographic.nativeInterface.webgl.compileShader(this.glContext, shader.external);
     };
 
     this.getShaderParameter = function(shader, pname) {
-        return nativeInterface.webgl.getShaderParameter(this.glContext, shader.external, pname);
+        return holographic.nativeInterface.webgl.getShaderParameter(this.glContext, shader.external, pname);
     };
 
     this.getShaderInfoLog = function(shader) {
-        return nativeInterface.webgl.getShaderInfoLog(this.glContext, shader.external);
+        return holographic.nativeInterface.webgl.getShaderInfoLog(this.glContext, shader.external);
     };
 
     this.attachShader = function(program, shader) {
-        return nativeInterface.webgl.attachShader(this.glContext, program.external, shader.external);
+        return holographic.nativeInterface.webgl.attachShader(this.glContext, program.external, shader.external);
     };
 
     this.deleteShader = function(shader) {
-        return nativeInterface.webgl.deleteShader(this.glContext, shader.external);
+        return holographic.nativeInterface.webgl.deleteShader(this.glContext, shader.external);
     };
 
     this.getUniformLocation = function(program, name) {
-        return nativeInterface.webgl.getUniformLocation(this.glContext, program.external, name);
+        return holographic.nativeInterface.webgl.getUniformLocation(this.glContext, program.external, name);
     };
 
     this.uniform1f = function(location, x) {
-        return nativeInterface.webgl.uniform1f(this.glContext, location.external, x);
+        return holographic.nativeInterface.webgl.uniform1f(this.glContext, location.external, x);
     };
 
     this.uniform1fv = function(location, v) {
-        return nativeInterface.webgl.uniform1fv(this.glContext, location.external, v);
+        return holographic.nativeInterface.webgl.uniform1fv(this.glContext, location.external, v);
     };
 
     this.uniform1i = function(location, x) {
-        return nativeInterface.webgl.uniform1i(this.glContext, location.external, x);
+        return holographic.nativeInterface.webgl.uniform1i(this.glContext, location.external, x);
     };
 
     this.uniform1iv = function(location, v) {
-        return nativeInterface.webgl.uniform1iv(this.glContext, location.external, v);
+        return holographic.nativeInterface.webgl.uniform1iv(this.glContext, location.external, v);
     };
 
     this.uniform2f = function(location, x, y) {
-        return nativeInterface.webgl.uniform2f(this.glContext, location.external, x, y);
+        return holographic.nativeInterface.webgl.uniform2f(this.glContext, location.external, x, y);
     };
 
     this.uniform2fv = function(location, v) {
-        return nativeInterface.webgl.uniform2fv(this.glContext, location.external, Float32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform2fv(this.glContext, location.external, Float32Array.from(v));
     };
 
     this.uniform2i = function(location, x, y) {
-        return nativeInterface.webgl.uniform2i(this.glContext, location.external, x, y);
+        return holographic.nativeInterface.webgl.uniform2i(this.glContext, location.external, x, y);
     };
 
     this.uniform2iv = function(location, v) {
-        return nativeInterface.webgl.uniform2iv(this.glContext, location.external, Int32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform2iv(this.glContext, location.external, Int32Array.from(v));
     };
 
     this.uniform3f = function(location, x, y, z) {
-        return nativeInterface.webgl.uniform3f(this.glContext, location.external, x, y, z);
+        return holographic.nativeInterface.webgl.uniform3f(this.glContext, location.external, x, y, z);
     };
 
     this.uniform3fv = function(location, v) {
-        return nativeInterface.webgl.uniform3fv(this.glContext, location.external, Float32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform3fv(this.glContext, location.external, Float32Array.from(v));
     };
 
     this.uniform3i = function(location, x, y, z) {
-        return nativeInterface.webgl.uniform3i(this.glContext, location.external, x, y, z);
+        return holographic.nativeInterface.webgl.uniform3i(this.glContext, location.external, x, y, z);
     };
 
     this.uniform3iv = function(location, v) {
-        return nativeInterface.webgl.uniform3iv(this.glContext, location.external, Int32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform3iv(this.glContext, location.external, Int32Array.from(v));
     };
 
     this.uniform4f = function(location, x, y, z, w) {
-        return nativeInterface.webgl.uniform4f(this.glContext, location.external, x, y, z, w);
+        return holographic.nativeInterface.webgl.uniform4f(this.glContext, location.external, x, y, z, w);
     };
 
     this.uniform4fv = function(location, v) {
-        return nativeInterface.webgl.uniform4fv(this.glContext, location.external, Float32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform4fv(this.glContext, location.external, Float32Array.from(v));
     };
 
     this.uniform4i = function(location, x, y, z, w) {
-        return nativeInterface.webgl.uniform4i(this.glContext, location.external, x, y, z, w);
+        return holographic.nativeInterface.webgl.uniform4i(this.glContext, location.external, x, y, z, w);
     };
 
     this.uniform4iv = function(location, v) {
-        return nativeInterface.webgl.uniform4iv(this.glContext, location.external, Int32Array.from(v));
+        return holographic.nativeInterface.webgl.uniform4iv(this.glContext, location.external, Int32Array.from(v));
     };
 
     this.uniformMatrix2fv = function(location, transpose, value) {
-        return nativeInterface.webgl.uniformMatrix2fv(
+        return holographic.nativeInterface.webgl.uniformMatrix2fv(
             this.glContext, location.external, transpose, Float32Array.from(value));
     };
 
     this.uniformMatrix3fv = function(location, transpose, value) {
-        return nativeInterface.webgl.uniformMatrix3fv(
+        return holographic.nativeInterface.webgl.uniformMatrix3fv(
             this.glContext, location.external, transpose, Float32Array.from(value));
     };
 
     this.uniformMatrix4fv = function(location, transpose, value) {
-        return nativeInterface.webgl.uniformMatrix4fv(
+        return holographic.nativeInterface.webgl.uniformMatrix4fv(
             this.glContext, location.external, transpose, Float32Array.from(value));
     };
 
     this.stencilFunc = function(func, ref, mask) {
-        return nativeInterface.webgl.stencilFunc(this.glContext, func, ref, mask);
+        return holographic.nativeInterface.webgl.stencilFunc(this.glContext, func, ref, mask);
     };
 
     this.stencilMask = function(mask) {
-        return nativeInterface.webgl.stencilMask(this.glContext, mask);
+        return holographic.nativeInterface.webgl.stencilMask(this.glContext, mask);
     };
 
     this.stencilOp = function(fail, zfail, zpass) {
-        return nativeInterface.webgl.stencilOp(this.glContext, fail, zfail, zpass);
+        return holographic.nativeInterface.webgl.stencilOp(this.glContext, fail, zfail, zpass);
     };
 
     this.lineWidth = function(width) {
-        return nativeInterface.webgl.lineWidth(this.glContext, width);
+        return holographic.nativeInterface.webgl.lineWidth(this.glContext, width);
     };
 
     this.DEPTH_BUFFER_BIT = 0x00000100;

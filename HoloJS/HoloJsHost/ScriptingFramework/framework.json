@@ -1,8 +1,14 @@
-{ "scripts" : [ "FrameworkHelpers.js",
-"XmlHttpRequest.js",
-"Image.js",
-"video.js",
-"window.js",
-"DOM.js",
-"WebGL.js",
-"canvas2d.js" ] }
+{
+  "scripts": [
+    "domjs.js",
+    "console.js",
+    "input.js",
+    "mouse-input.js",
+    "keyboard-input.js",
+    "spatial-input.js",
+    "window-holographic.js",
+    "XmlHttpRequest.js",
+    "WebGL.js",
+    "canvas2d.js"
+  ]
+}

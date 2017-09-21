@@ -282,6 +282,12 @@
     <None Include="ScriptingFramework\DOM.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ScriptingFramework\DomExtensions.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\domjs.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ScriptingFramework\framework.json">
       <DeploymentContent>true</DeploymentContent>
     </None>

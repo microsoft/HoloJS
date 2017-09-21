@@ -187,6 +187,12 @@
     <None Include="ScriptingFramework\framework.json">
       <Filter>Interface\ScriptSide</Filter>
     </None>
+    <None Include="ScriptingFramework\domjs.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\DomExtensions.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Loaders">

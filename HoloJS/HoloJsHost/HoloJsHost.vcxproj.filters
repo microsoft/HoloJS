@@ -166,9 +166,6 @@
     <None Include="ScriptingFramework\DOM.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
-    <None Include="ScriptingFramework\FrameworkHelpers.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\Image.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
@@ -178,14 +175,32 @@
     <None Include="ScriptingFramework\WebGL.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
-    <None Include="ScriptingFramework\Window.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\XmlHttpRequest.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\framework.json">
       <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\domjs.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\console.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\input.js">
+      <Filter>Interface\ScriptSide\input</Filter>
+    </None>
+    <None Include="ScriptingFramework\keyboard-input.js">
+      <Filter>Interface\ScriptSide\input</Filter>
+    </None>
+    <None Include="ScriptingFramework\mouse-input.js">
+      <Filter>Interface\ScriptSide\input</Filter>
+    </None>
+    <None Include="ScriptingFramework\spatial-input.js">
+      <Filter>Interface\ScriptSide\input</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +239,9 @@
     </Filter>
     <Filter Include="Runtime\Utilities">
       <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface\ScriptSide\input">
+      <UniqueIdentifier>{91dd0f74-8d05-4bfd-88bf-916a8d350f43}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -204,8 +204,11 @@ bool WindowElement::CreateViewMatrixStorageAndScriptProjection()
         JsValueRef globalObject;
         RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
 
+		JsValueRef holographicObject;
+		RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(globalObject, L"holographic", &holographicObject));
+
         JsValueRef nativeInterface;
-        RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(globalObject, L"nativeInterface", &nativeInterface));
+        RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(holographicObject, L"nativeInterface", &nativeInterface));
 
         JsValueRef windowObject;
         RETURN_IF_FALSE(ScriptHostUtilities::GetJsProperty(nativeInterface, L"window", &windowObject));
