@@ -1,0 +1,1 @@
+{ "scripts" : [ "polyfills.js", "itowns.js", "split.js"] }
