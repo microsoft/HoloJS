@@ -1,6 +1,6 @@
 {
   "scripts": [
-    "domjs.js",
+    "dom.js",
     "console.js",
     "input.js",
     "mouse-input.js",
@@ -8,7 +8,8 @@
     "spatial-input.js",
     "window-holographic.js",
     "XmlHttpRequest.js",
-    "WebGL.js",
-    "canvas2d.js"
+    "image.js",
+    "webgl-context.js",
+    "2d-context.js"
   ]
 }

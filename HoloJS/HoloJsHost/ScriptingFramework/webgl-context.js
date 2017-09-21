@@ -93,6 +93,18 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[6],
                                               arguments[7],
                                               arguments[8]);
+        } else if (arguments.length === 6 && (arguments[5] instanceof HTMLImageElement)) {
+            var image = arguments[5];
+            // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
+            holographic.nativeInterface.webgl.texImage2D2(this.glContext,
+                                              arguments[0],
+                                              arguments[1],
+                                              arguments[2],
+                                              image.width,
+                                              image.height,
+                                              arguments[3],
+                                              arguments[4],
+                                              image.getData());
         } else if (arguments.length === 6 && (arguments[5] instanceof Image)) {
             var image = arguments[5];
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
@@ -105,8 +117,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[3],
                                               arguments[4],
                                               image.native);
-        } else if ((arguments.length === 6) && (arguments[5].isCanvas2D === true) && arguments[5].context &&
-                   arguments[5].context.context2d) {
+        } else if ((arguments.length === 6) && (arguments[5] instanceof HTMLCanvasElement)) {
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
             var canvas = arguments[5];
             holographic.nativeInterface.webgl.texImage2D3(this.glContext,

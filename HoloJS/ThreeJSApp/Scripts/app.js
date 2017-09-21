@@ -227,4 +227,4 @@ function run() {
     start();
 }
 
-setTimeout(run, 10000);
+setTimeout(run, 1000);

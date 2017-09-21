@@ -160,9 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ScriptingFramework\Canvas2D.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\DOM.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
@@ -170,9 +167,6 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\Video.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\WebGL.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\XmlHttpRequest.js">
@@ -191,16 +185,22 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\input.js">
-      <Filter>Interface\ScriptSide\input</Filter>
+      <Filter>Interface\ScriptSide\Input</Filter>
     </None>
     <None Include="ScriptingFramework\keyboard-input.js">
-      <Filter>Interface\ScriptSide\input</Filter>
+      <Filter>Interface\ScriptSide\Input</Filter>
     </None>
     <None Include="ScriptingFramework\mouse-input.js">
-      <Filter>Interface\ScriptSide\input</Filter>
+      <Filter>Interface\ScriptSide\Input</Filter>
     </None>
     <None Include="ScriptingFramework\spatial-input.js">
-      <Filter>Interface\ScriptSide\input</Filter>
+      <Filter>Interface\ScriptSide\Input</Filter>
+    </None>
+    <None Include="ScriptingFramework\webgl-context.js">
+      <Filter>Interface\ScriptSide\RenderingContext</Filter>
+    </None>
+    <None Include="ScriptingFramework\2d-context.js">
+      <Filter>Interface\ScriptSide\RenderingContext</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -240,8 +240,11 @@
     <Filter Include="Runtime\Utilities">
       <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interface\ScriptSide\input">
+    <Filter Include="Interface\ScriptSide\Input">
       <UniqueIdentifier>{91dd0f74-8d05-4bfd-88bf-916a8d350f43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interface\ScriptSide\RenderingContext">
+      <UniqueIdentifier>{190c791a-c5f5-4275-accc-861d5411565e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

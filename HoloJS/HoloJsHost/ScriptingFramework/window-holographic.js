@@ -38,3 +38,11 @@ window.requestAnimationFrame = function (callback) {
     holographic.drawCallback = callback;
 };
 
+function makePerformance() {
+    var start = Date.now();
+    this.now = function () {
+        return Date.now() - start;
+    };
+}
+
+performance = new makePerformance();

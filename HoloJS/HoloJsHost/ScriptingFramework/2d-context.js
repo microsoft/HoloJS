@@ -6,8 +6,7 @@ function ImageData(buffer, width, height)
     this.width = width;
 }
 
-function Context2D(canvas)
-{
+holographic.nativeInterface.makeRenderingContext = function(canvas) {
     this.canvas = canvas;
     this.context2d = holographic.nativeInterface.canvas2d.createContext2D();
 
@@ -16,7 +15,7 @@ function Context2D(canvas)
             holographic.nativeInterface.canvas2d.drawImage3(this.context2d,
                                                 this.canvas.width,
                                                 this.canvas.height,
-                                                image.native,
+                                                image.getData(),
                                                 image.width,
                                                 image.height,
                                                 arguments[1],   // sx,
@@ -31,7 +30,7 @@ function Context2D(canvas)
             holographic.nativeInterface.canvas2d.drawImage1(this.context2d,
                                                 this.canvas.width,
                                                 this.canvas.height,
-                                                image.native,
+                                                image.getData(),
                                                 image.width,
                                                 image.height,
                                                 arguments[1],   // dx,
@@ -40,7 +39,7 @@ function Context2D(canvas)
             holographic.nativeInterface.canvas2d.drawImage2(this.context2d,
                                                 this.canvas.width,
                                                 this.canvas.height,
-                                                image.native,
+                                                image.getData(),
                                                 image.width,
                                                 image.height,
                                                 arguments[1],   // dx,
@@ -54,20 +53,6 @@ function Context2D(canvas)
         var buffer = holographic.nativeInterface.canvas2d.getImageData(this.context2d, sx, sy, sw, sh);
         var imageData = new ImageData(buffer, sw, sh);
         return imageData;
-    }.bind(this);
-}
-
-holographic.nativeInterface.Canvas2D = function() {
-    this.isCanvas2D = true;
-    this.getContext = function(type) {
-        if (type === '2d') {
-            if (!this.context) {
-                this.context = new Context2D(this);
-                this.context.canvas = this;
-            }
-
-            return this.context;
-        }
     }.bind(this);
 }
 })();

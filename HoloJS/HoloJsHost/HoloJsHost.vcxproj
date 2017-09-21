@@ -276,7 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ScriptingFramework\Canvas2D.js">
+    <None Include="ScriptingFramework\2d-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\DOM.js">
@@ -309,7 +309,7 @@
     <None Include="ScriptingFramework\Video.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\WebGL.js">
+    <None Include="ScriptingFramework\webgl-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
