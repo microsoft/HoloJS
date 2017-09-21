@@ -1,25 +1,58 @@
-﻿function XMLHttpRequest()
-{
-    this.native = new nativeInterface.xhr.create();
+﻿function XMLHttpRequest() {
+    var self = this;
+    this.native = new holographic.nativeInterface.xhr.create();
 
     this.nativeCallback = function(type) {
         if (type === 'change') {
-            this.readyState = arguments[1];
-            this.status = arguments[2];
-            this.statusText = arguments[3];
-            this.responseType = arguments[4];
+            self.readyState = arguments[1];
+            self.status = arguments[2];
+            self.statusText = arguments[3];
+            self.responseType = arguments[4];
 
             if (this.readyState === XMLHttpRequest.DONE) {
-                if (this.status >= 200 && this.status <= 205) {
-                    this.fireHandlersByType('load', {target: this});
+                if (self.status >= 200 && self.status <= 205) {
+                    self.fireHandlersByType('load', {target: self});
                 } else {
-                    this.fireHandlersByType('error', {target: this});
+                    self.fireHandlersByType('error', {target: self});
                 }
             }
         }
     };
 
-    nativeInterface.extendWithEventHandling(this);
+    this.eventListeners = [];
+    this.addEventListener = function (eventType, eventHandler) {
+        if ((self.eventListeners.length === 0) && self.native && self.nativeCallback) {
+            holographic.nativeInterface.eventing.setCallback(self.native, self.nativeCallback.bind(self));
+        }
+        self.eventListeners.push({ type: eventType, handler: eventHandler });
+    };
+
+    this.removeEventListener = function (eventType, eventHandler) {
+        var index;
+        var eventListener;
+        for (index = 0; index < self.eventListeners.length; index++) {
+            eventListener = self.eventListeners[index];
+            if (eventListener.type === eventType && eventListener.handler === eventHandler) {
+                self.eventListeners.splice(index, 1);
+                break;
+            }
+        }
+
+        if (self.eventListeners.length === 0 && self.native && self.nativeCallback) {
+            holographic.nativeInterface.eventing.removeCallback(self.native);
+        }
+    };
+
+    this.fireHandlersByType = function (type, args) {
+        var index;
+        var eventListener;
+        for (index = 0; index < self.eventListeners.length; index++) {
+            eventListener = self.eventListeners[index];
+            if (eventListener.type === type) {
+                eventListener.handler.call(this, args);
+            }
+        }
+    };
 
     this.stubonreadystatechange = function() {
         if (this.onreadystatechangeEvent) {
@@ -50,26 +83,26 @@
     };
 
     this.setRequestHeader = function(header, value) {
-        nativeInterface.xhr.setHeader(this.native, header, value);
+        holographic.nativeInterface.xhr.setHeader(this.native, header, value);
     };
 
     this.getResponseHeader = function(header) {
-        return nativeInterface.xhr.getHeader(this.native, header);
+        return holographic.nativeInterface.xhr.getHeader(this.native, header);
     };
 
     this.send = function() {
-        nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : 'text'));
+        holographic.nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : 'text'));
     };
 
     Object.defineProperty(this, 'responseText', {
         get: function() {
-            return nativeInterface.xhr.getResponseText(this.native);
+            return holographic.nativeInterface.xhr.getResponseText(this.native);
         }
     });
 
     Object.defineProperty(this, 'response', {
         get: function() {
-            return nativeInterface.xhr.getResponse(this.native);
+            return holographic.nativeInterface.xhr.getResponse(this.native);
         }
     });
 }
