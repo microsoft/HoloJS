@@ -75,6 +75,14 @@ function makeConsole()
         this.dirEntries.push(...entries);
         nativeInterface.system.log("dir: " + entries.join(" ") + "\r\n");
     };
+
+    this.time = function (timer) {
+
+    };
+
+    this.timeEnd = function (timer) {
+
+    };
 }
 
 function makeDocument()
