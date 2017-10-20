@@ -106,7 +106,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[4],
                                               image.native);
         } else if ((arguments.length === 6) && (arguments[5].isCanvas2D === true) && arguments[5].context &&
-                   arguments[5].context.context2d) {
+                    arguments[5].context.ctxNative) {
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
             var canvas = arguments[5];
             nativeInterface.webgl.texImage2D3(this.glContext,
@@ -117,7 +117,7 @@ nativeInterface.makeWebGLRenderingContext = function() {
                                               canvas.height,
                                               arguments[3],
                                               arguments[4],
-                                              canvas.context.context2d);
+                                              canvas.context.ctxNative);
         } else if (arguments.length === 6 && (arguments[5] instanceof HTMLVideoElement)) {
             var video = arguments[5];
             nativeInterface.webgl.texImage2D4(this.glContext,

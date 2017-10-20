@@ -76,5 +76,8 @@
     <Image Include="Scripts\texture.png">
       <Filter>Scripts</Filter>
     </Image>
+    <Image Include="Scripts\image.png">
+      <Filter>Scripts</Filter>
+    </Image>
   </ItemGroup>
 </Project>

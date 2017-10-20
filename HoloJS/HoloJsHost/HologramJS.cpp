@@ -4,6 +4,7 @@
 #include "ScriptsLoader.h"
 #include "System.h"
 #include "VideoElement.h"
+#include "CanvasProjections.h"
 #include "WebGLProjections.h"
 #include "XmlHttpRequest.h"
 #include "ScriptHostUtilities.h"
@@ -54,6 +55,7 @@ bool HologramScriptHost::Initialize()
     RETURN_IF_FALSE(API::VideoElement::Initialize());
 
     RETURN_IF_FALSE(WebGL::WebGLProjections::Initialize());
+    RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
 
     RETURN_IF_FALSE(m_window.Initialize());
 

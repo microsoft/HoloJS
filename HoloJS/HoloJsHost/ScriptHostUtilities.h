@@ -30,7 +30,9 @@ namespace HologramJS
 				return ProjectFunction(name, namespaceName, function, nullptr, &unusedScriptFunction);
 			}
 
-			static bool GetJsProperty(JsValueRef& parentObject, const std::wstring& name, JsValueRef* createdProperty);
+            static bool GetJsProperty(JsValueRef& parentObject, const std::wstring& name, JsValueRef* createdProperty);
+
+            static JsValueRef GetJsProperty(JsValueRef& parentObject, const std::wstring& name);
 
 			static bool SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, JsValueRef& propertyValue);
 
