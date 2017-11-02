@@ -11,6 +11,8 @@
 #include <wrl.h>
 #include <robuffer.h>
 
+#include <WindowsNumerics.h>
+
 // Enable function definitions in the GL headers below
 #define GL_GLEXT_PROTOTYPES
 
