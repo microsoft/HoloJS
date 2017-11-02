@@ -36,7 +36,8 @@ bool ScriptHostUtilities::GetJsProperty(JsValueRef& parentObject, const std::wst
     return true;
 }
 
-JsValueRef ScriptHostUtilities::GetJsProperty(JsValueRef& parentObject, const std::wstring& name) {
+JsValueRef ScriptHostUtilities::GetJsProperty(JsValueRef& parentObject, const std::wstring& name)
+{
     JsValueRef propRef;
     ScriptHostUtilities::GetJsProperty(parentObject, name, &propRef);
     return propRef;

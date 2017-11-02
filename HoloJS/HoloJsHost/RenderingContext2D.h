@@ -21,54 +21,46 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
     }
 
     void drawImage(HologramJS::API::ImageElement* imageElement,
-        Windows::Foundation::Rect& srcRect,
-        Windows::Foundation::Rect& destRect);
+                   Windows::Foundation::Rect& srcRect,
+                   Windows::Foundation::Rect& destRect);
 
+    void clearRect(Windows::Foundation::Rect& rect);
 
-    void clearRect(
-        Windows::Foundation::Rect& rect);
+    void fillRect(Windows::Foundation::Rect& rect, Windows::UI::Color& color);
 
-    void fillRect(
-        Windows::Foundation::Rect& rect, 
-        Windows::UI::Color& color);
+    void fillRectGradient(Windows::Foundation::Rect& rect,
+                          Windows::Foundation::Numerics::float2& start,
+                          Windows::Foundation::Numerics::float2& end,
+                          Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
 
-    void fillRectGradient(
-        Windows::Foundation::Rect& rect, 
-        Windows::Foundation::Numerics::float2& start,
-        Windows::Foundation::Numerics::float2& end, 
-        Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop>^ stops);
-
-    void fillText(
-        std::wstring& text,
-        Windows::Foundation::Numerics::float2& point, 
-        Windows::UI::Color& color, 
-        int fontSize,
-        std::wstring& fontFamily);
+    void fillText(std::wstring& text,
+                  Windows::Foundation::Numerics::float2& point,
+                  Windows::UI::Color& color,
+                  int fontSize,
+                  std::wstring& fontFamily);
 
     Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
 
-    void setWidth(int value) {
+    void setWidth(int value)
+    {
         m_width = value;
         this->createRenderTarget();
     }
 
-    int getWidth() {
-        return m_width;
-    }
+    int getWidth() { return m_width; }
 
-    void setHeight(int value) {
+    void setHeight(int value)
+    {
         m_height = value;
         this->createRenderTarget();
     }
 
-    int getHeight() {
-        return m_height;
-    }
+    int getHeight() { return m_height; }
 
     void createRenderTarget();
 
    private:
-    unsigned int m_height = 150; 
+    unsigned int m_height = 150;
     unsigned int m_width = 300;
 
     std::vector<byte> m_optimizedBitmap;
@@ -80,5 +72,5 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
 };
-}  // namespace WebGL
+}  // namespace Canvas
 }  // namespace HologramJS

@@ -36,14 +36,16 @@ bool CanvasProjections::Initialize()
     return true;
 }
 
-Color CanvasProjections::parseColor(JsValueRef objRef) {
+Color CanvasProjections::parseColor(JsValueRef objRef)
+{
     JsValueRef redRef = ScriptHostUtilities::GetJsProperty(objRef, L"r");
     JsValueRef greenRef = ScriptHostUtilities::GetJsProperty(objRef, L"g");
     JsValueRef blueRef = ScriptHostUtilities::GetJsProperty(objRef, L"b");
     JsValueRef alphaRef = ScriptHostUtilities::GetJsProperty(objRef, L"a");
 
     Color color;
-    color.A = ScriptHostUtilities::GLfloatFromJsRef(alphaRef) * 255; // Browser uses 0 - 1, UWP uses 0 - 255
+    color.A = static_cast<char>(ScriptHostUtilities::GLfloatFromJsRef(alphaRef) *
+                                255);  // Browser uses 0 - 1, UWP uses 0 - 255
     color.R = ScriptHostUtilities::GLintFromJsRef(redRef);
     color.G = ScriptHostUtilities::GLintFromJsRef(greenRef);
     color.B = ScriptHostUtilities::GLintFromJsRef(blueRef);
@@ -51,30 +53,28 @@ Color CanvasProjections::parseColor(JsValueRef objRef) {
     return color;
 }
 
-Rect CanvasProjections::parseRect(JsValueRef objRef) {
+Rect CanvasProjections::parseRect(JsValueRef objRef)
+{
     JsValueRef xRef = ScriptHostUtilities::GetJsProperty(objRef, L"x");
     JsValueRef yRef = ScriptHostUtilities::GetJsProperty(objRef, L"y");
     JsValueRef widthRef = ScriptHostUtilities::GetJsProperty(objRef, L"width");
     JsValueRef heightRef = ScriptHostUtilities::GetJsProperty(objRef, L"height");
 
-    Rect rect(
-        ScriptHostUtilities::GLintFromJsRef(xRef), 
-        ScriptHostUtilities::GLintFromJsRef(yRef), 
-        ScriptHostUtilities::GLintFromJsRef(widthRef), 
-        ScriptHostUtilities::GLintFromJsRef(heightRef)
-    );
+    Rect rect(static_cast<float>(ScriptHostUtilities::GLintFromJsRef(xRef)),
+              static_cast<float>(ScriptHostUtilities::GLintFromJsRef(yRef)),
+              static_cast<float>(ScriptHostUtilities::GLintFromJsRef(widthRef)),
+              static_cast<float>(ScriptHostUtilities::GLintFromJsRef(heightRef)));
 
     return rect;
 }
 
-float2 CanvasProjections::parsePoint(JsValueRef objRef) {
+float2 CanvasProjections::parsePoint(JsValueRef objRef)
+{
     JsValueRef xRef = ScriptHostUtilities::GetJsProperty(objRef, L"x");
     JsValueRef yRef = ScriptHostUtilities::GetJsProperty(objRef, L"y");
 
-    return float2(
-        ScriptHostUtilities::GLintFromJsRef(xRef),
-        ScriptHostUtilities::GLintFromJsRef(yRef)
-    );
+    return float2(static_cast<float>(ScriptHostUtilities::GLintFromJsRef(xRef)),
+                  static_cast<float>(ScriptHostUtilities::GLintFromJsRef(yRef)));
 }
 
 JsValueRef CHAKRA_CALLBACK CanvasProjections::createContext2D(
@@ -127,7 +127,6 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::fillRect(
     return JS_INVALID_REFERENCE;
 }
 
-
 JsValueRef CHAKRA_CALLBACK CanvasProjections::fillRectGradient(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
@@ -152,7 +151,7 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::fillRectGradient(
         JsValueRef positionRef = ScriptHostUtilities::GetJsProperty(stopRef, L"position");
         JsValueRef colorRef = ScriptHostUtilities::GetJsProperty(stopRef, L"color");
 
-        stops[i].Position = ScriptHostUtilities::GLintFromJsRef(positionRef);
+        stops[i].Position = static_cast<float>(ScriptHostUtilities::GLintFromJsRef(positionRef));
         stops[i].Color = parseColor(colorRef);
     }
 
@@ -182,7 +181,6 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::fillText(
     return JS_INVALID_REFERENCE;
 }
 
-
 JsValueRef CHAKRA_CALLBACK CanvasProjections::getImageData(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
@@ -191,7 +189,6 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::getImageData(
     RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
 
     RETURN_INVALID_REF_IF_NULL(context);
-
 
     Rect rect = parseRect(arguments[2]);
 
@@ -209,8 +206,7 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::getImageData(
         RETURN_NULL_IF_JS_ERROR(
             JsGetTypedArrayStorage(jsArray, &jsArrayPointer, &jsArrayLength, &jsArrayType, &jsArrayElementSize));
         context->CopyOptimizedBitmapToBuffer(jsArrayPointer);
-    }
-    else {
+    } else {
         unsigned int canvasStride;
         auto pixelsArray = context->getImageData(rect, &canvasStride);
 
