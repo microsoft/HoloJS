@@ -15,12 +15,6 @@ class WebGLProjections {
                                                     unsigned short argumentCount,
                                                     PVOID callbackData);
 
-    static JsValueRef CHAKRA_CALLBACK createContext2D(JsValueRef callee,
-                                                      bool isConstructCall,
-                                                      JsValueRef* arguments,
-                                                      unsigned short argumentCount,
-                                                      PVOID callbackData);
-
     // WebGL context functions
     static JsValueRef CHAKRA_CALLBACK getShaderPrecisionFormat(JsValueRef callee,
                                                                bool isConstructCall,
@@ -549,31 +543,6 @@ class WebGLProjections {
                                                        JsValueRef* arguments,
                                                        unsigned short argumentCount,
                                                        PVOID callbackData);
-
-    // Canvas 3D context functions
-    static JsValueRef CHAKRA_CALLBACK drawImage1(JsValueRef callee,
-                                                 bool isConstructCall,
-                                                 JsValueRef* arguments,
-                                                 unsigned short argumentCount,
-                                                 PVOID callbackData);
-
-    static JsValueRef CHAKRA_CALLBACK drawImage2(JsValueRef callee,
-                                                 bool isConstructCall,
-                                                 JsValueRef* arguments,
-                                                 unsigned short argumentCount,
-                                                 PVOID callbackData);
-
-    static JsValueRef CHAKRA_CALLBACK drawImage3(JsValueRef callee,
-                                                 bool isConstructCall,
-                                                 JsValueRef* arguments,
-                                                 unsigned short argumentCount,
-                                                 PVOID callbackData);
-
-    static JsValueRef CHAKRA_CALLBACK getImageData(JsValueRef callee,
-                                                   bool isConstructCall,
-                                                   JsValueRef* arguments,
-                                                   unsigned short argumentCount,
-                                                   PVOID callbackData);
 
     static JsValueRef CHAKRA_CALLBACK stencilFunc(JsValueRef callee,
                                                   bool isConstructCall,

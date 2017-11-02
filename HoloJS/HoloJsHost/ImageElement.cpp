@@ -253,20 +253,20 @@ HRESULT ImageElement::GetPixelsPointer(const GUID& format,
 
         m_decodedFormat = format;
         m_pixels = localPixels;
+        m_pixelsSize = localPixelsSize;
+        m_stride = localStride;
 
-        *pixels = m_pixels;
-        *pixelsSize = localPixelsSize;
-        *stride = localStride;
     } else {
         // The already decoded format does not match the requested format
         // TODO: re-decoding the image would be possible if we create a 'release pixels pointer' method
         if (!IsEqualGUID(format, m_decodedFormat)) {
             return E_FAIL;
         }
-        *pixels = m_pixels;
-        *pixelsSize = m_pixelsSize;
-        *stride = m_stride;
     }
+
+    *pixels = m_pixels;
+    *pixelsSize = m_pixelsSize;
+    *stride = m_stride;
 
     return S_OK;
 }

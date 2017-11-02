@@ -10,6 +10,7 @@
 #include "WebGLRenderingContext.h"
 
 using namespace HologramJS::WebGL;
+using namespace HologramJS::Canvas;
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
 
@@ -17,7 +18,6 @@ bool WebGLProjections::Initialize()
 {
     // WebGL context projections
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext", L"webgl", createContext));
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext2D", L"canvas2d", createContext2D));
 
     RETURN_IF_FALSE(
         ScriptHostUtilities::ProjectFunction(L"getShaderPrecisionFormat", L"webgl", getShaderPrecisionFormat));
@@ -116,12 +116,6 @@ bool WebGLProjections::Initialize()
 
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"lineWidth", L"webgl", lineWidth));
 
-    // Canvas 2D context projections
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage1", L"canvas2d", drawImage1));
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage2", L"canvas2d", drawImage2));
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawImage3", L"canvas2d", drawImage3));
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getImageData", L"canvas2d", getImageData));
-
     return true;
 }
 
@@ -130,13 +124,6 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::createContext(
 {
     return ScriptResourceTracker::ObjectToDirectExternal(new WebGLRenderingContext());
 }
-
-JsValueRef CHAKRA_CALLBACK WebGLProjections::createContext2D(
-    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
-{
-    return ScriptResourceTracker::ObjectToDirectExternal(new RenderingContext2D());
-}
-
 JsValueRef CHAKRA_CALLBACK WebGLProjections::getShaderPrecisionFormat(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
@@ -430,7 +417,8 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D3(
     RETURN_INVALID_REF_IF_NULL(context2D);
 
     unsigned int canvasStride;
-    auto canvasPixels = context2D->getImageData(0, 0, width, height, &canvasStride);
+    Windows::Foundation::Rect rect(0, 0, width, height);
+    auto canvasPixels = context2D->getImageData(rect, &canvasStride);
 
     context->texImage2D(
         target, level, internalformat, width, height, 0, format, type, canvasPixels->Data, canvasStride);
@@ -1643,137 +1631,6 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::uniformMatrix4fv(
     context->uniformMatrix4fv(
         location, transpose, valueLength / arrayElementSize / 16, reinterpret_cast<const GLfloat*>(value));
     return JS_INVALID_REFERENCE;
-}
-
-JsValueRef CHAKRA_CALLBACK WebGLProjections::drawImage1(
-    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
-{
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 9);
-
-    RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
-    RETURN_INVALID_REF_IF_NULL(context);
-
-    int canvasWidth = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
-    int canvasHeight = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-    context->SetSize(canvasWidth, canvasHeight);
-
-    auto imageElement = ScriptResourceTracker::ExternalToObject<API::ImageElement>(arguments[4]);
-
-    int imageWidth = ScriptHostUtilities::GLintFromJsRef(arguments[5]);
-    int imageHeight = ScriptHostUtilities::GLintFromJsRef(arguments[6]);
-
-    int dx = ScriptHostUtilities::GLintFromJsRef(arguments[7]);
-    int dy = ScriptHostUtilities::GLintFromJsRef(arguments[8]);
-
-    context->drawImage1(imageElement, imageWidth, imageHeight, dx, dy);
-    return JS_INVALID_REFERENCE;
-}
-
-JsValueRef CHAKRA_CALLBACK WebGLProjections::drawImage2(
-    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
-{
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 11);
-
-    RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
-    RETURN_INVALID_REF_IF_NULL(context);
-
-    int canvasWidth = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
-    int canvasHeight = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-    context->SetSize(canvasWidth, canvasHeight);
-
-    auto imageElement = ScriptResourceTracker::ExternalToObject<API::ImageElement>(arguments[4]);
-
-    int imageWidth = ScriptHostUtilities::GLintFromJsRef(arguments[5]);
-    int imageHeight = ScriptHostUtilities::GLintFromJsRef(arguments[6]);
-
-    int dx = ScriptHostUtilities::GLintFromJsRef(arguments[7]);
-    int dy = ScriptHostUtilities::GLintFromJsRef(arguments[8]);
-    int dWidth = ScriptHostUtilities::GLintFromJsRef(arguments[9]);
-    int dHeight = ScriptHostUtilities::GLintFromJsRef(arguments[10]);
-
-    context->drawImage2(imageElement, imageWidth, imageHeight, dx, dx, dWidth, dHeight);
-    return JS_INVALID_REFERENCE;
-}
-
-JsValueRef CHAKRA_CALLBACK WebGLProjections::drawImage3(
-    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
-{
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 15);
-
-    RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
-    RETURN_INVALID_REF_IF_NULL(context);
-
-    const auto canvasWidth = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
-    const auto canvasHeight = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-    context->SetSize(canvasWidth, canvasHeight);
-
-    auto imageElement = ScriptResourceTracker::ExternalToObject<API::ImageElement>(arguments[4]);
-
-    int imageWidth = ScriptHostUtilities::GLintFromJsRef(arguments[5]);
-    int imageHeight = ScriptHostUtilities::GLintFromJsRef(arguments[6]);
-
-    int sx = ScriptHostUtilities::GLintFromJsRef(arguments[7]);
-    int sy = ScriptHostUtilities::GLintFromJsRef(arguments[8]);
-    int sWidth = ScriptHostUtilities::GLintFromJsRef(arguments[9]);
-    int sHeight = ScriptHostUtilities::GLintFromJsRef(arguments[10]);
-
-    int dx = ScriptHostUtilities::GLintFromJsRef(arguments[11]);
-    int dy = ScriptHostUtilities::GLintFromJsRef(arguments[12]);
-    int dWidth = ScriptHostUtilities::GLintFromJsRef(arguments[13]);
-    int dHeight = ScriptHostUtilities::GLintFromJsRef(arguments[14]);
-
-    context->drawImage3(imageElement, imageWidth, imageHeight, sx, sy, sWidth, sHeight, dx, dx, dWidth, dHeight);
-    return JS_INVALID_REFERENCE;
-}
-
-JsValueRef CHAKRA_CALLBACK WebGLProjections::getImageData(
-    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
-{
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
-
-    RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
-
-    RETURN_INVALID_REF_IF_NULL(context);
-
-    int sx = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
-    int sy = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-    int sw = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
-    int sh = ScriptHostUtilities::GLintFromJsRef(arguments[5]);
-
-    // Create storage for the pixels in JS
-    JsValueRef jsArray;
-    if (context->OptimizedBufferAvailable()) {
-        RETURN_NULL_IF_JS_ERROR(JsCreateTypedArray(
-            JsTypedArrayType::JsArrayTypeUint8Clamped, nullptr, 0, context->GetOptimizedBufferSize(), &jsArray));
-
-        // Get a pointer to the newly allocated JS array
-        ChakraBytePtr jsArrayPointer;
-        JsTypedArrayType jsArrayType;
-        unsigned int jsArrayLength;
-        int jsArrayElementSize;
-        RETURN_NULL_IF_JS_ERROR(
-            JsGetTypedArrayStorage(jsArray, &jsArrayPointer, &jsArrayLength, &jsArrayType, &jsArrayElementSize));
-        context->CopyOptimizedBitmapToBuffer(jsArrayPointer);
-    } else {
-        unsigned int canvasStride;
-        auto pixelsArray = context->getImageData(sx, sy, sw, sh, &canvasStride);
-
-        RETURN_NULL_IF_JS_ERROR(
-            JsCreateTypedArray(JsTypedArrayType::JsArrayTypeUint8Clamped, nullptr, 0, pixelsArray->Length, &jsArray));
-
-        // Get a pointer to the newly allocated JS array and copy the pixels there
-        ChakraBytePtr jsArrayPointer;
-        JsTypedArrayType jsArrayType;
-        unsigned int jsArrayLength;
-        int jsArrayElementSize;
-
-        RETURN_NULL_IF_JS_ERROR(
-            JsGetTypedArrayStorage(jsArray, &jsArrayPointer, &jsArrayLength, &jsArrayType, &jsArrayElementSize));
-
-        CopyMemory(jsArrayPointer, pixelsArray->begin(), pixelsArray->Length);
-    }
-
-    return jsArray;
 }
 
 JsValueRef CHAKRA_CALLBACK WebGLProjections::stencilFunc(
