@@ -6,6 +6,8 @@ namespace HologramJS {
 
     using float4x4 = Windows::Foundation::Numerics::float4x4;
 
+    public delegate void HoloJsCallback();
+
     [Windows::Foundation::Metadata::WebHostHidden]
     public ref class HoloJsAppView sealed : public Windows::ApplicationModel::Core::IFrameworkView
     {
@@ -24,6 +26,9 @@ namespace HologramJS {
 
         // Enable depth based image stabilization
         property bool ImageStabilizationEnabled;
+
+        // Callback to allow developers to run their own extensions.
+        property HoloJsCallback^ OnBeforeRun;
 
         // Handle web-ar protocol activations; will execute scripts navigated to on the web-ar protocol
         property bool EnableWebArProtocolHandler;
