@@ -1,0 +1,31 @@
+newmtl Sand
+
+Kd 0.8344 0.79274 0.6856
+
+Ks 0 0 0
+
+Ka 0 0 0
+
+illum 1
+
+newmtl woodfeet
+
+Kd 1 1 1
+
+map_Kd couchPoofyPillows2.png
+Ks 0 0 0
+
+Ka 0 0 0
+
+illum 1
+
+newmtl circulargreen
+
+Kd 1 1 1
+
+map_Kd couchPoofyPillows1.png
+Ks 0 0 0
+
+Ka 0 0 0
+
+illum 1

@@ -106,6 +106,10 @@ void HoloJsAppView::LoadAndExecuteScript()
 
     m_holoScriptHost->ResizeWindow(m_PanelWidth, m_PanelHeight);
 
+    if (OnBeforeRun) {
+        OnBeforeRun();
+    }
+
     m_holoScriptHost->RunApp(m_appUri);
 }
 

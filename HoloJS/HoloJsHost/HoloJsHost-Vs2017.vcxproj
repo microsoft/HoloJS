@@ -210,6 +210,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CanvasProjections.h" />
     <ClInclude Include="HoloJsApp.h" />
     <ClInclude Include="ChakraForHoloJS.h" />
     <ClInclude Include="ErrorHandling.h" />
@@ -242,6 +243,7 @@
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CanvasProjections.cpp" />
     <ClCompile Include="HoloJsApp.cpp" />
     <ClCompile Include="FileSystemLoader.cpp" />
     <ClCompile Include="HologramJS.cpp" />

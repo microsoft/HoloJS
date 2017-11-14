@@ -189,6 +189,7 @@
     <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Image Include="Scripts\image.png" />
     <Image Include="Scripts\texture.png" />
   </ItemGroup>
   <ItemGroup>

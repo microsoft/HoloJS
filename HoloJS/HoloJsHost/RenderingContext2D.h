@@ -4,10 +4,10 @@
 #include "ImageElement.h"
 
 namespace HologramJS {
-namespace WebGL {
+namespace Canvas {
 class RenderingContext2D : public HologramJS::Utilities::IRelease {
    public:
-    RenderingContext2D() {}
+    RenderingContext2D();
 
     virtual ~RenderingContext2D() {}
 
@@ -20,40 +20,48 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
         CopyMemory(buffer, m_optimizedBitmap.data(), m_optimizedBitmap.size());
     }
 
-    void drawImage3(HologramJS::API::ImageElement* imageElement,
-                    GLsizei width,
-                    GLsizei heigh,
-                    unsigned int sx,
-                    unsigned int sy,
-                    unsigned int sWidth,
-                    unsigned int sHeight,
-                    unsigned int dx,
-                    unsigned int dy,
-                    unsigned int dWidth,
-                    unsigned int dHeight);
+    void drawImage(HologramJS::API::ImageElement* imageElement,
+                   Windows::Foundation::Rect& srcRect,
+                   Windows::Foundation::Rect& destRect);
 
-    void drawImage1(
-        HologramJS::API::ImageElement* imageElement, GLsizei width, GLsizei heigh, unsigned int dx, unsigned int dy);
+    void clearRect(Windows::Foundation::Rect& rect);
 
-    void drawImage2(HologramJS::API::ImageElement* imageElement,
-                    GLsizei width,
-                    GLsizei heigh,
-                    unsigned int dx,
-                    unsigned int dy,
-                    unsigned int dWidth,
-                    unsigned int dHeight);
+    void fillRect(Windows::Foundation::Rect& rect, Windows::UI::Color& color);
 
-    Platform::Array<unsigned char> ^ getImageData(int sx, int sy, int sw, int sh, unsigned int* stride);
+    void fillRectGradient(Windows::Foundation::Rect& rect,
+                          Windows::Foundation::Numerics::float2& start,
+                          Windows::Foundation::Numerics::float2& end,
+                          Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
 
-    void SetSize(unsigned int width, unsigned int height)
+    void fillText(std::wstring& text,
+                  Windows::Foundation::Numerics::float2& point,
+                  Windows::UI::Color& color,
+                  int fontSize,
+                  std::wstring& fontFamily);
+
+    Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
+
+    void setWidth(int value)
     {
-        m_height = height;
-        m_width = width;
+        m_width = value;
+        this->createRenderTarget();
     }
 
+    int getWidth() { return m_width; }
+
+    void setHeight(int value)
+    {
+        m_height = value;
+        this->createRenderTarget();
+    }
+
+    int getHeight() { return m_height; }
+
+    void createRenderTarget();
+
    private:
-    unsigned int m_height;
-    unsigned int m_width;
+    unsigned int m_height = 150;
+    unsigned int m_width = 300;
 
     std::vector<byte> m_optimizedBitmap;
     bool m_isOptimizedBitmap = false;
@@ -64,5 +72,5 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
 };
-}  // namespace WebGL
+}  // namespace Canvas
 }  // namespace HologramJS

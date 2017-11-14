@@ -1,12 +1,13 @@
 ﻿#include "pch.h"
 #include "HologramJS.h"
+#include "CanvasProjections.h"
 #include "ImageElement.h"
+#include "ScriptHostUtilities.h"
 #include "ScriptsLoader.h"
 #include "System.h"
 #include "VideoElement.h"
 #include "WebGLProjections.h"
 #include "XmlHttpRequest.h"
-#include "ScriptHostUtilities.h"
 
 using namespace HologramJS;
 using namespace Platform;
@@ -54,6 +55,7 @@ bool HologramScriptHost::Initialize()
     RETURN_IF_FALSE(API::VideoElement::Initialize());
 
     RETURN_IF_FALSE(WebGL::WebGLProjections::Initialize());
+    RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
 
     RETURN_IF_FALSE(m_window.Initialize());
 
@@ -68,12 +70,9 @@ IAsyncOperation<bool> ^ HologramScriptHost::RunApp(Platform::String ^ appUri)
 {
     wstring appUriString = appUri->Data();
 
-    if (ScriptsLoader::IsAbsoluteWebUri(appUriString))
-    {
+    if (ScriptsLoader::IsAbsoluteWebUri(appUriString)) {
         return create_async([this, appUri]() -> task<bool> { return RunWebScriptApp(appUri->Data()); });
-    }
-    else
-    {
+    } else {
         return create_async([this, appUri]() -> task<bool> { return RunLocalScriptApp(appUri->Data()); });
     }
 }
@@ -82,11 +81,10 @@ task<bool> HologramScriptHost::RunLocalScriptApp(wstring jsonFilePath)
 {
     unique_ptr<HologramJS::ScriptsLoader> loader(new ScriptsLoader());
     auto loadResult = await loader->LoadScriptsAsync(Package::Current->InstalledLocation,
-                                                L"hologramjs\\scriptingframework\\framework.json");
+                                                     L"hologramjs\\scriptingframework\\framework.json");
 
     if (loadResult) {
-        loadResult =
-            await loader->LoadScriptsAsync(Package::Current->InstalledLocation, jsonFilePath);
+        loadResult = await loader->LoadScriptsAsync(Package::Current->InstalledLocation, jsonFilePath);
     }
 
     if (loadResult) {
@@ -112,7 +110,7 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
     unique_ptr<HologramJS::ScriptsLoader> loader(new HologramJS::ScriptsLoader());
     wstring jsonUriString = jsonUri;
     auto loadResult = await loader->LoadScriptsAsync(Package::Current->InstalledLocation,
-                                                L"hologramjs\\scriptingframework\\framework.json");
+                                                     L"hologramjs\\scriptingframework\\framework.json");
 
     if (loadResult) {
         loadResult = await loader->DownloadScriptsAsync(jsonUriString);

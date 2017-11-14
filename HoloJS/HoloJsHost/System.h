@@ -22,6 +22,13 @@ class System {
         return reinterpret_cast<System*>(callbackData)->log(callee, arguments, argumentCount);
     }
 
+    static void CALLBACK StaticPromiseContinuationCallback(JsValueRef task, void* callbackState)
+    {
+        reinterpret_cast<System*>(callbackState)->PromiseContinuationCallback(task);
+    }
+
+    void PromiseContinuationCallback(JsValueRef task);
+
     JsValueRef log(JsValueRef callee, JsValueRef* arguments, unsigned short argumentCount);
 };
 

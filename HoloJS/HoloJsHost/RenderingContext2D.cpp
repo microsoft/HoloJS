@@ -1,47 +1,44 @@
 #include "pch.h"
 #include "RenderingContext2D.h"
+#include "IBufferOnMemory.h"
 #include "ImageElement.h"
 
-#include "IBufferOnMemory.h"
-
 using namespace Microsoft::Graphics::Canvas;
+using namespace Microsoft::Graphics::Canvas::Brushes;
+using namespace Microsoft::Graphics::Canvas::Text;
 using namespace Windows::Graphics::DirectX;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Numerics;
 using namespace Windows::Storage::Streams;
-using namespace HologramJS::WebGL;
+using namespace Windows::UI;
+using namespace HologramJS::Canvas;
 
-void RenderingContext2D::drawImage3(HologramJS::API::ImageElement *imageElement,
-                                    GLsizei imageWidth,
-                                    GLsizei imageHeight,
-                                    unsigned int sx,
-                                    unsigned int sy,
-                                    unsigned int sWidth,
-                                    unsigned int sHeight,
-                                    unsigned int dx,
-                                    unsigned int dy,
-                                    unsigned int dWidth,
-                                    unsigned int dHeight)
+RenderingContext2D::RenderingContext2D() { this->createRenderTarget(); }
+
+void RenderingContext2D::createRenderTarget()
 {
-    m_isOptimizedBitmap = false;
-
     m_canvasRenderTarget = ref new CanvasRenderTarget(CanvasDevice::GetSharedDevice(),
                                                       static_cast<float>(m_width),
                                                       static_cast<float>(m_height),
                                                       96,
                                                       m_nativePixelFormat,
                                                       CanvasAlphaMode::Ignore);
+}
+
+void RenderingContext2D::drawImage(HologramJS::API::ImageElement* imageElement, Rect& srcRect, Rect& destRect)
+{
+    m_isOptimizedBitmap = false;
 
     unsigned int imageBufferSize = 0;
     WICInProcPointer imageMemory = nullptr;
     unsigned int stride;
-    EXIT_IF_FALSE(
-        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
+
+    imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride);
 
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
     Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
         &imageBuffer, imageMemory, imageBufferSize);
-    auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
     IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
 
     auto canvasBitmap = CanvasBitmap::CreateFromBytes(CanvasDevice::GetSharedDevice(),
@@ -52,93 +49,63 @@ void RenderingContext2D::drawImage3(HologramJS::API::ImageElement *imageElement,
 
     CanvasDrawingSession ^ session = m_canvasRenderTarget->CreateDrawingSession();
 
-    Rect source(
-        static_cast<float>(sx), static_cast<float>(sy), static_cast<float>(sWidth), static_cast<float>(sHeight));
-    Rect dest(static_cast<float>(dx), static_cast<float>(dy), static_cast<float>(dWidth), static_cast<float>(dHeight));
-    session->DrawImage(canvasBitmap, dest, source);
+    session->DrawImage(canvasBitmap, destRect, srcRect);
     session = nullptr;
 }
 
-void RenderingContext2D::drawImage1(HologramJS::API::ImageElement *imageElement,
-                                    GLsizei imageWidth,
-                                    GLsizei imageHeight,
-                                    unsigned int dx,
-                                    unsigned int dy)
+void RenderingContext2D::clearRect(Rect& rect)
 {
-    EXIT_IF_FALSE((imageWidth + dx <= m_width) && (imageHeight + dy <= m_height));
+    CanvasDrawingSession ^ session = m_canvasRenderTarget->CreateDrawingSession();
+    session->Blend = CanvasBlend::Copy;  // Overwrite everything!
 
-    unsigned int imageBufferSize = 0;
-    WICInProcPointer imageMemory = nullptr;
-    unsigned int stride;
-    EXIT_IF_FALSE(
-        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
+    Color color;
+    color.A = 0;
+    color.R = 0;
+    color.G = 0;
+    color.B = 0;
 
-    m_optimizedBitmap.resize(m_width * m_height * m_bpp);
-    m_isOptimizedBitmap = true;
-
-    if (dx == 0 && dy == 0 && imageWidth == m_width && imageHeight == m_height && stride == (m_width * m_bpp)) {
-        CopyMemory(m_optimizedBitmap.data(), imageMemory, imageBufferSize);
-    } else {
-        unsigned int sourceLine = 0;
-        unsigned int destinationLine = dy;
-        const unsigned int destinationStride = m_width * m_bpp;
-        for (int i = 0; i < imageHeight; i++) {
-            CopyMemory(m_optimizedBitmap.data() + destinationLine * destinationStride + dx,
-                       imageMemory + sourceLine * stride,
-                       stride);
-            sourceLine++;
-            destinationLine++;
-        }
-    }
-}
-
-void RenderingContext2D::drawImage2(HologramJS::API::ImageElement *imageElement,
-                                    GLsizei imageWidth,
-                                    GLsizei imageHeight,
-                                    unsigned int dx,
-                                    unsigned int dy,
-                                    unsigned int dWidth,
-                                    unsigned int dHeight)
-{
-    m_isOptimizedBitmap = false;
-
-    m_canvasRenderTarget = ref new CanvasRenderTarget(CanvasDevice::GetSharedDevice(),
-                                                      static_cast<float>(m_width),
-                                                      static_cast<float>(m_height),
-                                                      96,
-                                                      m_nativePixelFormat,
-                                                      CanvasAlphaMode::Ignore);
-
-    unsigned int imageBufferSize = 0;
-    WICInProcPointer imageMemory = nullptr;
-    unsigned int stride;
-    EXIT_IF_FALSE(
-        imageElement->GetPixelsPointer(GUID_WICPixelFormat32bppRGBA, &imageMemory, &imageBufferSize, &stride));
-
-    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
-    Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
-        &imageBuffer, imageMemory, imageBufferSize);
-    auto iinspectable = (IInspectable *)reinterpret_cast<IInspectable *>(imageBuffer.Get());
-    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
-
-    auto canvasBitmap = CanvasBitmap::CreateFromBytes(CanvasDevice::GetSharedDevice(),
-                                                      imageIBuffer,
-                                                      imageElement->Width(),
-                                                      imageElement->Height(),
-                                                      m_nativePixelFormat);
-
-    auto session = m_canvasRenderTarget->CreateDrawingSession();
-
-    Rect dest(static_cast<float>(dx), static_cast<float>(dy), static_cast<float>(dWidth), static_cast<float>(dHeight));
-    session->DrawImage(canvasBitmap, dest);
+    session->FillRectangle(rect, color);
     session = nullptr;
 }
 
-Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(int sx, int sy, int sw, int sh, unsigned int *stride)
+void RenderingContext2D::fillRect(Rect& rect, Color& color)
+{
+    CanvasDrawingSession ^ session = m_canvasRenderTarget->CreateDrawingSession();
+    session->FillRectangle(rect, color);
+    session = nullptr;
+}
+
+void RenderingContext2D::fillRectGradient(Rect& rect,
+                                          float2& start,
+                                          float2& end,
+                                          Platform::Array<CanvasGradientStop> ^ stops)
+{
+    CanvasDrawingSession ^ session = m_canvasRenderTarget->CreateDrawingSession();
+    auto brush = ref new CanvasLinearGradientBrush(m_canvasRenderTarget, stops);
+    brush->StartPoint = start;
+    brush->EndPoint = end;
+    session->FillRectangle(rect, brush);
+    session = nullptr;
+}
+
+void RenderingContext2D::fillText(
+    std::wstring& text, float2& point, Color& color, int fontSize, std::wstring& fontFamily)
+{
+    CanvasDrawingSession ^ session = m_canvasRenderTarget->CreateDrawingSession();
+
+    CanvasTextFormat ^ format = ref new CanvasTextFormat();
+    format->FontFamily = ref new Platform::String(fontFamily.c_str());
+    format->FontSize = fontSize;
+
+    session->DrawText(ref new Platform::String(text.c_str()), point, color, format);
+    session = nullptr;
+}
+
+Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(Rect& rect, unsigned int* stride)
 {
     if (!m_isOptimizedBitmap) {
-        *stride = sw * m_bpp;
-        return m_canvasRenderTarget->GetPixelBytes(sx, sy, sw, sh);
+        *stride = rect.Width * m_bpp;
+        return m_canvasRenderTarget->GetPixelBytes(rect.X, rect.Y, rect.Width, rect.Height);
     } else {
         return nullptr;
     }

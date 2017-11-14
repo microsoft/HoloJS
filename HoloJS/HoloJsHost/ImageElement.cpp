@@ -148,11 +148,11 @@ task<void> ImageElement::DownloadAsync()
 
 void ImageElement::LoadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imageBuffer)
 {
-    Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
+    Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory;
     EXIT_IF_FAILED(
-        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &factory));
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &imagingFactory));
 
-    EXIT_IF_FAILED(factory->CreateStream(&m_imageStream));
+    EXIT_IF_FAILED(imagingFactory->CreateStream(&m_imageStream));
 
     Microsoft::WRL::ComPtr<Windows::Storage::Streams::IBufferByteAccess> bufferByteAccess;
     EXIT_IF_FAILED(reinterpret_cast<IInspectable*>(imageBuffer)->QueryInterface(IID_PPV_ARGS(&bufferByteAccess)));
@@ -161,9 +161,11 @@ void ImageElement::LoadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imag
     EXIT_IF_FAILED(bufferByteAccess->Buffer(&imageNativeBuffer));
 
     EXIT_IF_FAILED(m_imageStream->InitializeFromMemory(imageNativeBuffer, imageBuffer->Length));
+    // Now that we initialized the image stream, keep a reference to the image buffer underneath it
+    m_imageBuffer = imageBuffer;
 
-    EXIT_IF_FAILED(
-        factory->CreateDecoderFromStream(m_imageStream.Get(), nullptr, WICDecodeMetadataCacheOnDemand, &m_decoder));
+    EXIT_IF_FAILED(imagingFactory->CreateDecoderFromStream(
+        m_imageStream.Get(), nullptr, WICDecodeMetadataCacheOnDemand, &m_decoder));
 
     unsigned int frameCount;
     EXIT_IF_FAILED(m_decoder->GetFrameCount(&frameCount));
@@ -217,20 +219,21 @@ HRESULT ImageElement::GetPixelsPointer(const GUID& format,
             RETURN_IF_FAILED(converter.As(&m_bitmapSource));
         }
 
-        Microsoft::WRL::ComPtr<IWICImagingFactory> factory;
-        RETURN_IF_FAILED(
-            CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &factory));
+        Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory;
+        RETURN_IF_FAILED(CoCreateInstance(
+            CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &imagingFactory));
 
         // Flip image if needed
         Microsoft::WRL::ComPtr<IWICBitmapFlipRotator> flipRotator;
         if (flipRotation == ImageFlipRotation::FlipY) {
-            RETURN_IF_FAILED(factory->CreateBitmapFlipRotator(&flipRotator));
+            RETURN_IF_FAILED(imagingFactory->CreateBitmapFlipRotator(&flipRotator));
 
             RETURN_IF_FAILED(flipRotator->Initialize(m_bitmapSource.Get(), WICBitmapTransformFlipVertical));
             RETURN_IF_FAILED(flipRotator.As(&m_bitmapSource));
         }
 
-        RETURN_IF_FAILED(factory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapNoCache, &m_bitmap));
+        RETURN_IF_FAILED(
+            imagingFactory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapCacheOnDemand, &m_bitmap));
 
         // Lock the pixels
         WICRect allBitmapRect;
@@ -250,20 +253,20 @@ HRESULT ImageElement::GetPixelsPointer(const GUID& format,
 
         m_decodedFormat = format;
         m_pixels = localPixels;
+        m_pixelsSize = localPixelsSize;
+        m_stride = localStride;
 
-        *pixels = m_pixels;
-        *pixelsSize = localPixelsSize;
-        *stride = localStride;
     } else {
         // The already decoded format does not match the requested format
         // TODO: re-decoding the image would be possible if we create a 'release pixels pointer' method
         if (!IsEqualGUID(format, m_decodedFormat)) {
             return E_FAIL;
         }
-        *pixels = m_pixels;
-        *pixelsSize = m_pixelsSize;
-        *stride = m_stride;
     }
+
+    *pixels = m_pixels;
+    *pixelsSize = m_pixelsSize;
+    *stride = m_stride;
 
     return S_OK;
 }

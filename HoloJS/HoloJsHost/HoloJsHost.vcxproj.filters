@@ -69,6 +69,9 @@
       <Filter>Runtime\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="HoloJsApp.cpp" />
+    <ClCompile Include="CanvasProjections.cpp">
+      <Filter>Render\2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -157,6 +160,9 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="HoloJsApp.h" />
+    <ClInclude Include="CanvasProjections.h">
+      <Filter>Render\2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

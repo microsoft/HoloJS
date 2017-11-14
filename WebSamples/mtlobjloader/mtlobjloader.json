@@ -1,0 +1,12 @@
+{
+  "scripts": [
+    "../threejs/three.js",
+    "../threejs/three-patches.js",
+    "../threejs/loaders/DDSLoader.js",
+    "../threejs/loaders/MTLLoader.js",
+    "../threejs/loaders/OBJLoader.js",
+    "../threejs/OrbitControls.js",
+    "../threejs/holographicCamera.js",
+    "mtlobjloader.js"
+  ]
+}    

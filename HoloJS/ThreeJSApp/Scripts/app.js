@@ -1,5 +1,4 @@
 function run() {
-
     let canvas = document.createElement(typeof holographic !== undefined ? 'exp-holo-canvas' : 'canvas');
     if (!holographic) {
         document.body.appendChild(canvas);
