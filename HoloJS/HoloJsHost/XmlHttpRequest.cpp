@@ -11,6 +11,8 @@ using namespace Windows::Web::Http;
 using namespace HologramJS::Utilities;
 using namespace concurrency;
 using namespace std;
+using namespace Microsoft::WRL;
+using namespace Windows::Storage::Streams;
 
 bool XmlHttpRequest::UseFileSystem = false;
 wstring XmlHttpRequest::BaseUrl = L"";
@@ -22,7 +24,15 @@ JsValueRef XmlHttpRequest::m_sendXHRFunction = JS_INVALID_REFERENCE;
 JsValueRef XmlHttpRequest::m_getHeaderFunction = JS_INVALID_REFERENCE;
 JsValueRef XmlHttpRequest::m_setHeaderFunction = JS_INVALID_REFERENCE;
 
-XmlHttpRequest::XmlHttpRequest() {}
+XmlHttpRequest::XmlHttpRequest() : m_refScriptPayloadValue(JS_INVALID_REFERENCE) {}
+
+XmlHttpRequest::~XmlHttpRequest()
+{
+    if (m_refScriptPayloadValue != JS_INVALID_REFERENCE) {
+        JsRelease(m_refScriptPayloadValue, nullptr);
+        m_refScriptPayloadValue = JS_INVALID_REFERENCE;
+    }
+}
 
 bool XmlHttpRequest::Initialize()
 {
@@ -91,7 +101,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK XmlHttpRequest::getHeader(
 _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK XmlHttpRequest::sendXHR(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 6);
     auto xhr = ScriptResourceTracker::ExternalToObject<XmlHttpRequest>(arguments[1]);
     RETURN_INVALID_REF_IF_NULL(xhr);
 
@@ -104,7 +114,9 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK XmlHttpRequest::sendXHR(
     wstring type;
     RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[4], type));
 
-    xhr->SendRequest(method, uri, type);
+    RETURN_INVALID_REF_IF_FALSE(xhr->CreateHttpContent(arguments[5]));
+
+    RETURN_INVALID_REF_IF_FAILED(xhr->SendRequest(method, uri, type));
 
     return JS_INVALID_REFERENCE;
 }
@@ -153,22 +165,71 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK XmlHttpRequest::getResponse(
     }
 }
 
-void XmlHttpRequest::SendRequest(const std::wstring& method, const std::wstring& uri, const std::wstring type)
+bool XmlHttpRequest::CreateHttpContent(JsValueRef scriptContent)
+{
+    JsValueType contentType;
+    RETURN_IF_JS_ERROR(JsGetValueType(scriptContent, &contentType));
+
+    if (contentType == JsUndefined || contentType == JsNull) {
+        // No payload
+        return true;
+    } else if (contentType == JsString) {
+        wstring payload;
+        RETURN_IF_FALSE(ScriptHostUtilities::GetString(scriptContent, payload));
+        m_httpContent = ref new HttpStringContent(Platform::StringReference(payload.c_str()));
+    } else if (contentType == JsTypedArray || contentType == JsArrayBuffer) {
+        byte* buffer;
+        unsigned int bufferLength;
+
+        if (contentType == JsTypedArray) {
+            JsTypedArrayType arrayType;
+            int elementSize;
+            RETURN_INVALID_REF_IF_JS_ERROR(
+                JsGetTypedArrayStorage(scriptContent, &buffer, &bufferLength, &arrayType, &elementSize));
+        } else {
+            RETURN_IF_JS_ERROR(JsGetArrayBufferStorage(scriptContent, &buffer, &bufferLength));
+        }
+
+        RETURN_IF_JS_ERROR(JsAddRef(scriptContent, nullptr));
+        m_refScriptPayloadValue = scriptContent;
+
+        Details::MakeAndInitialize<BufferOnMemory>(&m_contentBuffer, buffer, bufferLength);
+        auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(m_contentBuffer.Get());
+        m_contentIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+        m_httpContent = ref new HttpBufferContent(m_contentIBuffer);
+        m_contentIsBufferType = true;
+    } else {
+        // Other payload type?
+        return false;
+    }
+
+    return true;
+}
+
+HRESULT XmlHttpRequest::SendRequest(const std::wstring& method, const std::wstring& uri, const std::wstring type)
 {
     m_method = method;
     m_url = uri;
     m_state = RequestState::OPENED;
     m_responseType = type;
 
-    if (m_url.empty() || (_wcsicmp(m_method.c_str(), L"get") != 0)) {
-        return;
+    if (m_url.empty()) {
+        return E_INVALIDARG;
     }
 
     if (ScriptsLoader::IsAbsoluteWebUri(m_url) || !UseFileSystem) {
-        DownloadAsync();
+        SendAsync();
     } else {
+        if (m_httpContent != nullptr || _wcsicmp(method.c_str(), L"get") != 0) {
+            // Cannot have request payload when resolving from local app package
+            // Only GET is supported for loading from the local app package
+            return E_NOTIMPL;
+        }
         ReadFromPackageAsync();
     }
+
+    return S_OK;
 }
 
 task<void> XmlHttpRequest::ReadFromPackageAsync()
@@ -195,7 +256,7 @@ task<void> XmlHttpRequest::ReadFromPackageAsync()
     FireStateChanged();
 }
 
-task<void> XmlHttpRequest::DownloadAsync()
+task<void> XmlHttpRequest::SendAsync()
 {
     Windows::Foundation::Uri ^ uri;
 
@@ -209,36 +270,68 @@ task<void> XmlHttpRequest::DownloadAsync()
 
     Windows::Web::Http::HttpClient ^ httpClient = ref new Windows::Web::Http::HttpClient();
 
+    HttpRequestMessage ^ requestMessage = ref new HttpRequestMessage();
     for (const auto& headerPair : m_requestHeaders) {
-        httpClient->DefaultRequestHeaders->Append(Platform::StringReference(headerPair.first.c_str()),
-                                                  Platform::StringReference(headerPair.second.c_str()));
+        if (_wcsicmp(headerPair.first.c_str(), L"content-type") == 0) {
+            if (m_httpContent != nullptr && m_contentIsBufferType) {
+                m_httpContent->Headers->Append(Platform::StringReference(headerPair.first.c_str()),
+                                               Platform::StringReference(headerPair.second.c_str()));
+            }
+        } else {
+            requestMessage->Headers->Append(Platform::StringReference(headerPair.first.c_str()),
+                                            Platform::StringReference(headerPair.second.c_str()));
+        }
+    }
+
+    HttpResponseMessage ^ responseMessage;
+
+    requestMessage->RequestUri = uri;
+
+    if (m_httpContent != nullptr) {
+        requestMessage->Content = m_httpContent;
     }
 
     if (_wcsicmp(m_method.c_str(), L"get") == 0) {
-        HttpResponseMessage ^ responseMessage;
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Get;
+    } else if (_wcsicmp(m_method.c_str(), L"post") == 0) {
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Post;
+    } else if (_wcsicmp(m_method.c_str(), L"put") == 0) {
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Put;
+    } else if (_wcsicmp(m_method.c_str(), L"delete") == 0) {
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Delete;
+    } else if (_wcsicmp(m_method.c_str(), L"head") == 0) {
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Head;
+    } else if (_wcsicmp(m_method.c_str(), L"patch") == 0) {
+        requestMessage->Method = Windows::Web::Http::HttpMethod::Patch;
+    } else {
+        requestMessage = nullptr;
+        m_status = -1;
+    }
+
+    if (requestMessage) {
         try {
-            responseMessage = await httpClient->GetAsync(uri);
+            responseMessage = await httpClient->SendRequestAsync(requestMessage);
         } catch (...) {
             m_status = -1;
         }
+    }
 
-        if (responseMessage) {
-            if (responseMessage->IsSuccessStatusCode) {
-                if (IsTextResponse()) {
-                    auto responseText = await responseMessage->Content->ReadAsStringAsync();
-                    m_responseText.assign(responseText->Data());
-                } else {
-                    m_response = await responseMessage->Content->ReadAsBufferAsync();
-                    m_responseLength = m_response->Length;
-                }
-
-                m_status = 200;
-                m_statusText = L"OK";
-                m_responseHeaders = responseMessage->Headers;
+    if (responseMessage) {
+        if (responseMessage->IsSuccessStatusCode) {
+            if (IsTextResponse()) {
+                auto responseText = await responseMessage->Content->ReadAsStringAsync();
+                m_responseText.assign(responseText->Data());
             } else {
-                m_status = static_cast<int>(responseMessage->StatusCode);
-                m_statusText.assign(responseMessage->ReasonPhrase->Data());
+                m_response = await responseMessage->Content->ReadAsBufferAsync();
+                m_responseLength = m_response->Length;
             }
+
+            m_status = 200;
+            m_statusText = L"OK";
+            m_responseHeaders = responseMessage->Headers;
+        } else {
+            m_status = static_cast<int>(responseMessage->StatusCode);
+            m_statusText.assign(responseMessage->ReasonPhrase->Data());
         }
     }
 
