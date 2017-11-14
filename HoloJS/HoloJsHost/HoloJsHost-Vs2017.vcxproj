@@ -278,34 +278,40 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ScriptingFramework\Canvas2D.js">
+    <None Include="ScriptingFramework\2d-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\console.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\DOM.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\DomExtensions.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ScriptingFramework\domjs.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="ScriptingFramework\framework.json">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ScriptingFramework\FrameworkHelpers.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\Image.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ScriptingFramework\input.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\keyboard-input.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\mouse-input.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\spatial-input.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ScriptingFramework\Video.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\WebGL.js">
+    <None Include="ScriptingFramework\webgl-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\Window.js">
+    <None Include="ScriptingFramework\window-holographic.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\XmlHttpRequest.js">
