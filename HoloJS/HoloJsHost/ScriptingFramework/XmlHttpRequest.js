@@ -90,8 +90,8 @@
         return holographic.nativeInterface.xhr.getHeader(this.native, header);
     };
 
-    this.send = function() {
-        holographic.nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : 'text'));
+    this.send = function(payload) {
+        holographic.nativeInterface.xhr.send(this.native, this.method, this.url, (this.responseType ? this.responseType : 'text'), payload);
     };
 
     Object.defineProperty(this, 'responseText', {

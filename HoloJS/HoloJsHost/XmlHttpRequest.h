@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ChakraForHoloJS.h"
+#include "IBufferOnMemory.h"
 #include "IRelease.h"
 #include "ObjectEvents.h"
 
@@ -9,13 +10,13 @@ namespace API {
 class XmlHttpRequest : public HologramJS::Utilities::ElementWithEvents, public HologramJS::Utilities::IRelease {
    public:
     XmlHttpRequest();
-    virtual ~XmlHttpRequest() {}
+    virtual ~XmlHttpRequest();
 
     virtual void Release() {}
 
     static bool Initialize();
 
-    void SendRequest(const std::wstring &method, const std::wstring &uri, const std::wstring type);
+    HRESULT SendRequest(const std::wstring &method, const std::wstring &uri, const std::wstring type);
 
     static bool UseFileSystem;
     static std::wstring BaseUrl;
@@ -30,6 +31,14 @@ class XmlHttpRequest : public HologramJS::Utilities::ElementWithEvents, public H
     Windows::Web::Http::Headers::HttpResponseHeaderCollection ^ m_responseHeaders;
     std::wstring m_responseType = L"";
 
+    // The payload that came from script; keep a reference to it for the duration of the request
+    JsValueRef m_refScriptPayloadValue;
+    Windows::Web::Http::IHttpContent ^ m_httpContent;
+    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> m_contentBuffer;
+    bool m_contentIsBufferType;
+    Windows::Storage::Streams::IBuffer ^ m_contentIBuffer;
+    bool CreateHttpContent(JsValueRef scriptContent);
+
     std::wstring m_responseText;
     Windows::Storage::Streams::IBuffer ^ m_response;
     unsigned long m_responseLength;
@@ -41,7 +50,7 @@ class XmlHttpRequest : public HologramJS::Utilities::ElementWithEvents, public H
     RequestState m_state;
 
     concurrency::task<void> ReadFromPackageAsync();
-    concurrency::task<void> DownloadAsync();
+    concurrency::task<void> SendAsync();
 
     void FireStateChanged();
 
