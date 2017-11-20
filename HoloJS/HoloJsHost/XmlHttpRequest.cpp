@@ -274,7 +274,7 @@ task<void> XmlHttpRequest::SendAsync()
     for (const auto& headerPair : m_requestHeaders) {
         if (_wcsicmp(headerPair.first.c_str(), L"content-type") == 0) {
             if (m_httpContent != nullptr) {
-				m_httpContent->Headers->ContentType->MediaType = Platform::StringReference(headerPair.second.c_str());
+                m_httpContent->Headers->ContentType->MediaType = Platform::StringReference(headerPair.second.c_str());
             }
         } else {
             requestMessage->Headers->Append(Platform::StringReference(headerPair.first.c_str()),
