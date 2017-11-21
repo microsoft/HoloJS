@@ -2554,6 +2554,90 @@ defineLazyProperty(idl, "MouseEvent", function() {
     });
 });
 
+//
+// Interface KeyboardEvent
+//
+
+defineLazyProperty(global, "KeyboardEvent", function() {
+    return idl.KeyboardEvent.publicInterface;
+}, true);
+
+defineLazyProperty(idl, "KeyboardEvent", function() {
+    return new IDLInterface({
+        name: "KeyboardEvent",
+        superclass: idl.UIEvent,
+        members: {
+            get key() {
+                return unwrap(this).key;
+            },
+
+            initKeyboardEvent: function initKeyboardEvent(
+                                    type,
+                                    key)
+            {
+                unwrap(this).initKeyboardEvent(
+                    String(type),
+                    String(key));
+            },
+
+        },
+    });
+});
+
+//
+// Interface SpatialInputEvent
+//
+
+defineLazyProperty(global, "SpatialInputEvent", function() {
+    return idl.SpatialInputEvent.publicInterface;
+}, true);
+
+defineLazyProperty(idl, "SpatialInputEvent", function() {
+    return new IDLInterface({
+        name: "SpatialInputEvent",
+        superclass: idl.UIEvent,
+        members: {
+            get isPressed() {
+                return unwrap(this).isPressed;
+            },
+
+            get x() {
+                return unwrap(this).x;
+            },
+
+            get y() {
+                return unwrap(this).y;
+            },
+
+            get z() {
+                return unwrap(this).z;
+            },
+
+            get sourceKind() {
+                return unwrap(this).sourceKind;
+            },
+
+            initSpatialInputEvent: function initSpatialInputEvent(
+                                    type,
+                                    isPressedArg,
+                                    xArg,
+                                    yArg,
+                                    zArg,
+                                    sourceKindArg)
+            {
+                unwrap(this).initSpatialInputEvent(
+                    String(type),
+                    Boolean(isPressedArg),
+                    toDouble(xArg),
+                    toDouble(yArg),
+                    toDouble(zArg),
+                    toDouble(sourceKindArg));
+            },
+
+        },
+    });
+});
+
 
 
 /************************************************************************
@@ -11241,7 +11325,9 @@ defineLazyProperty(impl, "Document", function() {
         event: "Event",
         customevent: "CustomEvent",
         uievent: "UIEvent",
-        mouseevent: "MouseEvent"
+        mouseevent: "MouseEvent",
+        keyboardevent: "KeyboardEvent",
+        spatialinputevent: "SpatialInputEvent",
     };
 
     // Certain arguments to document.createEvent() must be treated specially
@@ -12410,6 +12496,68 @@ defineLazyProperty(impl, "MouseEvent", function() {
 
 
 /************************************************************************
+ *  src/impl/KeyboardEvent.js
+ ************************************************************************/
+
+//@line 1 "src/impl/KeyboardEvent.js"
+defineLazyProperty(impl, "KeyboardEvent", function() {
+    function KeyboardEvent() {
+        // Just use the superclass constructor to initialize
+        impl.UIEvent.call(this);
+
+        this.key = "\0";
+    }
+    KeyboardEvent.prototype = O.create(impl.UIEvent.prototype, {
+        _idlName: constant("KeyboardEvent"),
+        initKeyboardEvent: constant(function(type, key, bubbles, cancelable,
+                                          view, detail) {
+            this.initEvent(type, bubbles, cancelable, view, detail);
+            this.key = key;
+        }),
+
+    });
+
+    return KeyboardEvent;
+});
+
+
+
+/************************************************************************
+ *  src/impl/SpatialInputEvent.js
+ ************************************************************************/
+
+//@line 1 "src/impl/SpatialInputEvent.js"
+defineLazyProperty(impl, "SpatialInputEvent", function() {
+    function SpatialInputEvent() {
+        // Just use the superclass constructor to initialize
+        impl.UIEvent.call(this);
+
+        this.isPressed = false;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.sourceKind = 0;
+    }
+    SpatialInputEvent.prototype = O.create(impl.UIEvent.prototype, {
+        _idlName: constant("SpatialInputEvent"),
+        initSpatialInputEvent: constant(function(type, isPressedArg, xArg,  yArg, zArg, sourceKindArg, bubbles, cancelable,
+                                          view, detail) {
+            this.initEvent(type, bubbles, cancelable, view, detail);
+            this.isPressed = isPressedArg;
+            this.x = xArg;
+            this.y = yArg;
+            this.z = zArg;
+            this.sourceKind = sourceKindArg;
+        }),
+
+    });
+
+    return SpatialInputEvent;
+});
+
+
+
+/************************************************************************
  *  src/impl/HTMLElement.js
  ************************************************************************/
 
@@ -12911,8 +13059,8 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
         this.removeEventListenerXXX = this.removeEventListener;
         
         this.addEventListener = function (type, listener, capture) {
-                holographic.nativeInterface.input.addEventListener(type);
-                this.addEventListenerXXX(type, listener, capture);
+            holographic.nativeInterface.input.addEventListener(type);
+            this.addEventListenerXXX(type, listener, capture);
         };
         
         this.removeEventListener = function (type, listener, capture) {
@@ -12965,10 +13113,22 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
                                  // the actually current keyboard state
                                  // somehow...
                                  false, false, false, false,
-                                 button, null)
+                                 button, null);
 
             // Dispatch this as an untrusted event since it is synthetic
             var success = this.dispatchEvent(event);
+        }),
+
+        dispatchKeyboardFromWindow: constant(function dispatchKeyboardFromWindow(key, type) {
+            var keyEvent = this.ownerDocument.createEvent("KeyboardEvent");
+            keyEvent.initKeyboardEvent(type, key, true, true, );
+            this.dispatchEvent(keyEvent);
+        }),
+
+        dispatchSpatialInputFromWindow: constant(function dispatchSpatialInputFromWindow(type, isPressedArg, xArg,  yArg, zArg, sourceKindArg) {
+            var spatialInputEvent = this.ownerDocument.createEvent("SpatialInputEvent");
+            spatialInputEvent.initSpatialInputEvent(type, isPressedArg, xArg, yArg, zArg, sourceKindArg, true, true, )
+            this.dispatchEvent(spatialInputEvent);
         }),
     });
 
@@ -21909,7 +22069,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-November-2017 07:07:18 */
+/* Build time: 21-November-2017 09:22:26 */
 var parserlib = {};
 (function(){
 
@@ -22813,7 +22973,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-November-2017 07:07:18 */
+/* Build time: 21-November-2017 09:22:26 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,

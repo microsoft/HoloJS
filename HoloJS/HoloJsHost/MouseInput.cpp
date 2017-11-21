@@ -31,7 +31,7 @@ MouseInput::~MouseInput()
 	m_inputRefCount = 0;
 }
 
-void MouseInput::AddEventListener(const wstring& type)
+bool MouseInput::AddEventListener(const wstring& type)
 {
 	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
 	{
@@ -64,13 +64,15 @@ void MouseInput::AddEventListener(const wstring& type)
 					this->CallbackScriptForMouseInput(MouseInputEventType::MouseMove, args);
 				});
 			}
-		}
 
-		break;
+			return true;
+		}
 	}
+
+	return false;
 }
 
-void MouseInput::RemoveEventListener(const wstring& type)
+bool MouseInput::RemoveEventListener(const wstring& type)
 {
 	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
 	{
@@ -84,8 +86,12 @@ void MouseInput::RemoveEventListener(const wstring& type)
 				CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
 				CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
 			}
+
+			return true;
 		}
 	}
+
+	return false;
 }
 
 MouseButtons GetButtonFromArgs(PointerEventArgs ^ args)

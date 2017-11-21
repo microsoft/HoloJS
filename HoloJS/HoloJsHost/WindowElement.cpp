@@ -307,7 +307,13 @@ JsValueRef WindowElement::addEventListener(JsValueRef* arguments, unsigned short
 	wstring type;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], type));
 
-	m_mouseInput.AddEventListener(type);
+	if (!m_mouseInput.AddEventListener(type))
+	{
+		if (!m_keyboardInput.AddEventListener(type))
+		{
+			m_spatialInput.AddEventListener(type);
+		}
+	}
 
 	return JS_INVALID_REFERENCE;
 }
