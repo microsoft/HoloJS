@@ -8,6 +8,7 @@
 using namespace HologramJS::API;
 using namespace HologramJS::Utilities;
 using namespace HologramJS::Input;
+using namespace std;
 
 WindowElement::WindowElement() {}
 
@@ -34,6 +35,12 @@ bool WindowElement::Initialize()
         L"setCallback", L"window", setCallbackStatic, this, &m_setCallbackFunction));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
         L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
+
+	RETURN_IF_FALSE(
+		ScriptHostUtilities::ProjectFunction(L"addEventListener", L"input", addEventListenerStatic, this, &m_addEventListener));
+
+	RETURN_IF_FALSE(
+		ScriptHostUtilities::ProjectFunction(L"removeEventListener", L"input", removeEventListenerStatic, this, &m_removeEventListener));
 
     RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
 
@@ -291,4 +298,28 @@ JsValueRef WindowElement::requestSpatialMapping(JsValueRef* arguments, unsigned 
     const auto trianglesPerCubicMeter = ScriptHostUtilities::GLintFromJsRef(arguments[4]);
 
     return m_spatialMapping.GetSpatialData(extentX, extentY, extentZ, trianglesPerCubicMeter);
+}
+
+JsValueRef WindowElement::addEventListener(JsValueRef* arguments, unsigned short argumentCount)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+	wstring type;
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], type));
+
+	m_mouseInput.AddEventListener(type);
+
+	return JS_INVALID_REFERENCE;
+}
+
+JsValueRef WindowElement::removeEventListener(JsValueRef* arguments, unsigned short argumentCount)
+{
+	RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+	wstring type;
+	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], type));
+
+	m_mouseInput.AddEventListener(type);
+
+	return JS_INVALID_REFERENCE;
 }

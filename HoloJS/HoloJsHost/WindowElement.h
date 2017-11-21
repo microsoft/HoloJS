@@ -107,6 +107,28 @@ class WindowElement {
 
     JsValueRef requestSpatialMapping(JsValueRef* arguments, unsigned short argumentCount);
 
+	JsValueRef m_addEventListener = JS_INVALID_REFERENCE;
+	static JsValueRef CHAKRA_CALLBACK addEventListenerStatic(JsValueRef callee,
+		bool isConstructCall,
+		JsValueRef* arguments,
+		unsigned short argumentCount,
+		PVOID callbackData)
+	{
+		return reinterpret_cast<WindowElement*>(callbackData)->addEventListener(arguments, argumentCount);
+	}
+	JsValueRef addEventListener(JsValueRef* arguments, unsigned short argumentCount);
+
+	JsValueRef m_removeEventListener = JS_INVALID_REFERENCE;
+	static JsValueRef CHAKRA_CALLBACK removeEventListenerStatic(JsValueRef callee,
+		bool isConstructCall,
+		JsValueRef* arguments,
+		unsigned short argumentCount,
+		PVOID callbackData)
+	{
+		return reinterpret_cast<WindowElement*>(callbackData)->removeEventListener(arguments, argumentCount);
+	}
+	JsValueRef removeEventListener(JsValueRef* arguments, unsigned short argumentCount);
+
     float* m_viewMatrixMidStoragePointer = nullptr;
     JsValueRef m_viewMatrixMidScriptProjection = JS_INVALID_REFERENCE;
     float* m_viewMatrixLeftStoragePointer = nullptr;

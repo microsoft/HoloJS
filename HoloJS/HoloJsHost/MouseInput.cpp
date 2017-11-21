@@ -2,6 +2,8 @@
 #include "MouseInput.h"
 #include "ScriptErrorHandling.h"
 
+PCWSTR g_supportedMouseEvents[] = { L"mousedown", L"mouseup", L"mousewheel", L"mousewheel" };
+
 using namespace HologramJS::Input;
 using namespace Windows::UI::Core;
 using namespace std;
@@ -17,37 +19,73 @@ inline MouseButtons& operator|=(MouseButtons& __x, MouseButtons __y)
 
 MouseInput::MouseInput()
 {
-    m_mouseDownToken = CoreWindow::GetForCurrentThread()->PointerPressed +=
-        ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-            [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-                this->CallbackScriptForMouseInput(MouseInputEventType::MouseDown, args);
-            });
-
-    m_mouseUpToken = CoreWindow::GetForCurrentThread()->PointerReleased +=
-        ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-            [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-                this->CallbackScriptForMouseInput(MouseInputEventType::MouseUp, args);
-            });
-
-    m_mouseWheelToken = CoreWindow::GetForCurrentThread()->PointerWheelChanged +=
-        ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-            [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-                this->CallbackScriptForMouseInput(MouseInputEventType::MouseWheel, args);
-            });
-
-    m_mouseMoveToken = CoreWindow::GetForCurrentThread()->PointerMoved +=
-        ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-            [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-                this->CallbackScriptForMouseInput(MouseInputEventType::MouseMove, args);
-            });
 }
 
 MouseInput::~MouseInput()
 {
-    CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
-    CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
-    CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
-    CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
+	CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
+	CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
+	CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
+	CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
+
+	m_inputRefCount = 0;
+}
+
+void MouseInput::AddEventListener(const wstring& type)
+{
+	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
+	{
+		if (type == g_supportedMouseEvents[i])
+		{
+			m_inputRefCount++;
+
+			if (m_inputRefCount == 1) {
+				m_mouseDownToken = CoreWindow::GetForCurrentThread()->PointerPressed +=
+					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+					this->CallbackScriptForMouseInput(MouseInputEventType::MouseDown, args);
+				});
+
+				m_mouseUpToken = CoreWindow::GetForCurrentThread()->PointerReleased +=
+					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+					this->CallbackScriptForMouseInput(MouseInputEventType::MouseUp, args);
+				});
+
+				m_mouseWheelToken = CoreWindow::GetForCurrentThread()->PointerWheelChanged +=
+					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+					this->CallbackScriptForMouseInput(MouseInputEventType::MouseWheel, args);
+				});
+
+				m_mouseMoveToken = CoreWindow::GetForCurrentThread()->PointerMoved +=
+					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+					this->CallbackScriptForMouseInput(MouseInputEventType::MouseMove, args);
+				});
+			}
+		}
+
+		break;
+	}
+}
+
+void MouseInput::RemoveEventListener(const wstring& type)
+{
+	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
+	{
+		if (type == g_supportedMouseEvents[i])
+		{
+			m_inputRefCount--;
+
+			if (m_inputRefCount == 0) {
+				CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
+				CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
+				CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
+				CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
+			}
+		}
+	}
 }
 
 MouseButtons GetButtonFromArgs(PointerEventArgs ^ args)

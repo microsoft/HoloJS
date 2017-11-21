@@ -2307,6 +2307,7 @@ defineLazyProperty(global, "DOMStringList", function() {
 defineLazyProperty(idl, "DOMStringList", function() {
     return new IDLInterface({
         name: "DOMStringList",
+        proxyFactory: DOMStringListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2335,6 +2336,7 @@ defineLazyProperty(global, "DOMTokenList", function() {
 defineLazyProperty(idl, "DOMTokenList", function() {
     return new IDLInterface({
         name: "DOMTokenList",
+        proxyFactory: DOMTokenListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -12904,6 +12906,19 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
         this.height = this.clientHeight = window.height;
         holographic.canvas = this;
         impl.HTMLElement.call(this, doc, localName, prefix);
+
+        this.addEventListenerXXX = this.addEventListener;
+        this.removeEventListenerXXX = this.removeEventListener;
+        
+        this.addEventListener = function (type, listener, capture) {
+                holographic.nativeInterface.input.addEventListener(type);
+                this.addEventListenerXXX(type, listener, capture);
+        };
+        
+        this.removeEventListener = function (type, listener, capture) {
+            holographic.nativeInterface.input.removeEventListener(type);
+            this.removeEventListenerXXX(type, listener, capture);
+        };
     }
 
     HTMLHoloCanvasElementExp.prototype = O.create(impl.HTMLElement.prototype, {
@@ -21894,7 +21909,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 20-September-2017 10:52:59 */
+/* Build time: 21-November-2017 07:07:18 */
 var parserlib = {};
 (function(){
 
@@ -22798,7 +22813,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 20-September-2017 10:52:59 */
+/* Build time: 21-November-2017 07:07:18 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
