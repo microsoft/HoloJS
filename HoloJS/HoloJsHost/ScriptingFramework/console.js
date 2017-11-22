@@ -37,6 +37,14 @@ var console;
             this.dirEntries.push(...entries);
             holographic.nativeInterface.system.log("dir: " + entries.join(" ") + "\r\n");
         };
+
+        this.time = function (label) {
+            this.log("Start " + label);
+        }
+
+        this.timeEnd = function(label) {
+            this.log("End " + label);
+        }
     }
 
     console = new makeConsole();

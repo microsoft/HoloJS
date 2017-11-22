@@ -14,7 +14,7 @@ using namespace HologramJS;
 int main(Array<Platform::String^>^)
 {
     // If the app is launched without protocol invocation, run the bellow script that shows a canned message
-    auto holoJsAppView = ref new HoloJsAppView(ref new String(L"http://holojs.azurewebsites.net/v2/samples/webarviewer/webarviewer.json"));
+    auto holoJsAppView = ref new HoloJsAppView(ref new String(L"http://localhost:6728/mtlobjloader/mtlobjloader.json"));
 
     // This app handles activations on the web-ar protocol; it is invoked by the web browser when a web-ar: link is navigated to
     // The app will execute any script navigated to on the web-ar protocol

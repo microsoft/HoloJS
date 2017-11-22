@@ -1,5 +1,4 @@
-﻿var canvas;
-var gl;
+﻿var gl;
 
 var cubeVerticesBuffer;
 var cubeVerticesTextureCoordBuffer;
@@ -45,15 +44,19 @@ var modelMatrix;
 
 var cubeX, cubeY, cubeZ;
 
+var isHoloJs = (typeof holographic !== 'undefined');
+
+var canvas;
+
 //
 // start
 //
 // Called when the canvas is created to get the ball rolling.
 //
 function start() {
-    canvas = document.createElement("canvas3D");
+    canvas = document.createElement(isHoloJs ? 'exp-holo-canvas' : 'canvas');
 
-    initWebGL(canvas);      // Initialize the GL context
+    initWebGL();      // Initialize the GL context
 
     // Only continue if WebGL is available and working
 
@@ -63,7 +66,7 @@ function start() {
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
 
-        if (window.experimentalHolographic !== true) {
+        if (!isHoloJs || holographic.renderMode === 0) {
             // When running non-holographic (desktop etc.), use a proper projection matrix
             projectionMatrix = new Float32Array(
                 makePerspectiveMatrixForNonHolographic(40, window.innerWidth / window.innerHeight, 1, 10));
@@ -115,9 +118,9 @@ var lastSpatialInputZ = 0;
 
 function onSpatialSourcePress(spatialInputEvent) {
     // Remember last hand position
-    lastSpatialInputX = spatialInputEvent.location.x;
-    lastSpatialInputY = spatialInputEvent.location.y;
-    lastSpatialInputZ = spatialInputEvent.location.z;
+    lastSpatialInputX = spatialInputEvent.x;
+    lastSpatialInputY = spatialInputEvent.y;
+    lastSpatialInputZ = spatialInputEvent.z;
 
     spatialInputTracking = true;
 }
@@ -129,9 +132,9 @@ function onSpatialSourceRelease(spatialInputEvent) {
 function onSpatialSourceUpdate(spatialInputEvent) {
     if (spatialInputTracking === true) {
         // Compute new cube position based on hand delta movement
-        cubeX = cubeX + (lastSpatialInputX - spatialInputEvent.location.x);
-        cubeY = cubeY + (lastSpatialInputY - spatialInputEvent.location.y);
-        cubeZ = cubeZ + (lastSpatialInputZ - spatialInputEvent.location.z);
+        cubeX = cubeX - 3 * (lastSpatialInputX - spatialInputEvent.x);
+        cubeY = cubeY + 3 * (lastSpatialInputY - spatialInputEvent.y);
+        cubeZ = cubeZ - 3 * (lastSpatialInputZ - spatialInputEvent.z);
 
         // Move the cube around to follow hand movement
         modelMatrix[12] = cubeX;
@@ -139,9 +142,9 @@ function onSpatialSourceUpdate(spatialInputEvent) {
         modelMatrix[14] = cubeZ;
 
         // Remember last hand position
-        lastSpatialInputX = spatialInputEvent.location.x;
-        lastSpatialInputY = spatialInputEvent.location.y;
-        lastSpatialInputZ = spatialInputEvent.location.z;
+        lastSpatialInputX = spatialInputEvent.x;
+        lastSpatialInputY = spatialInputEvent.y;
+        lastSpatialInputZ = spatialInputEvent.z;
     }
 }
 
@@ -348,10 +351,18 @@ function drawScene() {
     // Draw the cube.
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVerticesIndexBuffer);
     gl.uniformMatrix4fv(mUniform, false, new Float32Array(modelMatrix));
-    // When running holographic, use the host provided view/projection matrices which ensures rendering is world locked;
-    // When running non-holographic, use the app (script) provided view/projection matrices
-    gl.uniformMatrix4fv(vUniform, false, (window.experimentalHolographic === true ? window.getViewMatrix() : viewMatrix));
-    gl.uniformMatrix4fv(pUniform, false, (window.experimentalHolographic === true ? window.getProjectionMatrix() : projectionMatrix));
+
+    if (isHoloJs && holographic.renderMode > 0) {
+        // When running holographic, use the host provided view/projection matrices which ensures rendering is world locked;
+        let params = holographic.getHolographicCameraParameters();
+        gl.uniformMatrix4fv(vUniform, false, params.mid.viewMatrix);
+        gl.uniformMatrix4fv(pUniform, false, params.mid.projectionMatrix);
+    } else {
+        // When running non-holographic, use the app (script) provided view/projection matrices
+        gl.uniformMatrix4fv(vUniform, false, viewMatrix);
+        gl.uniformMatrix4fv(pUniform, false, projectionMatrix);
+    }
+
     gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
 
     // Present the frame.

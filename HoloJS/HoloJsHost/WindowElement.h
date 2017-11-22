@@ -154,6 +154,9 @@ class WindowElement {
     float* m_cameraPositionRightStoragePointer = nullptr;
     JsValueRef m_cameraPositionRightScriptProjection = JS_INVALID_REFERENCE;
 
+	JsValueRef m_vsyncEventType;
+	JsValueRef m_resizeEventType;
+
     bool CreateViewMatrixStorageAndScriptProjection();
 };
 }  // namespace API

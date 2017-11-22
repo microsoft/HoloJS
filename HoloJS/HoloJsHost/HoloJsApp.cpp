@@ -96,10 +96,7 @@ void HoloJsAppView::LoadAndExecuteScript()
     m_holoScriptHost = ref new HologramJS::HologramScriptHost();
     m_holoScriptHost->Initialize();
 
-    if (mHolographicSpace != nullptr)
-    {
-        m_holoScriptHost->EnableHolographicExperimental(mStationaryReferenceFrame);
-    }
+	m_holoScriptHost->EnableHolographicExperimental(mStationaryReferenceFrame, AutoStereoEnabled);
 
     eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_WIDTH, &m_PanelWidth);
     eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_HEIGHT, &m_PanelHeight);

@@ -66,7 +66,7 @@ let scene = new THREE.Scene();
 // Instanciate iTowns GlobeView*
 //var globeView = new itowns.GlobeView(canvas, positionOnGlobe, { renderer: renderer });//, { renderer: renderer });
 
-let camera = (isHoloJs && holographic.experimental.autoStereo === true) ? new THREE.HolographicCamera() :
+let camera = (isHoloJs && holographic.renderMode > 0) ? new THREE.HolographicCamera() :
 	new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 	//globeView.camera.camera3D;
 

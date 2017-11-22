@@ -4,7 +4,7 @@ namespace HologramJS {
 namespace Input {
 // the mapping of events to values is fixed on the script side;
 // any changes here must be ported to window.js as well
-enum class NativeToScriptInputType : int { Resize = 0, Mouse, Keyboard, SpatialInput, SpatialMapping };
+enum class NativeToScriptInputType : int { Resize = 0, Mouse, Keyboard, SpatialInput, SpatialMapping, VSync };
 
 enum class KeyboardInputEventType : int { KeyDown = 0, KeyUp };
 

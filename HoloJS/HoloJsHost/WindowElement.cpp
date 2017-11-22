@@ -44,6 +44,9 @@ bool WindowElement::Initialize()
 
     RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
 
+	RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), &m_resizeEventType));
+	RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::VSync), &m_vsyncEventType));
+
     return true;
 }
 
@@ -89,7 +92,6 @@ JsValueRef WindowElement::getHeight(JsValueRef* arguments, unsigned short argume
 
 void WindowElement::Resize(int width, int height)
 {
-    static std::wstring resizeEventName(L"resize");
     const bool shouldFireResize = (m_width != width || m_height != height);
 
     if (shouldFireResize) {
@@ -97,15 +99,13 @@ void WindowElement::Resize(int width, int height)
         m_height = height;
 
         if (m_callbackFunction != JS_INVALID_REFERENCE) {
-            std::vector<JsValueRef> parameters(2);
-            parameters[0] = m_callbackFunction;
-            JsValueRef* eventTypeParam = &parameters[1];
-
-            EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), eventTypeParam));
+			JsValueRef parameters[2];
+			parameters[0] = m_callbackFunction;
+			parameters[1] = m_resizeEventType;
 
             JsValueRef result;
             HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-                m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+                m_callbackFunction, parameters, ARRAYSIZE(parameters), &result));
         }
     }
 }
@@ -185,11 +185,11 @@ void WindowElement::VSync(float4x4 midViewMatrix, float4x4 midProjectionMatrix, 
             }
         }
 
-        std::vector<JsValueRef> parameters(1);
-        parameters[0] = m_callbackFunction;
+		JsValueRef parameters[2];
+		parameters[0] = m_callbackFunction;
+		parameters[1] = m_vsyncEventType;
         JsValueRef result;
-        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-            m_callbackFunction, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters, ARRAYSIZE(parameters), &result));
     }
 }
 
@@ -325,7 +325,13 @@ JsValueRef WindowElement::removeEventListener(JsValueRef* arguments, unsigned sh
 	wstring type;
 	RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], type));
 
-	m_mouseInput.AddEventListener(type);
+	if (!m_mouseInput.RemoveEventListener(type))
+	{
+		if (!m_keyboardInput.RemoveEventListener(type))
+		{
+			m_spatialInput.RemoveEventListener(type);
+		}
+	}
 
 	return JS_INVALID_REFERENCE;
 }

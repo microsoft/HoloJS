@@ -93,7 +93,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[6],
                                               arguments[7],
                                               arguments[8]);
-        } else if (arguments.length === 6 && (arguments[5] instanceof HTMLImageElement)) {
+        } else if (arguments.length === 6 && ((arguments[5] instanceof HTMLImageElement) || (arguments[5] instanceof Image))) {
             var image = arguments[5];
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
             holographic.nativeInterface.webgl.texImage2D2(this.glContext,

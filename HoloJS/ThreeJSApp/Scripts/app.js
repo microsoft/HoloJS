@@ -1,6 +1,8 @@
 function run() {
-    let canvas = document.createElement(typeof holographic !== undefined ? 'exp-holo-canvas' : 'canvas');
-    if (!holographic) {
+    let isHoloJs = (typeof holographic !== 'undefined');
+
+    let canvas = document.createElement(isHoloJs ? 'exp-holo-canvas' : 'canvas');
+    if (!isHoloJs) {
         document.body.appendChild(canvas);
         document.body.style.margin = document.body.style.padding = 0;
         canvas.style.width = canvas.style.height = "100%";
@@ -8,7 +10,7 @@ function run() {
 
     let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
     let scene = new THREE.Scene();
-    let camera = (holographic && holographic.experimental.autoStereo === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000));
+    let camera = (isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000));
     let clock = new THREE.Clock();
     let loader = new THREE.TextureLoader();
     let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -65,7 +67,7 @@ function run() {
 
     var controls;
 
-    if (window.experimentalHolographic !== true) {
+    if (!isHoloJs || holographic.renderMode === 0) {
         camera.position.set(0, 0, 1);
         controls = new THREE.OrbitControls(camera, canvas);
     }

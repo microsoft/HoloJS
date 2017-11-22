@@ -21,7 +21,7 @@ using float4x4 = Windows::Foundation::Numerics::float4x4;
     void Shutdown();
 
     bool EnableHolographicExperimental(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
-                                       frameOfReference);
+                                       frameOfReference, bool autoStereoEnabled);
 
     Windows::Foundation::IAsyncOperation<bool> ^ RunApp(Platform::String ^ jsonUri);
 

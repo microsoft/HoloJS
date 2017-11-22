@@ -6,11 +6,11 @@
     };
 
     this.addEventListener = function (eventType, eventHandler) {
-        this.DOM.addEventListener(eventType, eventHandler);
+        this.DOM.addEventListener(eventType, eventHandler, true);
     };
 
     this.removeEventListener = function (eventType, eventHandler) {
-        this.DOM.removeEventListener(eventType, eventHandler);
+        this.DOM.removeEventListener(eventType, eventHandler, true);
     };
 
     this.stubOnLoad = function() {
@@ -26,10 +26,10 @@
         set: function(value) {
             if (!value && this.loadEvent) {
                 this.loadEvent = value;
-                this.removeEventListener('load', this.stubOnLoad);
+                this.removeEventListener('load', this.stubOnLoad.bind(this));
             } else if (value && !this.loadEvent) {
                 this.loadEvent = value;
-                this.addEventListener('load', this.stubOnLoad);
+                this.addEventListener('load', this.stubOnLoad.bind(this));
             } else {
                 this.loadEvent = value;
             }
@@ -42,6 +42,18 @@
         },
         set: function (value) {
             this.DOM.src = value;
+        }
+    });
+
+    Object.defineProperty(this, 'width', {
+        get: function () {
+            return this.DOM.width;
+        }
+    });
+
+    Object.defineProperty(this, 'height', {
+        get: function () {
+            return this.DOM.height;
         }
     });
 }
