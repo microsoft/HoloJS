@@ -50,6 +50,7 @@ artifacts/
 *.ilk
 *.meta
 *.obj
+!**/WebSamples/*/*.obj
 *.pch
 *.pdb
 *.pgc
