@@ -5,9 +5,9 @@
 holographic.input.mouse = {};
 holographic.input.mouse.id = 1;
 
-holographic.input.mouse.events = ['mouseup', 'mousedown', 'mousemove', 'mousewheel'];
+holographic.input.mouse.events = ['mouseup', 'mousedown', 'mousemove', 'wheel'];
 
-holographic.input.mouse.dispatch = function(x, y, button, action) {
+holographic.input.mouse.dispatch = function(x, y, button, action, wheelDelta) {
     if (!holographic.canvas) {
         return;
     }
@@ -22,6 +22,6 @@ holographic.input.mouse.dispatch = function(x, y, button, action) {
         realButton = 1;
     }
 
-    holographic.canvas.dispatchMouseFromWindow(x, y, realButton, holographic.input.mouse.events[action]);
-    holographic.canvas.ownerDocument.dispatchMouseFromWindow(x, y, realButton, holographic.input.mouse.events[action]);
+    holographic.canvas.dispatchMouseFromWindow(x, y, realButton, holographic.input.mouse.events[action], wheelDelta);
+    holographic.canvas.ownerDocument.dispatchMouseFromWindow(x, y, realButton, holographic.input.mouse.events[action], wheelDelta);
 }

@@ -119,19 +119,21 @@ void MouseInput::CallbackScriptForMouseInput(MouseInputEventType type, Windows::
 {
     EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
 
-    JsValueRef parameters[6];
+    JsValueRef parameters[7];
     parameters[0] = m_scriptCallback;
     JsValueRef* eventTypeParam = &parameters[1];
     JsValueRef* xParam = &parameters[2];
     JsValueRef* yParam = &parameters[3];
     JsValueRef* buttonParam = &parameters[4];
     JsValueRef* actionParam = &parameters[5];
+	JsValueRef* deltaParam = &parameters[6];
 
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Mouse), eventTypeParam));
     EXIT_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.X, xParam));
     EXIT_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.Y, yParam));
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(GetButtonFromArgs(args)), buttonParam));
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), actionParam));
+	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(args->CurrentPoint->Properties->MouseWheelDelta), deltaParam));
 
     JsValueRef result;
     HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));

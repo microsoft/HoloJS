@@ -2555,6 +2555,80 @@ defineLazyProperty(idl, "MouseEvent", function() {
 });
 
 //
+// Interface WheelEvent
+//
+
+defineLazyProperty(global, "WheelEvent", function() {
+    return idl.WheelEvent.publicInterface;
+}, true);
+
+defineLazyProperty(idl, "WheelEvent", function() {
+    return new IDLInterface({
+        name: "WheelEvent",
+        superclass: idl.MouseEvent,
+        members: {
+            get deltaX() {
+                return unwrap(this).deltaX;
+            },
+
+            get deltaY() {
+                return unwrap(this).deltaY;
+            },
+
+            get deltaZ() {
+                return unwrap(this).deltaZ;
+            },
+
+            initWheelEvent: function initWheelEvent(
+                                    typeArg,
+                                    canBubbleArg,
+                                    cancelableArg,
+                                    viewArg,
+                                    detailArg,
+                                    screenXArg,
+                                    screenYArg,
+                                    clientXArg,
+                                    clientYArg,
+                                    deltaXArg,
+                                    deltaYArg,
+                                    deltaZArg,
+                                    ctrlKeyArg,
+                                    altKeyArg,
+                                    shiftKeyArg,
+                                    metaKeyArg,
+                                    buttonArg,
+                                    relatedTargetArg)
+            {
+                unwrap(this).initWheelEvent(
+                    String(typeArg),
+                    Boolean(canBubbleArg),
+                    Boolean(cancelableArg),
+                    unwrap(viewArg),
+                    toLong(detailArg),
+                    toLong(screenXArg),
+                    toLong(screenYArg),
+                    toLong(clientXArg),
+                    toLong(clientYArg),
+                    toLong(deltaXArg),
+                    toLong(deltaYArg),
+                    toLong(deltaZArg),
+                    Boolean(ctrlKeyArg),
+                    Boolean(altKeyArg),
+                    Boolean(shiftKeyArg),
+                    Boolean(metaKeyArg),
+                    toUShort(buttonArg),
+                    unwrap(relatedTargetArg));
+            },
+
+            getModifierState: function getModifierState(keyArg) {
+                return unwrap(this).getModifierState(String(keyArg));
+            },
+
+        },
+    });
+});
+
+//
 // Interface KeyboardEvent
 //
 
@@ -11331,6 +11405,7 @@ defineLazyProperty(impl, "Document", function() {
         uievent: "UIEvent",
         mouseevent: "MouseEvent",
         keyboardevent: "KeyboardEvent",
+        wheelevent: "WheelEvent",
         spatialinputevent: "SpatialInputEvent",
     };
 
@@ -12500,6 +12575,45 @@ defineLazyProperty(impl, "MouseEvent", function() {
 
 
 /************************************************************************
+ *  src/impl/WheelEvent.js
+ ************************************************************************/
+
+//@line 1 "src/impl/WheelEvent.js"
+defineLazyProperty(impl, "WheelEvent", function() {
+    function WheelEvent() {
+        // Just use the superclass constructor to initialize
+        impl.MouseEvent.call(this);
+
+        this.screenX = this.screenY = this.clientX = this.clientY = 0;
+        this.ctrlKey = this.altKey = this.shiftKey = this.metaKey = false;
+        this.deltaX = this.deltaY = this.deltaZ = 0;
+        this.button = 0;
+        this.buttons = 1;
+        this.relatedTarget = null;
+    }
+    WheelEvent.prototype = O.create(impl.MouseEvent.prototype, {
+        _idlName: constant("WheelEvent"),
+        initWheelEvent: constant(function(type, bubbles, cancelable,
+                                          view, detail,
+                                          screenX, screenY, clientX, clientY, deltaX, deltaY, deltaZ,
+                                          ctrlKey, altKey, shiftKey, metaKey,
+                                          button, relatedTarget) {
+            
+            this.initMouseEvent(type, bubbles, cancelable, view, detail, screenX, screenY, clientX, clientY,
+                ctrlKey, altKey, shiftKey, metaKey, button, relatedTarget);
+            
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+            this.deltaZ = deltaZ;
+        }),
+    });
+
+    return WheelEvent;
+});
+
+
+
+/************************************************************************
  *  src/impl/KeyboardEvent.js
  ************************************************************************/
 
@@ -13109,17 +13223,30 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
             }
         }),
 
-        dispatchMouseFromWindow: constant(function dispatchMouseFromWindow(x, y, button, action) {
-            var event = this.ownerDocument.createEvent("MouseEvent");
+        dispatchMouseFromWindow: constant(function dispatchMouseFromWindow(x, y, button, action, wheelDelta) {
 
-            event.initMouseEvent(action, true, true,
-                                 this.ownerDocument.defaultView, 1,
-                                 x, y, x, y,
-                                 // These 4 should be initialized with
-                                 // the actually current keyboard state
-                                 // somehow...
-                                 false, false, false, false,
-                                 button, null);
+            var event;
+            if (action ===  "wheel") {
+                event = this.ownerDocument.createEvent("WheelEvent");
+                event.initWheelEvent(action, true, true,
+                    this.ownerDocument.defaultView, 1,
+                    x, y, x, y, 0, wheelDelta, 0,
+                    // These 4 should be initialized with
+                    // the actually current keyboard state
+                    // somehow...
+                    false, false, false, false,
+                    button, null);
+            } else {
+                event = this.ownerDocument.createEvent("MouseEvent");
+                event.initMouseEvent(action, true, true,
+                    this.ownerDocument.defaultView, 1,
+                    x, y, x, y,
+                    // These 4 should be initialized with
+                    // the actually current keyboard state
+                    // somehow...
+                    false, false, false, false,
+                    button, null);
+            }
 
             // Dispatch this as an untrusted event since it is synthetic
             var success = this.dispatchEvent(event);
@@ -28172,7 +28299,7 @@ function Window() {
             resizeEvent.initEvent("resize", true, true);
             this.dispatchEvent(resizeEvent);
         } else if (type === holographic.input.mouse.id) {
-            holographic.input.mouse.dispatch(arguments[1], arguments[2], arguments[3], arguments[4]);
+            holographic.input.mouse.dispatch(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5]);
         } else if (type === holographic.input.keyboard.id) {
             holographic.input.keyboard.dispatch(arguments[1], arguments[2]);
 
