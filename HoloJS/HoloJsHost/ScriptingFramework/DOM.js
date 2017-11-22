@@ -2307,7 +2307,6 @@ defineLazyProperty(global, "DOMStringList", function() {
 defineLazyProperty(idl, "DOMStringList", function() {
     return new IDLInterface({
         name: "DOMStringList",
-        proxyFactory: DOMStringListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2336,7 +2335,6 @@ defineLazyProperty(global, "DOMTokenList", function() {
 defineLazyProperty(idl, "DOMTokenList", function() {
     return new IDLInterface({
         name: "DOMTokenList",
-        proxyFactory: DOMTokenListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
