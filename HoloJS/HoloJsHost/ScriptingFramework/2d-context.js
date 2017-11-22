@@ -63,8 +63,7 @@
         });
     };
 
-    holographic.nativeInterface.makeRenderingContext = function(canvas) {
-        this.canvas = canvas;
+    holographic.nativeInterface.makeRenderingContext = function() {
         this.ctxNative = holographic.nativeInterface.canvas2d.createContext2D();
 
         this.drawImage = function (image) {
@@ -142,44 +141,7 @@
         };
     }
 
-    holographic.nativeInterface.Canvas2D = function () {
-        this.isCanvas2D = true;
-        this.getContext = (type) => {
-            if (type === '2d') {
-                if (!this.context) {
-                    this.context = new Context2D(this);
-                    this.context.canvas = this;
-                }
-
-                return this.context;
-            }
-        };
-
-        Object.defineProperty(this, 'width', {
-            get: function () {
-                return holographic.nativeInterface.canvas2d.getWidth(this.getContext('2d').ctxNative);
-            },
-
-            set: function (value) {
-                holographic.nativeInterface.canvas2d.setWidth(this.getContext('2d').ctxNative, value);
-            }
-        });
-
-        Object.defineProperty(this, 'height', {
-            get: function () {
-                return holographic.nativeInterface.canvas2d.getHeight(this.getContext('2d').ctxNative);
-            },
-
-            set: function (value) {
-                holographic.nativeInterface.canvas2d.setHeight(this.getContext('2d').ctxNative, value);
-            }
-        })
-    }
-
     // Global variable exports
     global.ImageData = ImageData;
     global.CanvasGradient = CanvasGradient;
-    global.CanvasRenderingContext2D = Context2D;
-    global.HTMLCanvasElement = holographic.nativeInterface.Canvas2D;
 })(this);
->>>>>>> master:HoloJS/HoloJsHost/ScriptingFramework/Canvas2D.js

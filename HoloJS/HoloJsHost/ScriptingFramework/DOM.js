@@ -13145,6 +13145,11 @@ defineLazyProperty(impl, "HTMLButtonElement", function() {
 defineLazyProperty(impl, "HTMLCanvasElement", function() {
     function HTMLCanvasElement(doc, localName, prefix) {
         impl.HTMLElement.call(this, doc, localName, prefix);
+        this._width = 0;
+        this._height = 0;
+
+        this.context2D = new holographic.nativeInterface.makeRenderingContext();
+        this.context2D._idlName = "RenderingContext";
     }
 
     HTMLCanvasElement.prototype = O.create(impl.HTMLElement.prototype, {
@@ -13152,17 +13157,31 @@ defineLazyProperty(impl, "HTMLCanvasElement", function() {
 
         getContext: constant(function getContext(contextType) {
             if (contextType === '2d') {
-                if (this.context) {
-                    return this.context;
-                } else {
-                    this.context = new holographic.nativeInterface.makeRenderingContext(this);
-                    this.context._idlName = "RenderingContext";
-                    return this.context;
-                }
+                return this.context2D;
             } else {
                 return null;
             }
         }),
+
+        width: attribute(
+            function () {
+                return this._width;
+            },
+            function (value) {
+                this._width = value;
+                holographic.nativeInterface.canvas2d.setWidth(this.context2D.ctxNative, value);
+            }
+        ),
+
+        height: attribute(
+            function () {
+                return this._height;
+            },
+            function (value) {
+                this._height = value;
+                holographic.nativeInterface.canvas2d.setHeight(this.context2D.ctxNative, value);
+            }
+        ),
     });
 
     return HTMLCanvasElement;

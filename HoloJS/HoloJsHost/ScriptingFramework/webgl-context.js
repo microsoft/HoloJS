@@ -128,7 +128,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               canvas.height,
                                               arguments[3],
                                               arguments[4],
-                                              canvas.context.ctxNative);
+                                              canvas.getContext('2d').ctxNative);
         } else if (arguments.length === 6 && (arguments[5] instanceof HTMLVideoElement)) {
             var video = arguments[5];
             holographic.nativeInterface.webgl.texImage2D4(this.glContext,
