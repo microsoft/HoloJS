@@ -25,5 +25,6 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <uap2:Capability Name="spatialPerception" />
+    <DeviceCapability Name="microphone" />
   </Capabilities>
 </Package>

@@ -2663,6 +2663,36 @@ defineLazyProperty(idl, "KeyboardEvent", function() {
 });
 
 //
+// Interface VoiceEvent
+//
+
+defineLazyProperty(global, "VoiceEvent", function() {
+    return idl.VoiceEvent.publicInterface;
+}, true);
+
+defineLazyProperty(idl, "VoiceEvent", function() {
+    return new IDLInterface({
+        name: "VoiceEvent",
+        superclass: idl.UIEvent,
+        members: {
+            get command() {
+                return unwrap(this).command;
+            },
+
+            initKeyboardEvent: function initKeyboardEvent(
+                                    type,
+                                    command)
+            {
+                unwrap(this).initKeyboardEvent(
+                    String(type),
+                    String(command));
+            },
+
+        },
+    });
+});
+
+//
 // Interface SpatialInputEvent
 //
 
@@ -11406,6 +11436,7 @@ defineLazyProperty(impl, "Document", function() {
         mouseevent: "MouseEvent",
         keyboardevent: "KeyboardEvent",
         wheelevent: "WheelEvent",
+        voiceevent: "VoiceEvent",
         spatialinputevent: "SpatialInputEvent",
     };
 
@@ -12631,6 +12662,33 @@ defineLazyProperty(impl, "KeyboardEvent", function() {
 
 
 /************************************************************************
+ *  src/impl/VoiceEvent.js
+ ************************************************************************/
+
+//@line 1 "src/impl/VoiceEvent.js"
+defineLazyProperty(impl, "VoiceEvent", function() {
+    function VoiceEvent() {
+        // Just use the superclass constructor to initialize
+        impl.UIEvent.call(this);
+
+        this.command = "";
+    }
+    VoiceEvent.prototype = O.create(impl.UIEvent.prototype, {
+        _idlName: constant("VoiceEvent"),
+        initVoiceEvent: constant(function(type, command, bubbles, cancelable,
+                                          view, detail) {
+            this.initEvent(type, bubbles, cancelable, view, detail);
+            this.command = key;
+        }),
+
+    });
+
+    return VoiceEvent;
+});
+
+
+
+/************************************************************************
  *  src/impl/SpatialInputEvent.js
  ************************************************************************/
 
@@ -13199,6 +13257,7 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
         this.spatialInputEvents = ['sourcepress', 'sourcerelease', 'sourcelost', 'sourcedetected', 'sourceupdate'];
         this.keyboardEvents = ['keydown', 'keyup'];
         this.mouseEvents = ['mouseup', 'mousedown', 'mousemove', 'wheel'];
+        this.voiceEvents = ['command'];
     }
 
     HTMLHoloCanvasElementExp.prototype = O.create(impl.HTMLElement.prototype, {
@@ -13272,19 +13331,26 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
             }
 
             // Dispatch this as an untrusted event since it is synthetic
-            var success = this.dispatchEvent(event);
+            this.dispatchEvent(event);
             return event;
         }),
 
         dispatchKeyboardFromWindow: constant(function dispatchKeyboardFromWindow(key, typeId) {
-            var keyEvent = this.ownerDocument.createEvent("KeyboardEvent");
+            let keyEvent = this.ownerDocument.createEvent("KeyboardEvent");
             keyEvent.initKeyboardEvent(this.keyboardEvents[typeId], key, true, true);
             this.dispatchEvent(keyEvent);
             return keyEvent;
         }),
 
+        dispatchVoiceFromWindow: constant(function dispatchKeyboardFromWindow(command, typeId) {
+            let voiceEvent = this.ownerDocument.createEvent("VoiceEvent");
+            voiceEvent.initVoiceEvent(this.voiceEvents[typeId], command, true, true);
+            this.dispatchEvent(voiceEvent);
+            return voiceEvent;
+        }),
+
         dispatchSpatialInputFromWindow: constant(function dispatchSpatialInputFromWindow(xArg,  yArg, zArg, isPressedArg, sourceKindArg, typeId) {
-            var spatialInputEvent = this.ownerDocument.createEvent("SpatialInputEvent");
+            let spatialInputEvent = this.ownerDocument.createEvent("SpatialInputEvent");
             spatialInputEvent.initSpatialInputEvent(this.spatialInputEvents[typeId], isPressedArg, xArg, yArg, zArg, sourceKindArg, true, true, )
             this.dispatchEvent(spatialInputEvent);
         }),
@@ -28310,7 +28376,11 @@ function Window() {
     this.location = new Location(this, "about:blank");
 
     // These numbers must match native code
-    this.input = { "vsync": 5, "resize": 0, "spatialmapping" : 4, "spatialinput" : 3, "keyboard" : 2, "mouse" : 1};
+    this.input = { 
+        "resize": 0,  "mouse" : 1, "keyboard" : 2, 
+        "spatialinput" : 3, "spatialmapping" : 4, "vsync": 5,
+        "voice" : 6
+    };
 
     this.callbackFromNative = function (type) {
         if (type === this.input.vsync) {
@@ -28335,6 +28405,8 @@ function Window() {
             this.dispatchEvent(keyEvent);
         } else if (type === this.input.spatialinput) {
             holographic.canvas.dispatchSpatialInputFromWindow(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6]);
+        } else if (type === this.input.voice) {
+            let keyEvent = holographic.canvas.dispatchVoiceFromWindow(arguments[1], arguments[2]);
         }
     };
 
@@ -28351,6 +28423,9 @@ function Window() {
                 this._spatialMappingOptions.scanExtentMeters.z,
                 this._spatialMappingOptions.trianglesPerCubicMeter);
             this.onSpatialMapping = listener;
+        } else if (type == "voicecommand") {
+            holographic.nativeInterface.input.addEventListener(type);
+            this.addEventListenerXXX(type, listener, capture);
         } else {
             this.addEventListenerXXX(type, listener, capture);
         }
@@ -28359,12 +28434,16 @@ function Window() {
     this.removeEventListener = function (type, listener, capture) {
         if (type === "spatialmapping") {
             delete this.onSpatialMapping;
+        } else if (type == "voicecommand") {
+            holographic.nativeInterface.input.removeEventListener(type);
+            this.removeEventListenerXXX(type, listener, capture);
         } else {
             this.removeEventListenerXXX(type, listener, capture);
         }
     };
 
     this._spatialMappingOptions = { scanExtentMeters: { x: 5, y: 5, z: 3 }, trianglesPerCubicMeter: 100 };
+    this._voiceCommands = [];
 }
 
 Window.prototype = O.create(impl.EventTarget.prototype, {
@@ -28418,6 +28497,16 @@ Window.prototype = O.create(impl.EventTarget.prototype, {
         },
         function (v) {
             this._spatialMappingOptions = v;
+        }
+    ),
+
+    voiceCommands: attribute(
+        function () {
+            return this._voiceCommands;
+        },
+        function (v) {
+            holographic.nativeInterface.input.setVoiceCommands(v);
+            this._voiceCommands = v;
         }
     ),
 });
@@ -28518,6 +28607,18 @@ Object.defineProperty(global, "spatialMappingOptions", {
     enumerable: false,
     configurable: true, // XXX: check this
 });
+
+Object.defineProperty(global, "voiceCommands", {
+    get: function () {
+        return unwrap(this).voiceCommands;
+    },
+    set: function (v) {
+        unwrap(this).voiceCommands = v;
+    },
+    enumerable: false,
+    configurable: true, // XXX: check this
+});
+
 
 // XXX
 // This is a completely broken implementation put here just to see if we

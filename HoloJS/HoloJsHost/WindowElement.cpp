@@ -42,6 +42,9 @@ bool WindowElement::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
         L"removeEventListener", L"input", removeEventListenerStatic, this, &m_removeEventListener));
 
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
+        L"setVoiceCommands", L"input", setVoiceCommandsStatic, this, &m_setVoiceCommands));
+
     RETURN_IF_FALSE(CreateViewMatrixStorageAndScriptProjection());
 
     RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Resize), &m_resizeEventType));
@@ -72,6 +75,7 @@ JsValueRef WindowElement::setCallback(JsValueRef* arguments, unsigned short argu
     m_mouseInput.SetScriptCallback(callback);
     m_spatialInput.SetScriptCallback(callback);
     m_spatialMapping.SetScriptCallback(callback);
+    m_voiceInput.SetScriptCallback(callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -323,7 +327,9 @@ JsValueRef WindowElement::addEventListener(JsValueRef* arguments, unsigned short
 
     if (!m_mouseInput.AddEventListener(type)) {
         if (!m_keyboardInput.AddEventListener(type)) {
-            m_spatialInput.AddEventListener(type);
+            if (!m_spatialInput.AddEventListener(type)) {
+                m_voiceInput.AddEventListener(type);
+            }
         }
     }
 
@@ -339,9 +345,46 @@ JsValueRef WindowElement::removeEventListener(JsValueRef* arguments, unsigned sh
 
     if (!m_mouseInput.RemoveEventListener(type)) {
         if (!m_keyboardInput.RemoveEventListener(type)) {
-            m_spatialInput.RemoveEventListener(type);
+            if (!m_spatialInput.RemoveEventListener(type)) {
+                m_voiceInput.RemoveEventListener(type);
+            }
         }
     }
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef WindowElement::setVoiceCommands(JsValueRef* arguments, unsigned short argumentCount)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+    JsValueRef commandsArray = arguments[1];
+
+    JsValueRef lengthProperty;
+    JsPropertyIdRef lengthPropertyName;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetPropertyIdFromName(L"length", &lengthPropertyName));
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetProperty(commandsArray, lengthPropertyName, &lengthProperty));
+
+    JsValueType type;
+    JsGetValueType(lengthProperty, &type);
+
+    int length;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsNumberToInt(lengthProperty, &length));
+
+    vector<wstring> commands = vector<wstring>();
+
+    for (int i = 0; i < length; i++) {
+        JsValueRef commandValue;
+        JsValueRef index;
+        RETURN_INVALID_REF_IF_JS_ERROR(JsIntToNumber(i, &index));
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetIndexedProperty(commandsArray, index, &commandValue));
+
+        wstring command;
+        RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(commandValue, command));
+        commands.emplace_back(move(command));
+    }
+
+    m_voiceInput.SetVoiceCommands(std::move(commands)).wait();
 
     return JS_INVALID_REFERENCE;
 }

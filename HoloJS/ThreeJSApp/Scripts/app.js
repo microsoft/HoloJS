@@ -274,4 +274,17 @@ function onSpatialSourcePress(spatialInputEvent) {
     window.addEventListener("spatialmapping", onSurfaceAvailable);
 }
 
+canvas.addEventListener("keyup", onKey);
+function onKey() {
+    window.voiceCommands = ["start", "stop"];
+    //window.addEventListener("voicecommand", onVoiceCommand);
+    
+    //window.removeEventListener("voicecommand", onVoiceCommand);
+}
+
+
+function onVoiceCommand(voiceEvent) {
+
+}
+
 start();

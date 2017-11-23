@@ -4,6 +4,7 @@
 #include "MouseInput.h"
 #include "SpatialInput.h"
 #include "SpatialMapping.h"
+#include "VoiceInput.h"
 
 namespace HologramJS {
 namespace API {
@@ -46,6 +47,7 @@ class WindowElement {
     Input::MouseInput m_mouseInput;
     Input::SpatialInput m_spatialInput;
     Input::SpatialMapping m_spatialMapping;
+    Input::VoiceInput m_voiceInput;
 
     int m_width;
     int m_height;
@@ -133,6 +135,17 @@ class WindowElement {
         return reinterpret_cast<WindowElement*>(callbackData)->removeEventListener(arguments, argumentCount);
     }
     JsValueRef removeEventListener(JsValueRef* arguments, unsigned short argumentCount);
+
+    JsValueRef m_setVoiceCommands = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK setVoiceCommandsStatic(JsValueRef callee,
+                                                             bool isConstructCall,
+                                                             JsValueRef* arguments,
+                                                             unsigned short argumentCount,
+                                                             PVOID callbackData)
+    {
+        return reinterpret_cast<WindowElement*>(callbackData)->setVoiceCommands(arguments, argumentCount);
+    }
+    JsValueRef setVoiceCommands(JsValueRef* arguments, unsigned short argumentCount);
 
     float* m_viewMatrixMidStoragePointer = nullptr;
     JsValueRef m_viewMatrixMidScriptProjection = JS_INVALID_REFERENCE;

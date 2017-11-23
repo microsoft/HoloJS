@@ -9,18 +9,7 @@ using namespace Windows::UI::Core;
 using namespace std;
 using namespace Windows::Foundation;
 
-KeyboardInput::KeyboardInput()
-{
-    m_keyDownToken = CoreWindow::GetForCurrentThread()->KeyDown +=
-        ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>([this](CoreWindow ^ sender, KeyEventArgs ^ args) {
-            CallbackScriptForKeyboardInput(KeyboardInputEventType::KeyDown, args);
-        });
-
-    m_keyUpToken = CoreWindow::GetForCurrentThread()->KeyUp +=
-        ref new TypedEventHandler<CoreWindow ^, KeyEventArgs ^>([this](CoreWindow ^ sender, KeyEventArgs ^ args) {
-            CallbackScriptForKeyboardInput(KeyboardInputEventType::KeyUp, args);
-        });
-}
+KeyboardInput::KeyboardInput() {}
 
 KeyboardInput::~KeyboardInput()
 {
