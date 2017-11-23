@@ -293,18 +293,6 @@
     <None Include="ScriptingFramework\Image.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ScriptingFramework\input.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ScriptingFramework\keyboard-input.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ScriptingFramework\mouse-input.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="ScriptingFramework\spatial-input.js">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
     <None Include="ScriptingFramework\Video.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

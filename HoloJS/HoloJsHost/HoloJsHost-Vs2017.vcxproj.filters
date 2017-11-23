@@ -190,18 +190,6 @@
     <None Include="ScriptingFramework\console.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
-    <None Include="ScriptingFramework\input.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\keyboard-input.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\mouse-input.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\spatial-input.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\window-holographic.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>

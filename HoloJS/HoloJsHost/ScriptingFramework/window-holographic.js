@@ -2,10 +2,6 @@
     throw new Error("HoloJS missing");
 }
 
-if (typeof holographic.input === 'undefined') {
-    throw new Error("HoloJS input missing");
-}
-
 holographic.getViewMatrix = function () {
     return holographic.nativeInterface.window.holographicViewMatrixMid;
 };
