@@ -1,8 +1,11 @@
-{ "scripts" : [ "FrameworkHelpers.js",
-"XmlHttpRequest.js",
-"Image.js",
-"video.js",
-"window.js",
-"DOM.js",
-"WebGL.js",
-"canvas2d.js" ] }
+{
+  "scripts": [
+    "dom.js",
+    "console.js",
+    "window-holographic.js",
+    "XmlHttpRequest.js",
+    "image.js",
+    "webgl-context.js",
+    "2d-context.js"
+  ]
+}

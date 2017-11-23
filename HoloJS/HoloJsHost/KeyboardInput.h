@@ -11,6 +11,10 @@ class KeyboardInput {
 
     void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
+    bool AddEventListener(const std::wstring& type);
+
+    bool RemoveEventListener(const std::wstring& type);
+
    private:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
@@ -18,6 +22,8 @@ class KeyboardInput {
 
     Windows::Foundation::EventRegistrationToken m_keyDownToken;
     Windows::Foundation::EventRegistrationToken m_keyUpToken;
+
+    unsigned int m_inputRefCount = 0;
 };
 
 }  // namespace Input

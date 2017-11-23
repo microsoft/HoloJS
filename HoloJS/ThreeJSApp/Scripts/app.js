@@ -1,5 +1,8 @@
-let canvas = document.createElement(window.getViewMatrix ? 'canvas3D' : 'canvas');
-if (!window.getViewMatrix) {
+
+let isHoloJs = (typeof holographic !== 'undefined');
+
+let canvas = document.createElement(isHoloJs ? 'exp-holo-canvas' : 'canvas');
+if (!isHoloJs) {
     document.body.appendChild(canvas);
     document.body.style.margin = document.body.style.padding = 0;
     canvas.style.width = canvas.style.height = "100%";
@@ -7,7 +10,7 @@ if (!window.getViewMatrix) {
 
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = window.experimentalHolographic === true ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
+let camera = (isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000));
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -38,8 +41,6 @@ cube.geometry.addAttribute('color', new THREE.BufferAttribute(Float32Array.from(
 ]), 3));
 loader.load('texture.png', tex => { cube.material.map = tex; start(); }, x => x, err => start());
 
-
-
 sphere.position.set(0.4, 0, -1.5);
 sphere.material.color.set(0xff0000);
 sphere.material.roughness = 0.3;
@@ -67,7 +68,7 @@ scene.add(camera); // this is required for HolographicCamera to function correct
 // Canvas Texture Example
 (function () {
 
-    let canvas = new HTMLCanvasElement();
+    let canvas = document.createElement('canvas');
     canvas.width = 300;
     canvas.height = 300;
     let ctx = canvas.getContext('2d');
@@ -115,16 +116,16 @@ scene.add(camera); // this is required for HolographicCamera to function correct
 
 var controls;
 
-if (window.experimentalHolographic !== true) {
+if (!isHoloJs || holographic.renderMode === 0) {
     camera.position.set(0, 0, 1);
     controls = new THREE.OrbitControls(camera, canvas);
 }
 
-function initColors (geometry) {
+function initColors(geometry) {
     return geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(geometry.attributes.position.array.length).fill(1.0), 3));
 }
 
-function update (delta, elapsed) {
+function update(delta, elapsed) {
     window.requestAnimationFrame(() => update(clock.getDelta(), clock.getElapsedTime()));
 
     pointLight.position.set(0 + 2.0 * Math.cos(elapsed * 0.5), 0, -1.5 + 2.0 * Math.sin(elapsed * 0.5));
@@ -134,7 +135,7 @@ function update (delta, elapsed) {
     renderer.render(scene, camera);
 }
 
-function start () {
+function start() {
     update(clock.getDelta(), clock.getElapsedTime());
 
     // Listen to spatial input events (hands)
@@ -210,7 +211,7 @@ function SpatialMappingMeshes(scene) {
         geometry.setIndex(new THREE.BufferAttribute(indices, 1));
         geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));
         geometry.addAttribute('normal', new THREE.BufferAttribute(normals, 3, true));
-        
+
         var vertexTransform = new THREE.Matrix4();
         vertexTransform.fromArray(surface.originToSurfaceTransform);
         geometry.applyMatrix(vertexTransform);
@@ -269,8 +270,8 @@ function onSurfaceAvailable(surfaceData) {
 }
 
 function onSpatialSourcePress(spatialInputEvent) {
-    var mappingOptions = { scanExtentMeters: { x: 5, y: 5, z: 3 }, trianglesPerCubicMeter: 100 };
-    window.requestSpatialMappingData(onSurfaceAvailable, mappingOptions);
+    window.spatialMappingOptions = { scanExtentMeters: { x: 5, y: 5, z: 3 }, trianglesPerCubicMeter: 100 };
+    window.addEventListener("spatialmapping", onSurfaceAvailable);
 }
 
 start();

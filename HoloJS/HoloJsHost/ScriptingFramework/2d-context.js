@@ -1,4 +1,4 @@
-﻿(function (global) {
+(function (global) {
     const SHORTHAND_HEX_REGEX = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
     const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
     const RGBA_REGEX = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
@@ -63,9 +63,8 @@
         });
     };
 
-    function Context2D(canvas) {
-        this.canvas = canvas;
-        this.ctxNative = nativeInterface.canvas2d.createContext2D();
+    holographic.nativeInterface.makeRenderingContext = function() {
+        this.ctxNative = holographic.nativeInterface.canvas2d.createContext2D();
 
         this.drawImage = function (image) {
             let sx = 0,
@@ -98,9 +97,9 @@
                 throw new Error('Canvas: Invalid number of arguments.');
             }
 
-            nativeInterface.canvas2d.drawImage(
+            holographic.nativeInterface.canvas2d.drawImage(
                 this.ctxNative,
-                image.native,
+                image.getData(),
                 { x: sx, y: sy, width: sWidth, height: sHeight },
                 { x: dx, y: dy, width: dWidth, height: dHeight }
             );
@@ -113,11 +112,11 @@
             let font = parseFont(this.font);
             let color = parseColor(this.fillStyle);
             let point = { x, y };
-            nativeInterface.canvas2d.fillText(this.ctxNative, text, point, color, font.size, font.family);
+            holographic.nativeInterface.canvas2d.fillText(this.ctxNative, text, point, color, font.size, font.family);
         };
 
         this.clearRect = (x, y, width, height) => {
-            nativeInterface.canvas2d.clearRect(this.ctxNative, { x, y, width, height });
+            holographic.nativeInterface.canvas2d.clearRect(this.ctxNative, { x, y, width, height });
         };
 
         this.createLinearGradient = function (x1, y1, x2, y2) {
@@ -128,57 +127,21 @@
             let rect = { x, y, width, height };
 
             if (this.fillStyle instanceof CanvasGradient) {
-                nativeInterface.canvas2d.fillRectGradient(this.ctxNative, rect, this.fillStyle);
+                holographic.nativeInterface.canvas2d.fillRectGradient(this.ctxNative, rect, this.fillStyle);
             } else {
                 let color = parseColor(this.fillStyle);
-                nativeInterface.canvas2d.fillRect(this.ctxNative, rect, color);
+                holographic.nativeInterface.canvas2d.fillRect(this.ctxNative, rect, color);
             }
         };
 
         this.getImageData = (x, y, width, height) => {
-            let buffer = nativeInterface.canvas2d.getImageData(this.ctxNative, { x, y, width, height });
+            let buffer = holographic.nativeInterface.canvas2d.getImageData(this.ctxNative, { x, y, width, height });
             let imageData = new ImageData(buffer, width, height);
             return imageData;
         };
     }
 
-    nativeInterface.Canvas2D = function () {
-        this.isCanvas2D = true;
-        this.getContext = (type) => {
-            if (type === '2d') {
-                if (!this.context) {
-                    this.context = new Context2D(this);
-                    this.context.canvas = this;
-                }
-
-                return this.context;
-            }
-        };
-
-        Object.defineProperty(this, 'width', {
-            get: function () {
-                return nativeInterface.canvas2d.getWidth(this.getContext('2d').ctxNative);
-            },
-
-            set: function (value) {
-                nativeInterface.canvas2d.setWidth(this.getContext('2d').ctxNative, value);
-            }
-        });
-
-        Object.defineProperty(this, 'height', {
-            get: function () {
-                return nativeInterface.canvas2d.getHeight(this.getContext('2d').ctxNative);
-            },
-
-            set: function (value) {
-                nativeInterface.canvas2d.setHeight(this.getContext('2d').ctxNative, value);
-            }
-        })
-    }
-
     // Global variable exports
     global.ImageData = ImageData;
     global.CanvasGradient = CanvasGradient;
-    global.CanvasRenderingContext2D = Context2D;
-    global.HTMLCanvasElement = nativeInterface.Canvas2D;
 })(this);

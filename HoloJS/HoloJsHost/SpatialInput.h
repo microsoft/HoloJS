@@ -22,6 +22,10 @@ class SpatialInput {
     // guaranteed to come on the UI thread
     void DrainQueuedSpatialInputEvents();
 
+    bool AddEventListener(const std::wstring& type);
+
+    bool RemoveEventListener(const std::wstring& type);
+
    private:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
@@ -68,6 +72,8 @@ class SpatialInput {
     // List of events that were queued because they came on a non-UI thread;
     // This list is drained on v-sync
     std::vector<SpatialEventData> m_queuedEvents;
+
+    unsigned int m_inputRefCount = 0;
 };
 }  // namespace Input
 }  // namespace HologramJS

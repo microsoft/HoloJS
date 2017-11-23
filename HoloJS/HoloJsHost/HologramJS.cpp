@@ -136,25 +136,31 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
     return true;
 }
 
-bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference ^ frameOfReference)
+bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference ^ frameOfReference,
+                                                       bool autoStereoEnabled)
 {
-    // Get the global object
     JsValueRef globalObject;
-
     RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
 
-    // Create or get global.nativeInterface
-    JsValueRef windowRef;
-    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::GetJsProperty(globalObject, L"window", &windowRef));
+    // Create or get global.holographic
+    JsValueRef holographicRef;
+    RETURN_IF_FALSE(Utilities::ScriptHostUtilities::GetJsProperty(globalObject, L"holographic", &holographicRef));
 
-    JsPropertyIdRef holographicPropertyId;
-    RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"experimentalHolographic", &holographicPropertyId));
-    JsValueRef holographicValue;
-    RETURN_IF_JS_ERROR(JsBoolToBoolean(true, &holographicValue));
+    JsPropertyIdRef renderModePropertyId;
+    RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"renderMode", &renderModePropertyId));
+    JsValueRef renderModeValue;
 
-    RETURN_IF_JS_ERROR(JsSetProperty(windowRef, holographicPropertyId, holographicValue, true));
+    enum class RenderMode : int { Flat, AutoStereo, AdvancedStereo };
+    const auto renderMode =
+        (frameOfReference == nullptr ? RenderMode::Flat
+                                     : (autoStereoEnabled ? RenderMode::AutoStereo : RenderMode::AdvancedStereo));
+    RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(renderMode), &renderModeValue));
 
-    m_window.SetStationaryFrameOfReference(frameOfReference);
+    RETURN_IF_JS_ERROR(JsSetProperty(holographicRef, renderModePropertyId, renderModeValue, true));
+
+    if (frameOfReference != nullptr) {
+        m_window.SetStationaryFrameOfReference(frameOfReference);
+    }
 
     return true;
 }

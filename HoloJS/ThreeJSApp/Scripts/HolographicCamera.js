@@ -12,9 +12,8 @@ THREE.HolographicCamera = class HolographicCamera extends THREE.Camera {
     }
 
     update () {
-        if (!window.experimentalHolographic) return;
-
-        let params = window.getHolographicCameraParameters();
+        if (typeof holographic === 'undefined') return;
+        let params = holographic.getHolographicCameraParameters();
 
         // view matrix
         this._holographicViewMatrix.fromArray(params.mid.viewMatrix); // store

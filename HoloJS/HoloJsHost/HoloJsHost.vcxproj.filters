@@ -166,31 +166,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="ScriptingFramework\Canvas2D.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\DOM.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\FrameworkHelpers.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\Image.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\Video.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
-    <None Include="ScriptingFramework\WebGL.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
-    <None Include="ScriptingFramework\Window.js">
-      <Filter>Interface\ScriptSide</Filter>
-    </None>
     <None Include="ScriptingFramework\XmlHttpRequest.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\framework.json">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\console.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\DOM.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\2d-context.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\webgl-context.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>

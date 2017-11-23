@@ -11,6 +11,10 @@ class MouseInput {
 
     void SetScriptCallback(JsValueRef scriptCallback) { m_scriptCallback = scriptCallback; }
 
+    bool AddEventListener(const std::wstring& type);
+
+    bool RemoveEventListener(const std::wstring& type);
+
    private:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
@@ -20,6 +24,8 @@ class MouseInput {
     Windows::Foundation::EventRegistrationToken m_mouseUpToken;
     Windows::Foundation::EventRegistrationToken m_mouseWheelToken;
     Windows::Foundation::EventRegistrationToken m_mouseMoveToken;
+
+    unsigned int m_inputRefCount = 0;
 };
 }  // namespace Input
 }  // namespace HologramJS
