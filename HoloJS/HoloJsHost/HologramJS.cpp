@@ -136,7 +136,8 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
     return true;
 }
 
-bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference ^ frameOfReference, bool autoStereoEnabled)
+bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference ^ frameOfReference,
+                                                       bool autoStereoEnabled)
 {
     JsValueRef globalObject;
     RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
@@ -149,16 +150,17 @@ bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfR
     RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"renderMode", &renderModePropertyId));
     JsValueRef renderModeValue;
 
-	enum class RenderMode : int { Flat, AutoStereo, AdvancedStereo };
-	const auto renderMode = (frameOfReference == nullptr ? RenderMode::Flat : (autoStereoEnabled ? RenderMode::AutoStereo : RenderMode::AdvancedStereo));
+    enum class RenderMode : int { Flat, AutoStereo, AdvancedStereo };
+    const auto renderMode =
+        (frameOfReference == nullptr ? RenderMode::Flat
+                                     : (autoStereoEnabled ? RenderMode::AutoStereo : RenderMode::AdvancedStereo));
     RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(renderMode), &renderModeValue));
 
     RETURN_IF_JS_ERROR(JsSetProperty(holographicRef, renderModePropertyId, renderModeValue, true));
 
-	if (frameOfReference != nullptr)
-	{
-		m_window.SetStationaryFrameOfReference(frameOfReference);
-	}
+    if (frameOfReference != nullptr) {
+        m_window.SetStationaryFrameOfReference(frameOfReference);
+    }
 
     return true;
 }

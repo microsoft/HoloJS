@@ -2,7 +2,7 @@
 #include "MouseInput.h"
 #include "ScriptErrorHandling.h"
 
-PCWSTR g_supportedMouseEvents[] = { L"mousedown", L"mouseup", L"mousewheel", L"mousewheel" };
+PCWSTR g_supportedMouseEvents[] = {L"mousedown", L"mouseup", L"mousewheel", L"mousewheel"};
 
 using namespace HologramJS::Input;
 using namespace Windows::UI::Core;
@@ -17,81 +17,75 @@ inline MouseButtons& operator|=(MouseButtons& __x, MouseButtons __y)
     return __x;
 }
 
-MouseInput::MouseInput()
-{
-}
+MouseInput::MouseInput() {}
 
 MouseInput::~MouseInput()
 {
-	CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
-	CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
-	CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
-	CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
+    CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
+    CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
+    CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
+    CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
 
-	m_inputRefCount = 0;
+    m_inputRefCount = 0;
 }
 
 bool MouseInput::AddEventListener(const wstring& type)
 {
-	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
-	{
-		if (type == g_supportedMouseEvents[i])
-		{
-			m_inputRefCount++;
+    for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++) {
+        if (type == g_supportedMouseEvents[i]) {
+            m_inputRefCount++;
 
-			if (m_inputRefCount == 1) {
-				m_mouseDownToken = CoreWindow::GetForCurrentThread()->PointerPressed +=
-					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-					this->CallbackScriptForMouseInput(MouseInputEventType::MouseDown, args);
-				});
+            if (m_inputRefCount == 1) {
+                m_mouseDownToken = CoreWindow::GetForCurrentThread()->PointerPressed +=
+                    ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+                        [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+                            this->CallbackScriptForMouseInput(MouseInputEventType::MouseDown, args);
+                        });
 
-				m_mouseUpToken = CoreWindow::GetForCurrentThread()->PointerReleased +=
-					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-					this->CallbackScriptForMouseInput(MouseInputEventType::MouseUp, args);
-				});
+                m_mouseUpToken = CoreWindow::GetForCurrentThread()->PointerReleased +=
+                    ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+                        [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+                            this->CallbackScriptForMouseInput(MouseInputEventType::MouseUp, args);
+                        });
 
-				m_mouseWheelToken = CoreWindow::GetForCurrentThread()->PointerWheelChanged +=
-					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-					this->CallbackScriptForMouseInput(MouseInputEventType::MouseWheel, args);
-				});
+                m_mouseWheelToken = CoreWindow::GetForCurrentThread()->PointerWheelChanged +=
+                    ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+                        [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+                            this->CallbackScriptForMouseInput(MouseInputEventType::MouseWheel, args);
+                        });
 
-				m_mouseMoveToken = CoreWindow::GetForCurrentThread()->PointerMoved +=
-					ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
-						[this](CoreWindow ^ sender, PointerEventArgs ^ args) {
-					this->CallbackScriptForMouseInput(MouseInputEventType::MouseMove, args);
-				});
-			}
+                m_mouseMoveToken = CoreWindow::GetForCurrentThread()->PointerMoved +=
+                    ref new TypedEventHandler<CoreWindow ^, PointerEventArgs ^>(
+                        [this](CoreWindow ^ sender, PointerEventArgs ^ args) {
+                            this->CallbackScriptForMouseInput(MouseInputEventType::MouseMove, args);
+                        });
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool MouseInput::RemoveEventListener(const wstring& type)
 {
-	for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++)
-	{
-		if (type == g_supportedMouseEvents[i])
-		{
-			m_inputRefCount--;
+    for (int i = 0; i < ARRAYSIZE(g_supportedMouseEvents); i++) {
+        if (type == g_supportedMouseEvents[i]) {
+            m_inputRefCount--;
 
-			if (m_inputRefCount == 0) {
-				CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
-				CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
-				CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
-				CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
-			}
+            if (m_inputRefCount == 0) {
+                CoreWindow::GetForCurrentThread()->PointerPressed -= m_mouseDownToken;
+                CoreWindow::GetForCurrentThread()->PointerReleased -= m_mouseUpToken;
+                CoreWindow::GetForCurrentThread()->PointerWheelChanged -= m_mouseWheelToken;
+                CoreWindow::GetForCurrentThread()->PointerMoved -= m_mouseMoveToken;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 MouseButtons GetButtonFromArgs(PointerEventArgs ^ args)
@@ -126,14 +120,14 @@ void MouseInput::CallbackScriptForMouseInput(MouseInputEventType type, Windows::
     JsValueRef* yParam = &parameters[3];
     JsValueRef* buttonParam = &parameters[4];
     JsValueRef* actionParam = &parameters[5];
-	JsValueRef* deltaParam = &parameters[6];
+    JsValueRef* deltaParam = &parameters[6];
 
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Mouse), eventTypeParam));
     EXIT_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.X, xParam));
     EXIT_IF_JS_ERROR(JsDoubleToNumber(args->CurrentPoint->Position.Y, yParam));
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(GetButtonFromArgs(args)), buttonParam));
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(type), actionParam));
-	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(args->CurrentPoint->Properties->MouseWheelDelta), deltaParam));
+    EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(args->CurrentPoint->Properties->MouseWheelDelta), deltaParam));
 
     JsValueRef result;
     HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));

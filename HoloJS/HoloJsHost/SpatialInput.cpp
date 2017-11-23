@@ -2,7 +2,8 @@
 #include "SpatialInput.h"
 #include "ScriptErrorHandling.h"
 
-PCWSTR g_supportedSpatialInputEvents[] = { L"sourcepress", L"sourcerelease", L"sourcelost", L"sourcedetected", L"sourceupdate" };
+PCWSTR g_supportedSpatialInputEvents[] = {
+    L"sourcepress", L"sourcerelease", L"sourcelost", L"sourcedetected", L"sourceupdate"};
 
 using namespace HologramJS::Input;
 using namespace Windows::UI::Input::Spatial;
@@ -10,100 +11,91 @@ using namespace Windows::Foundation;
 using namespace std;
 using namespace Windows::Perception::Spatial;
 
-SpatialInput::SpatialInput()
-{
-    
-}
+SpatialInput::SpatialInput() {}
 
 SpatialInput::~SpatialInput()
 {
-	if (m_inputRefCount > 0)
-	{
-		SpatialInteractionManager::GetForCurrentView()->SourceReleased -= m_sourceReleasedToken;
-		SpatialInteractionManager::GetForCurrentView()->SourcePressed -= m_sourcePressedToken;
-		SpatialInteractionManager::GetForCurrentView()->SourceDetected -= m_sourceDetectedToken;
-		SpatialInteractionManager::GetForCurrentView()->SourceLost -= m_sourceLostToken;
-		SpatialInteractionManager::GetForCurrentView()->SourceUpdated -= m_sourceUpdateToken;
+    if (m_inputRefCount > 0) {
+        SpatialInteractionManager::GetForCurrentView()->SourceReleased -= m_sourceReleasedToken;
+        SpatialInteractionManager::GetForCurrentView()->SourcePressed -= m_sourcePressedToken;
+        SpatialInteractionManager::GetForCurrentView()->SourceDetected -= m_sourceDetectedToken;
+        SpatialInteractionManager::GetForCurrentView()->SourceLost -= m_sourceLostToken;
+        SpatialInteractionManager::GetForCurrentView()->SourceUpdated -= m_sourceUpdateToken;
 
-		m_inputRefCount = 0;
-	}
-    
+        m_inputRefCount = 0;
+    }
 }
 
 bool SpatialInput::AddEventListener(const wstring& type)
 {
-	for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++)
-	{
-		if (type == g_supportedSpatialInputEvents[i])
-		{
-			m_inputRefCount++;
+    for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++) {
+        if (type == g_supportedSpatialInputEvents[i]) {
+            m_inputRefCount++;
 
-			if (m_inputRefCount == 1) {
-				if (!SpatialInteractionManager::GetForCurrentView()) {
-					return true;
-				}
+            if (m_inputRefCount == 1) {
+                if (!SpatialInteractionManager::GetForCurrentView()) {
+                    return true;
+                }
 
-				m_sourcePressedToken = SpatialInteractionManager::GetForCurrentView()->SourcePressed +=
-					ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
-						[this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
-					QueueEventOrFireCallback(SpatialInputEventType::Pressed, args);
-				});
+                m_sourcePressedToken = SpatialInteractionManager::GetForCurrentView()->SourcePressed +=
+                    ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
+                        [this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
+                            QueueEventOrFireCallback(SpatialInputEventType::Pressed, args);
+                        });
 
-				m_sourceReleasedToken = SpatialInteractionManager::GetForCurrentView()->SourceReleased +=
-					ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
-						[this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
-					QueueEventOrFireCallback(SpatialInputEventType::Released, args);
-				});
+                m_sourceReleasedToken = SpatialInteractionManager::GetForCurrentView()->SourceReleased +=
+                    ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
+                        [this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
+                            QueueEventOrFireCallback(SpatialInputEventType::Released, args);
+                        });
 
-				m_sourceDetectedToken = SpatialInteractionManager::GetForCurrentView()->SourceDetected +=
-					ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
-						[this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
-					QueueEventOrFireCallback(SpatialInputEventType::Detected, args);
-				});
+                m_sourceDetectedToken = SpatialInteractionManager::GetForCurrentView()->SourceDetected +=
+                    ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
+                        [this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
+                            QueueEventOrFireCallback(SpatialInputEventType::Detected, args);
+                        });
 
-				m_sourceLostToken = SpatialInteractionManager::GetForCurrentView()->SourceLost +=
-					ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
-						[this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
-					QueueEventOrFireCallback(SpatialInputEventType::Lost, args);
-				});
+                m_sourceLostToken = SpatialInteractionManager::GetForCurrentView()->SourceLost +=
+                    ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
+                        [this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
+                            QueueEventOrFireCallback(SpatialInputEventType::Lost, args);
+                        });
 
-				m_sourceUpdateToken = SpatialInteractionManager::GetForCurrentView()->SourceUpdated +=
-					ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
-						[this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
-					QueueEventOrFireCallback(SpatialInputEventType::Update, args);
-				});
+                m_sourceUpdateToken = SpatialInteractionManager::GetForCurrentView()->SourceUpdated +=
+                    ref new TypedEventHandler<SpatialInteractionManager ^, SpatialInteractionSourceEventArgs ^>(
+                        [this](SpatialInteractionManager ^ sender, SpatialInteractionSourceEventArgs ^ args) {
+                            QueueEventOrFireCallback(SpatialInputEventType::Update, args);
+                        });
 
-				m_spatialInputAvailable = true;
-			}
+                m_spatialInputAvailable = true;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool SpatialInput::RemoveEventListener(const wstring& type)
 {
-	for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++)
-	{
-		if (type == g_supportedSpatialInputEvents[i])
-		{
-			m_inputRefCount--;
+    for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++) {
+        if (type == g_supportedSpatialInputEvents[i]) {
+            m_inputRefCount--;
 
-			if (m_inputRefCount == 0 && m_spatialInputAvailable) {
-				SpatialInteractionManager::GetForCurrentView()->SourceReleased -= m_sourceReleasedToken;
-				SpatialInteractionManager::GetForCurrentView()->SourcePressed -= m_sourcePressedToken;
-				SpatialInteractionManager::GetForCurrentView()->SourceDetected -= m_sourceDetectedToken;
-				SpatialInteractionManager::GetForCurrentView()->SourceLost -= m_sourceLostToken;
-				SpatialInteractionManager::GetForCurrentView()->SourceUpdated -= m_sourceUpdateToken;
-			}
+            if (m_inputRefCount == 0 && m_spatialInputAvailable) {
+                SpatialInteractionManager::GetForCurrentView()->SourceReleased -= m_sourceReleasedToken;
+                SpatialInteractionManager::GetForCurrentView()->SourcePressed -= m_sourcePressedToken;
+                SpatialInteractionManager::GetForCurrentView()->SourceDetected -= m_sourceDetectedToken;
+                SpatialInteractionManager::GetForCurrentView()->SourceLost -= m_sourceLostToken;
+                SpatialInteractionManager::GetForCurrentView()->SourceUpdated -= m_sourceUpdateToken;
+            }
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 void SpatialInput::DrainQueuedSpatialInputEvents()

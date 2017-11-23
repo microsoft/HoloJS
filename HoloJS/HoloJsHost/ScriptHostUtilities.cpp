@@ -54,8 +54,8 @@ bool ScriptHostUtilities::ProjectFunction(const std::wstring& name,
 
     RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
 
-	JsValueRef holographicObject;
-	RETURN_IF_FALSE(GetJsProperty(globalObject, L"holographic", &holographicObject));
+    JsValueRef holographicObject;
+    RETURN_IF_FALSE(GetJsProperty(globalObject, L"holographic", &holographicObject));
 
     // Create or get global.nativeInterface
     JsValueRef nativeInterface;
