@@ -53,8 +53,6 @@ task<SpeechRecognitionCompilationResult ^> VoiceInput::CompileVoiceCommandsAsync
     m_speechRecognizer->Constraints->Clear();
     m_speechRecognizer->Constraints->Append(spConstraint);
 
-    std::shared_ptr<concurrency::event> _completed = std::make_shared<concurrency::event>();
-
     return create_task(m_speechRecognizer->CompileConstraintsAsync());
 }
 
