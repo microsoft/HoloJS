@@ -275,11 +275,15 @@ function onSpatialSourcePress(spatialInputEvent) {
 }
 
 canvas.addEventListener("keyup", onKey);
-function onKey() {
-    window.voiceCommands = ["start", "stop"];
-    //window.addEventListener("voicecommand", onVoiceCommand);
-    
-    //window.removeEventListener("voicecommand", onVoiceCommand);
+function onKey(event) {
+    if (event.key === 83) {
+        window.addEventListener("voicecommand", onVoiceCommand);
+    } else if (event.key === 88) {
+        window.removeEventListener("voicecommand", onVoiceCommand);
+    }
+    else {
+        window.voiceCommands = ["start", "stop"];
+    }
 }
 
 

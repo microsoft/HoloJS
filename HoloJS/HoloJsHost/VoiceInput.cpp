@@ -7,37 +7,40 @@ using namespace Windows::Media::SpeechRecognition;
 using namespace Windows::Foundation;
 using namespace Platform;
 using namespace concurrency;
+using namespace Windows::UI::Core;
 
 PCWSTR g_supporteVoiceInputEvents[] = {L"voicecommand"};
 
-VoiceInput::VoiceInput() {}
+VoiceInput::VoiceInput()
+{
+    m_speechRecognizer = ref new SpeechRecognizer();
+
+    m_resultGeneratedToken = m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated +=
+        ref new TypedEventHandler<SpeechContinuousRecognitionSession ^,
+                                  SpeechContinuousRecognitionResultGeneratedEventArgs ^>(
+            &VoiceInput::OnResultGenerated);
+}
 
 VoiceInput::~VoiceInput() {}
 
-task<void> VoiceInput::SetVoiceCommands(vector<wstring> voiceCommands)
+void VoiceInput::SetVoiceCommands(vector<wstring> voiceCommands)
 {
-    lock_guard<mutex> guard(m_recognizerLock);
-
     m_voiceCommands = voiceCommands;
 
-    if (m_speechRecognizer == nullptr) {
-        return;
+    if (m_isRunning) {
+        m_eventsQueue.push(EventType::Set);
+        create_task([this]() { ProcessQueueEntry(); });
     }
-
-    if (m_speechRecognizer->State != SpeechRecognizerState::Idle) {
-        await m_speechRecognizer->ContinuousRecognitionSession->StopAsync();
-    }
-
-    auto compilationResult = await CompileVoiceCommandsAsync();
-
-    if (compilationResult) {
-        await m_speechRecognizer->ContinuousRecognitionSession->StartAsync();
-    }
-
-    return;
 }
 
-task<bool> VoiceInput::CompileVoiceCommandsAsync()
+task<void> VoiceInput::ResetVoiceCommandsAsync()
+{
+    await m_speechRecognizer->ContinuousRecognitionSession->CancelAsync();
+
+    await StartAsync();
+}
+
+task<SpeechRecognitionCompilationResult ^> VoiceInput::CompileVoiceCommandsAsync()
 {
     Platform::Collections::Vector<String ^> ^ speechCommandList = ref new Platform::Collections::Vector<String ^>();
     for (int i = 0; i < m_voiceCommands.size(); i++) {
@@ -48,41 +51,47 @@ task<bool> VoiceInput::CompileVoiceCommandsAsync()
     m_speechRecognizer->Constraints->Clear();
     m_speechRecognizer->Constraints->Append(spConstraint);
 
-    auto result = await m_speechRecognizer->CompileConstraintsAsync();
+    std::shared_ptr<concurrency::event> _completed = std::make_shared<concurrency::event>();
 
-    return (result->Status == SpeechRecognitionResultStatus::Success);
+    return create_task(m_speechRecognizer->CompileConstraintsAsync());
 }
 
-task<void> VoiceInput::Initialize()
+// Process speech recognize requests: start, stop, change commands
+// This method runs synchronously on a background thread and
+// sequentializes the incoming asynchronous speech recognizer requests
+void VoiceInput::ProcessQueueEntry()
 {
-    lock_guard<mutex> guard(m_recognizerLock);
-
-    if (m_speechRecognizer != nullptr) {
+    EventType queuedEvent;
+    if (!m_eventsQueue.try_pop(queuedEvent)) {
         return;
     }
 
-    m_speechRecognizer = ref new SpeechRecognizer();
+    m_recognizerLock.lock();
 
-    m_resultGeneratedToken = m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated +=
-        ref new TypedEventHandler<SpeechContinuousRecognitionSession ^,
-                                  SpeechContinuousRecognitionResultGeneratedEventArgs ^>(
-            &VoiceInput::OnResultGenerated);
-
-    if (await CompileVoiceCommandsAsync()) {
-        await m_speechRecognizer->ContinuousRecognitionSession->StartAsync();
+    if (queuedEvent == EventType::Start) {
+        if (!m_isRunning) {
+            StartAsync().wait();
+            m_isRunning = true;
+        }
+    } else if (queuedEvent == EventType::Set) {
+        if (m_isRunning) {
+            ResetVoiceCommandsAsync().wait();
+        }
+    } else if (queuedEvent == EventType::Stop) {
+        if (m_isRunning) {
+            create_task(m_speechRecognizer->ContinuousRecognitionSession->CancelAsync()).wait();
+            m_isRunning = false;
+        }
     }
+
+    m_recognizerLock.unlock();
 }
 
-task<void> VoiceInput::Shutdown()
+task<void> VoiceInput::StartAsync()
 {
-    lock_guard<mutex> guard(m_recognizerLock);
-
-    if (m_speechRecognizer != nullptr) {
-        m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated -= m_resultGeneratedToken;
-        if (m_speechRecognizer->State != SpeechRecognizerState::Idle) {
-            await m_speechRecognizer->ContinuousRecognitionSession->StopAsync();
-        }
-        m_speechRecognizer = nullptr;
+    auto result = await CompileVoiceCommandsAsync();
+    if (result->Status == SpeechRecognitionResultStatus::Success) {
+        await m_speechRecognizer->ContinuousRecognitionSession->StartAsync();
     }
 }
 
@@ -90,10 +99,14 @@ bool VoiceInput::AddEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supporteVoiceInputEvents); i++) {
         if (type == g_supporteVoiceInputEvents[i]) {
+			// AddEventListener and RemoveEventListener are always called on the UI thread; as such
+			// there is no need to synchronize access to the input ref count
             m_inputRefCount++;
             if (m_inputRefCount == 1) {
-                Initialize().get();
+                m_eventsQueue.push(EventType::Start);
+                create_task([this]() { ProcessQueueEntry(); });
             }
+
             return true;
         }
     }
@@ -104,10 +117,16 @@ bool VoiceInput::RemoveEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supporteVoiceInputEvents); i++) {
         if (type == g_supporteVoiceInputEvents[i]) {
-            m_inputRefCount--;
-            if (m_inputRefCount == 0) {
-                Shutdown().get();
+			// AddEventListener and RemoveEventListener are always called on the UI thread; as such
+			// there is no need to synchronize access to the input ref count
+            if (m_inputRefCount == 1) {
+				m_inputRefCount = 0;
+                m_eventsQueue.push(EventType::Stop);
+                create_task([this]() { ProcessQueueEntry(); });
+            } else if (m_inputRefCount > 1) {
+				m_inputRefCount--;
             }
+
             return true;
         }
     }

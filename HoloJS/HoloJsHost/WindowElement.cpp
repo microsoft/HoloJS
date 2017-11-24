@@ -384,7 +384,7 @@ JsValueRef WindowElement::setVoiceCommands(JsValueRef* arguments, unsigned short
         commands.emplace_back(move(command));
     }
 
-    m_voiceInput.SetVoiceCommands(std::move(commands)).wait();
+    m_voiceInput.SetVoiceCommands(std::move(commands));
 
     return JS_INVALID_REFERENCE;
 }

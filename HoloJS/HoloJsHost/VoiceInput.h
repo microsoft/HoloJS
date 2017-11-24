@@ -2,6 +2,9 @@
 
 #include "ChakraForHoloJS.h"
 #include "InputInterface.h"
+#include <concrt.h>
+#include <queue>
+#include <concurrent_queue.h>
 
 namespace HologramJS {
 namespace Input {
@@ -17,18 +20,18 @@ class VoiceInput {
 
     bool RemoveEventListener(const std::wstring& type);
 
-    concurrency::task<void> SetVoiceCommands(std::vector<std::wstring> voiceCommands);
+    void SetVoiceCommands(std::vector<std::wstring> voiceCommands);
 
    private:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
     unsigned int m_inputRefCount = 0;
 
-    concurrency::task<void> Initialize();
+	concurrency::task<void> StartAsync();
 
-    concurrency::task<void> Shutdown();
+	concurrency::task<void> ResetVoiceCommandsAsync();
 
-    concurrency::task<bool> CompileVoiceCommandsAsync();
+	concurrency::task<Windows::Media::SpeechRecognition::SpeechRecognitionCompilationResult^> CompileVoiceCommandsAsync();
 
     Windows::Media::SpeechRecognition::SpeechRecognizer ^ m_speechRecognizer;
     static void OnResultGenerated(
@@ -39,7 +42,19 @@ class VoiceInput {
 
     std::vector<std::wstring> m_voiceCommands;
 
+	void ProcessQueueEntry();
+
+	enum class EventType
+	{
+		Set,
+		Start,
+		Stop
+	};
+
+	concurrency::concurrent_queue<EventType> m_eventsQueue;
+
     std::mutex m_recognizerLock;
+	bool m_isRunning = false;
 };
 }  // namespace Input
 }  // namespace HologramJS
