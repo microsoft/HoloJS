@@ -3,8 +3,8 @@
 #include "ChakraForHoloJS.h"
 #include "InputInterface.h"
 #include <concrt.h>
-#include <queue>
 #include <concurrent_queue.h>
+#include <queue>
 
 namespace HologramJS {
 namespace Input {
@@ -27,34 +27,33 @@ class VoiceInput {
 
     unsigned int m_inputRefCount = 0;
 
-	concurrency::task<void> StartAsync();
+    concurrency::task<void> StartAsync();
 
-	concurrency::task<void> ResetVoiceCommandsAsync();
+    concurrency::task<void> ResetVoiceCommandsAsync();
 
-	concurrency::task<Windows::Media::SpeechRecognition::SpeechRecognitionCompilationResult^> CompileVoiceCommandsAsync();
+    concurrency::task<Windows::Media::SpeechRecognition::SpeechRecognitionCompilationResult ^>
+    CompileVoiceCommandsAsync();
 
     Windows::Media::SpeechRecognition::SpeechRecognizer ^ m_speechRecognizer;
-    static void OnResultGenerated(
-        Windows::Media::SpeechRecognition::SpeechContinuousRecognitionSession ^ sender,
-        Windows::Media::SpeechRecognition::SpeechContinuousRecognitionResultGeneratedEventArgs ^ args);
+    void OnResultGenerated(Windows::Media::SpeechRecognition::SpeechContinuousRecognitionSession ^ sender,
+                           Windows::Media::SpeechRecognition::SpeechContinuousRecognitionResultGeneratedEventArgs ^
+                               args);
 
     Windows::Foundation::EventRegistrationToken m_resultGeneratedToken;
 
     std::vector<std::wstring> m_voiceCommands;
 
-	void ProcessQueueEntry();
+    void ProcessQueueEntry();
 
-	enum class EventType
-	{
-		Set,
-		Start,
-		Stop
-	};
+    enum class EventType { Set, Start, Stop };
 
-	concurrency::concurrent_queue<EventType> m_eventsQueue;
+    concurrency::concurrent_queue<EventType> m_eventsQueue;
 
     std::mutex m_recognizerLock;
-	bool m_isRunning = false;
+    bool m_isRunning = false;
+
+    void CallbackScriptForVoiceInput(
+        Windows::Media::SpeechRecognition::SpeechContinuousRecognitionResultGeneratedEventArgs ^ args);
 };
 }  // namespace Input
 }  // namespace HologramJS

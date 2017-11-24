@@ -274,17 +274,8 @@ function onSpatialSourcePress(spatialInputEvent) {
     window.addEventListener("spatialmapping", onSurfaceAvailable);
 }
 
-canvas.addEventListener("keyup", onKey);
-function onKey(event) {
-    if (event.key === 83) {
-        window.addEventListener("voicecommand", onVoiceCommand);
-    } else if (event.key === 88) {
-        window.removeEventListener("voicecommand", onVoiceCommand);
-    }
-    else {
-        window.voiceCommands = ["start", "stop"];
-    }
-}
+window.voiceCommands = ["start", "stop"];
+window.addEventListener("voicecommand", onVoiceCommand);
 
 
 function onVoiceCommand(voiceEvent) {

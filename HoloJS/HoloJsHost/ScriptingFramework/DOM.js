@@ -2307,7 +2307,6 @@ defineLazyProperty(global, "DOMStringList", function() {
 defineLazyProperty(idl, "DOMStringList", function() {
     return new IDLInterface({
         name: "DOMStringList",
-        proxyFactory: DOMStringListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2336,7 +2335,6 @@ defineLazyProperty(global, "DOMTokenList", function() {
 defineLazyProperty(idl, "DOMTokenList", function() {
     return new IDLInterface({
         name: "DOMTokenList",
-        proxyFactory: DOMTokenListProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2679,13 +2677,23 @@ defineLazyProperty(idl, "VoiceEvent", function() {
                 return unwrap(this).command;
             },
 
-            initKeyboardEvent: function initKeyboardEvent(
+            get confidence() {
+                return unwrap(this).confidence;
+            },
+
+            get type() {
+                return unwrap(this).type;
+            },
+
+            VoiceEvent: function VoiceEvent(
                                     type,
-                                    command)
+                                    command,
+                                    confidence)
             {
-                unwrap(this).initKeyboardEvent(
+                unwrap(this).VoiceEvent(
                     String(type),
-                    String(command));
+                    String(command),
+                    toDouble(confidence));
             },
 
         },
@@ -12672,13 +12680,17 @@ defineLazyProperty(impl, "VoiceEvent", function() {
         impl.UIEvent.call(this);
 
         this.command = "";
+        this.type = "";
+        this.confidence = 0;
     }
     VoiceEvent.prototype = O.create(impl.UIEvent.prototype, {
         _idlName: constant("VoiceEvent"),
-        initVoiceEvent: constant(function(type, command, bubbles, cancelable,
+        initVoiceEvent: constant(function(type, command, confidence, bubbles, cancelable,
                                           view, detail) {
             this.initEvent(type, bubbles, cancelable, view, detail);
-            this.command = key;
+            this.command = command;
+            this.confidence = confidence;
+            this.type = type;
         }),
 
     });
@@ -13257,7 +13269,7 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
         this.spatialInputEvents = ['sourcepress', 'sourcerelease', 'sourcelost', 'sourcedetected', 'sourceupdate'];
         this.keyboardEvents = ['keydown', 'keyup'];
         this.mouseEvents = ['mouseup', 'mousedown', 'mousemove', 'wheel'];
-        this.voiceEvents = ['command'];
+        this.voiceEvents = ['voicecommand'];
     }
 
     HTMLHoloCanvasElementExp.prototype = O.create(impl.HTMLElement.prototype, {
@@ -13342,9 +13354,9 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
             return keyEvent;
         }),
 
-        dispatchVoiceFromWindow: constant(function dispatchKeyboardFromWindow(command, typeId) {
+        dispatchVoiceFromWindow: constant(function dispatchVoiceFromWindow(typeId, command, confidence ) {
             let voiceEvent = this.ownerDocument.createEvent("VoiceEvent");
-            voiceEvent.initVoiceEvent(this.voiceEvents[typeId], command, true, true);
+            voiceEvent.initVoiceEvent(this.voiceEvents[typeId], command, confidence, true, true);
             this.dispatchEvent(voiceEvent);
             return voiceEvent;
         }),
@@ -28406,7 +28418,8 @@ function Window() {
         } else if (type === this.input.spatialinput) {
             holographic.canvas.dispatchSpatialInputFromWindow(arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], arguments[6]);
         } else if (type === this.input.voice) {
-            let keyEvent = holographic.canvas.dispatchVoiceFromWindow(arguments[1], arguments[2]);
+            let voiceEvent = holographic.canvas.dispatchVoiceFromWindow(arguments[1], arguments[2], arguments[3]);
+            this.dispatchEvent(voiceEvent);
         }
     };
 
@@ -28423,7 +28436,7 @@ function Window() {
                 this._spatialMappingOptions.scanExtentMeters.z,
                 this._spatialMappingOptions.trianglesPerCubicMeter);
             this.onSpatialMapping = listener;
-        } else if (type == "voicecommand") {
+        } else if (type === "voicecommand" || type === "keyup" || type === "keydown") {
             holographic.nativeInterface.input.addEventListener(type);
             this.addEventListenerXXX(type, listener, capture);
         } else {
@@ -28434,7 +28447,7 @@ function Window() {
     this.removeEventListener = function (type, listener, capture) {
         if (type === "spatialmapping") {
             delete this.onSpatialMapping;
-        } else if (type == "voicecommand") {
+        } else if (type === "voicecommand") {
             holographic.nativeInterface.input.removeEventListener(type);
             this.removeEventListenerXXX(type, listener, capture);
         } else {

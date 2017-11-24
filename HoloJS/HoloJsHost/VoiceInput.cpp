@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "VoiceInput.h"
+#include "ScriptErrorHandling.h"
 
 using namespace HologramJS::Input;
 using namespace std;
@@ -18,7 +19,8 @@ VoiceInput::VoiceInput()
     m_resultGeneratedToken = m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated +=
         ref new TypedEventHandler<SpeechContinuousRecognitionSession ^,
                                   SpeechContinuousRecognitionResultGeneratedEventArgs ^>(
-            &VoiceInput::OnResultGenerated);
+            [this](SpeechContinuousRecognitionSession ^ session,
+                   SpeechContinuousRecognitionResultGeneratedEventArgs ^ args) { OnResultGenerated(session, args); });
 }
 
 VoiceInput::~VoiceInput() {}
@@ -56,7 +58,7 @@ task<SpeechRecognitionCompilationResult ^> VoiceInput::CompileVoiceCommandsAsync
     return create_task(m_speechRecognizer->CompileConstraintsAsync());
 }
 
-// Process speech recognize requests: start, stop, change commands
+// Process speech recognizer requests: start, stop, change commands
 // This method runs synchronously on a background thread and
 // sequentializes the incoming asynchronous speech recognizer requests
 void VoiceInput::ProcessQueueEntry()
@@ -99,8 +101,8 @@ bool VoiceInput::AddEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supporteVoiceInputEvents); i++) {
         if (type == g_supporteVoiceInputEvents[i]) {
-			// AddEventListener and RemoveEventListener are always called on the UI thread; as such
-			// there is no need to synchronize access to the input ref count
+            // AddEventListener and RemoveEventListener are always called on the UI thread; as such
+            // there is no need to synchronize access to the input ref count
             m_inputRefCount++;
             if (m_inputRefCount == 1) {
                 m_eventsQueue.push(EventType::Start);
@@ -117,14 +119,14 @@ bool VoiceInput::RemoveEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supporteVoiceInputEvents); i++) {
         if (type == g_supporteVoiceInputEvents[i]) {
-			// AddEventListener and RemoveEventListener are always called on the UI thread; as such
-			// there is no need to synchronize access to the input ref count
+            // AddEventListener and RemoveEventListener are always called on the UI thread; as such
+            // there is no need to synchronize access to the input ref count
             if (m_inputRefCount == 1) {
-				m_inputRefCount = 0;
+                m_inputRefCount = 0;
                 m_eventsQueue.push(EventType::Stop);
                 create_task([this]() { ProcessQueueEntry(); });
             } else if (m_inputRefCount > 1) {
-				m_inputRefCount--;
+                m_inputRefCount--;
             }
 
             return true;
@@ -136,4 +138,26 @@ bool VoiceInput::RemoveEventListener(const wstring& type)
 void VoiceInput::OnResultGenerated(SpeechContinuousRecognitionSession ^ sender,
                                    SpeechContinuousRecognitionResultGeneratedEventArgs ^ args)
 {
+    Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+        CoreDispatcherPriority::Normal, ref new DispatchedHandler([this, args] { CallbackScriptForVoiceInput(args); }));
+}
+
+void VoiceInput::CallbackScriptForVoiceInput(SpeechContinuousRecognitionResultGeneratedEventArgs ^ args)
+{
+    EXIT_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
+
+    JsValueRef parameters[5];
+    parameters[0] = m_scriptCallback;
+    JsValueRef* eventTypeParam = &parameters[1];
+	JsValueRef* voiceTypeParam = &parameters[2];
+    JsValueRef* commandParam = &parameters[3];
+    JsValueRef* confidenceParam = &parameters[4];
+
+    EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Voice), eventTypeParam));
+	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(VoiceInputEventType::Command), voiceTypeParam));
+    EXIT_IF_JS_ERROR(JsPointerToString(args->Result->Text->Data(), args->Result->Text->Length(), commandParam));
+    EXIT_IF_JS_ERROR(JsDoubleToNumber(args->Result->RawConfidence, confidenceParam));
+
+    JsValueRef result;
+    HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
 }
