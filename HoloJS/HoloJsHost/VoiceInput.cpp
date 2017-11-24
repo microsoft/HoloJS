@@ -45,7 +45,7 @@ task<void> VoiceInput::ResetVoiceCommandsAsync()
 task<SpeechRecognitionCompilationResult ^> VoiceInput::CompileVoiceCommandsAsync()
 {
     Platform::Collections::Vector<String ^> ^ speechCommandList = ref new Platform::Collections::Vector<String ^>();
-    for (int i = 0; i < m_voiceCommands.size(); i++) {
+    for (size_t i = 0; i < m_voiceCommands.size(); i++) {
         speechCommandList->Append(Platform::StringReference(m_voiceCommands[i].c_str()));
     }
 
