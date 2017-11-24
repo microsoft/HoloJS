@@ -149,12 +149,12 @@ void VoiceInput::CallbackScriptForVoiceInput(SpeechContinuousRecognitionResultGe
     JsValueRef parameters[5];
     parameters[0] = m_scriptCallback;
     JsValueRef* eventTypeParam = &parameters[1];
-	JsValueRef* voiceTypeParam = &parameters[2];
+    JsValueRef* voiceTypeParam = &parameters[2];
     JsValueRef* commandParam = &parameters[3];
     JsValueRef* confidenceParam = &parameters[4];
 
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::Voice), eventTypeParam));
-	EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(VoiceInputEventType::Command), voiceTypeParam));
+    EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(VoiceInputEventType::Command), voiceTypeParam));
     EXIT_IF_JS_ERROR(JsPointerToString(args->Result->Text->Data(), args->Result->Text->Length(), commandParam));
     EXIT_IF_JS_ERROR(JsDoubleToNumber(args->Result->RawConfidence, confidenceParam));
 
