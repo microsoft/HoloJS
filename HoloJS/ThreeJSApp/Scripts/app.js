@@ -274,4 +274,12 @@ function onSpatialSourcePress(spatialInputEvent) {
     window.addEventListener("spatialmapping", onSurfaceAvailable);
 }
 
+window.voiceCommands = ["start", "stop"];
+window.addEventListener("voicecommand", onVoiceCommand);
+
+
+function onVoiceCommand(voiceEvent) {
+    console.log("Voice command: " + voiceEvent.command + "; confidence: " + voiceEvent.confidence);
+}
+
 start();

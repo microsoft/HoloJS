@@ -235,6 +235,7 @@
     <ClInclude Include="System.h" />
     <ClInclude Include="Timers.h" />
     <ClInclude Include="VideoElement.h" />
+    <ClInclude Include="VoiceInput.h" />
     <ClInclude Include="WebGLObjects.h" />
     <ClInclude Include="WebGLProjections.h" />
     <ClInclude Include="WebGLRenderingContext.h" />
@@ -269,6 +270,7 @@
     <ClCompile Include="System.cpp" />
     <ClCompile Include="Timers.cpp" />
     <ClCompile Include="VideoElement.cpp" />
+    <ClCompile Include="VoiceInput.cpp" />
     <ClCompile Include="WebGLObjects.cpp" />
     <ClCompile Include="WebGLProjections.cpp" />
     <ClCompile Include="WebGLRenderingContext.cpp" />

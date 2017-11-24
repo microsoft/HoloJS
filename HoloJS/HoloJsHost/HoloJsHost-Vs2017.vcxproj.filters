@@ -72,6 +72,9 @@
     <ClCompile Include="CanvasProjections.cpp">
       <Filter>Render\2D</Filter>
     </ClCompile>
+    <ClCompile Include="VoiceInput.cpp">
+      <Filter>Runtime\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -162,6 +165,9 @@
     <ClInclude Include="HoloJsApp.h" />
     <ClInclude Include="CanvasProjections.h">
       <Filter>Render\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="VoiceInput.h">
+      <Filter>Runtime\Input</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
