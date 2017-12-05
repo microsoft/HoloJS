@@ -9,11 +9,8 @@ using float4x4 = Windows::Foundation::Numerics::float4x4;
 public
 delegate void HoloJsCallback();
 
-public enum class HoloJsLaunchMode {
-	AsActivated,
-	Flat,
-	Holographic
-};
+public
+enum class HoloJsLaunchMode { AsActivated, Flat, Holographic };
 
 [Windows::Foundation::Metadata::WebHostHidden] public ref class HoloJsAppView sealed
     : public Windows::ApplicationModel::Core::IFrameworkView {
@@ -42,11 +39,10 @@ public enum class HoloJsLaunchMode {
     // The location of the world coordinate system to use; the default location is 2 meters infront of the camera
     property Windows::Foundation::Numerics::float3 WorldOriginRelativePosition;
 
-	property HoloJsLaunchMode LaunchMode;
+    property HoloJsLaunchMode LaunchMode;
 
    private:
-
-	void ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window, bool m_isHolographicActivation);
+    void ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window, bool m_isHolographicActivation);
     void RecreateRenderer();
 
     // Application lifecycle event handlers.

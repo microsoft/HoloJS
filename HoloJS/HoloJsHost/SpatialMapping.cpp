@@ -42,10 +42,9 @@ JsValueRef SpatialMapping::GetSpatialData(float extentX, float extentY, float ex
 
 void SpatialMapping::EnableSpatialMapping(SpatialStationaryFrameOfReference ^ frameOfReference)
 {
-	if (frameOfReference == nullptr)
-	{
-		return;
-	}
+    if (frameOfReference == nullptr) {
+        return;
+    }
 
     m_frameOfReference = frameOfReference;
 
@@ -75,7 +74,8 @@ bool SpatialMapping::CreateSurfaceObserver(float extentX, float extentY, float e
     }
 
     SpatialBoundingBox axisAlignedBoundingBox = {
-        {0.f, 0.f, 0.f}, {extentX, extentY, extentZ},
+        {0.f, 0.f, 0.f},
+        {extentX, extentY, extentZ},
     };
     SpatialBoundingVolume ^ bounds =
         SpatialBoundingVolume::FromBox(m_frameOfReference->CoordinateSystem, axisAlignedBoundingBox);

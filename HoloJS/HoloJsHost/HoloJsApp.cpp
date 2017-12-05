@@ -53,11 +53,10 @@ void HoloJsAppView::Initialize(CoreApplicationView ^ applicationView)
     // http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh994930.aspx
 }
 
-void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window,
-                                                   bool m_isHolographicActivation)
+void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window, bool isHolographicActivation)
 {
     try {
-        if ((m_isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
+        if ((isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
             (LaunchMode == HoloJsLaunchMode::Holographic)) {
             // Create a holographic space for the core window for the current view.
             mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
