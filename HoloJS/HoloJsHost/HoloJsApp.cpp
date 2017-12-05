@@ -58,18 +58,23 @@ void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow
     try {
         if ((isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
             (LaunchMode == HoloJsLaunchMode::Holographic)) {
-            // Create a holographic space for the core window for the current view.
-            mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+			// Get the default SpatialLocator.
+			SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
 
-            // Get the default SpatialLocator.
-            SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
+			if (mLocator == nullptr) {
+				InitializeEGL(window);
+			}
+			else {
+				// Create a holographic space for the core window for the current view.
+				mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
 
-            // Create a stationary frame of reference.
-            mStationaryReferenceFrame =
-                mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
+				// Create a stationary frame of reference.
+				mStationaryReferenceFrame =
+					mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
 
-            // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
-            InitializeEGL(mHolographicSpace);
+				// The HolographicSpace has been created, so EGL can be initialized in holographic mode.
+				InitializeEGL(mHolographicSpace);
+			}
         } else {
             // Initialize a flat view for the app
             InitializeEGL(window);
