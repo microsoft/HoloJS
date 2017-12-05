@@ -12,7 +12,7 @@ delegate void HoloJsCallback();
 public enum class HoloJsLaunchMode {
 	AsActivated,
 	Flat,
-	HolographicIfAvailable
+	Holographic
 };
 
 [Windows::Foundation::Metadata::WebHostHidden] public ref class HoloJsAppView sealed
@@ -45,6 +45,8 @@ public enum class HoloJsLaunchMode {
 	property HoloJsLaunchMode LaunchMode;
 
    private:
+
+	void ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window, bool m_isHolographicActivation);
     void RecreateRenderer();
 
     // Application lifecycle event handlers.
@@ -63,7 +65,6 @@ public enum class HoloJsLaunchMode {
 
     bool m_WindowClosed;
     bool m_WindowVisible;
-    bool m_holographicActivation = false;
 
     EGLDisplay m_EglDisplay;
     EGLContext m_EglContext;

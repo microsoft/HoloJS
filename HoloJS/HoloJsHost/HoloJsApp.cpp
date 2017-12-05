@@ -37,7 +37,7 @@ HoloJsAppView::HoloJsAppView(String ^ appUri)
     ImageStabilizationEnabled = false;
     WorldOriginRelativePosition = float3(0, 0, -2);
     EnableWebArProtocolHandler = false;
-	LaunchMode = HoloJsLaunchMode::AsActivated;
+    LaunchMode = HoloJsLaunchMode::AsActivated;
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -53,17 +53,12 @@ void HoloJsAppView::Initialize(CoreApplicationView ^ applicationView)
     // http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh994930.aspx
 }
 
-// Called when the CoreWindow object is created (or re-created).
-void HoloJsAppView::SetWindow(CoreWindow ^ window)
+void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window,
+                                                   bool m_isHolographicActivation)
 {
-    window->VisibilityChanged += ref new TypedEventHandler<CoreWindow ^, VisibilityChangedEventArgs ^>(
-        this, &HoloJsAppView::OnVisibilityChanged);
-
-    window->Closed +=
-        ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsAppView::OnWindowClosed);
-
     try {
-        if ((m_holographicActivation && LaunchMode == HoloJsLaunchMode::AsActivated) || (LaunchMode == HoloJsLaunchMode::HolographicIfAvailable)) {
+        if ((m_isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
+            (LaunchMode == HoloJsLaunchMode::Holographic)) {
             // Create a holographic space for the core window for the current view.
             mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
 
@@ -77,7 +72,7 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
             // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
             InitializeEGL(mHolographicSpace);
         } else {
-            // The launch happened on the desktop; keep the app on the desktop
+            // Initialize a flat view for the app
             InitializeEGL(window);
         }
     } catch (Platform::Exception ^ ex) {
@@ -85,6 +80,21 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
             // Device does not support holographic spaces. Initialize EGL to use the CoreWindow instead.
             InitializeEGL(window);
         }
+    }
+}
+
+// Called when the CoreWindow object is created (or re-created).
+void HoloJsAppView::SetWindow(CoreWindow ^ window)
+{
+    window->VisibilityChanged += ref new TypedEventHandler<CoreWindow ^, VisibilityChangedEventArgs ^>(
+        this, &HoloJsAppView::OnVisibilityChanged);
+
+    window->Closed +=
+        ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsAppView::OnWindowClosed);
+
+    if (!Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
+            Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
+        ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
     }
 }
 
@@ -188,17 +198,13 @@ void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivate
 {
     if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
             Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
-        // Store the activation kind on RS3+
-        // If activated on the desktop, skip initializing the holographic space later to keep the app on the desktop (as
-        // opposed to the VR headest)
-        m_holographicActivation =
+        auto isHolographicActivation =
             Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
                 args);
-    } else {
-        // Pre-RS3, mixed reality on desktop is not supported
-        // Assume holographic activation; we'll fallback to desktop if initializing the holographic space throws an
-        // exception
-        m_holographicActivation = true;
+
+        // Activate the window in the correct context, depending on where was the app activate from and launch settings
+        // set by the app itself
+        ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
     }
 
     // On protocol activation, use the URI from the activation as the app URI

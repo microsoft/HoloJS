@@ -30,6 +30,12 @@ bool SpatialInput::AddEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++) {
         if (type == g_supportedSpatialInputEvents[i]) {
+			if (m_frameOfReference == nullptr)
+			{
+				// The event was handled, but there is no frame of reference
+				return true;
+			}
+
             m_inputRefCount++;
 
             if (m_inputRefCount == 1) {
@@ -81,6 +87,12 @@ bool SpatialInput::RemoveEventListener(const wstring& type)
 {
     for (int i = 0; i < ARRAYSIZE(g_supportedSpatialInputEvents); i++) {
         if (type == g_supportedSpatialInputEvents[i]) {
+			if (m_frameOfReference == nullptr)
+			{
+				// The event was handled, but there is no frame of reference
+				return true;
+			}
+
             m_inputRefCount--;
 
             if (m_inputRefCount == 0 && m_spatialInputAvailable) {

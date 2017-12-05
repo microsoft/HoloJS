@@ -24,7 +24,7 @@ void RunLocalWithOptions()
 	// If more customizations are required, copy the HoloJsAppView class in this project and make further changes as needed
 	auto holoJsAppView = ref new HoloJsAppView(ref new String(L"scripts/app.json"));
 	holoJsAppView->ImageStabilizationEnabled = false;
-	holoJsAppView->LaunchMode = HoloJsLaunchMode::HolographicIfAvailable;
+	holoJsAppView->LaunchMode = HoloJsLaunchMode::AsActivated;
 	holoJsAppView->WorldOriginRelativePosition = Windows::Foundation::Numerics::float3(0, 0, -2);
 
 	// 2. Create the source from the app and run it

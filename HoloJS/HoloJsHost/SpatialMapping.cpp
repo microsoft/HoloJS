@@ -42,6 +42,11 @@ JsValueRef SpatialMapping::GetSpatialData(float extentX, float extentY, float ex
 
 void SpatialMapping::EnableSpatialMapping(SpatialStationaryFrameOfReference ^ frameOfReference)
 {
+	if (frameOfReference == nullptr)
+	{
+		return;
+	}
+
     m_frameOfReference = frameOfReference;
 
     auto initSurfaceObserverTask = create_task(SpatialSurfaceObserver::RequestAccessAsync());
