@@ -37,6 +37,7 @@ HoloJsAppView::HoloJsAppView(String ^ appUri)
     ImageStabilizationEnabled = false;
     WorldOriginRelativePosition = float3(0, 0, -2);
     EnableWebArProtocolHandler = false;
+	LaunchMode = HoloJsLaunchMode::AsActivated;
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -62,18 +63,23 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
         ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsAppView::OnWindowClosed);
 
     try {
-        // Create a holographic space for the core window for the current view.
-        mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+        if ((m_holographicActivation && LaunchMode == HoloJsLaunchMode::AsActivated) || (LaunchMode == HoloJsLaunchMode::HolographicIfAvailable)) {
+            // Create a holographic space for the core window for the current view.
+            mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
 
-        // Get the default SpatialLocator.
-        SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
+            // Get the default SpatialLocator.
+            SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
 
-        // Create a stationary frame of reference.
-        mStationaryReferenceFrame =
-            mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
+            // Create a stationary frame of reference.
+            mStationaryReferenceFrame =
+                mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
 
-        // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
-        InitializeEGL(mHolographicSpace);
+            // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
+            InitializeEGL(mHolographicSpace);
+        } else {
+            // The launch happened on the desktop; keep the app on the desktop
+            InitializeEGL(window);
+        }
     } catch (Platform::Exception ^ ex) {
         if (ex->HResult == HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)) {
             // Device does not support holographic spaces. Initialize EGL to use the CoreWindow instead.
@@ -180,6 +186,21 @@ void HoloJsAppView::Uninitialize() {}
 // Application lifecycle event handler.
 void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
 {
+    if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
+            Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
+        // Store the activation kind on RS3+
+        // If activated on the desktop, skip initializing the holographic space later to keep the app on the desktop (as
+        // opposed to the VR headest)
+        m_holographicActivation =
+            Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
+                args);
+    } else {
+        // Pre-RS3, mixed reality on desktop is not supported
+        // Assume holographic activation; we'll fallback to desktop if initializing the holographic space throws an
+        // exception
+        m_holographicActivation = true;
+    }
+
     // On protocol activation, use the URI from the activation as the app URI
     if (args->Kind == ActivationKind::Protocol && EnableWebArProtocolHandler) {
         ProtocolActivatedEventArgs ^ eventArgs = dynamic_cast<ProtocolActivatedEventArgs ^>(args);
