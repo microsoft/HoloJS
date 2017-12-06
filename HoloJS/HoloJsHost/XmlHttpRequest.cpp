@@ -177,6 +177,7 @@ bool XmlHttpRequest::CreateHttpContent(JsValueRef scriptContent)
         wstring payload;
         RETURN_IF_FALSE(ScriptHostUtilities::GetString(scriptContent, payload));
         m_httpContent = ref new HttpStringContent(Platform::StringReference(payload.c_str()));
+        m_contentType = HttpContentType::String;
     } else if (contentType == JsTypedArray || contentType == JsArrayBuffer) {
         byte* buffer;
         unsigned int bufferLength;
@@ -198,7 +199,7 @@ bool XmlHttpRequest::CreateHttpContent(JsValueRef scriptContent)
         m_contentIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
 
         m_httpContent = ref new HttpBufferContent(m_contentIBuffer);
-        m_contentIsBufferType = true;
+        m_contentType = HttpContentType::Buffer;
     } else {
         // Other payload type?
         return false;
@@ -273,7 +274,7 @@ task<void> XmlHttpRequest::SendAsync()
     HttpRequestMessage ^ requestMessage = ref new HttpRequestMessage();
     for (const auto& headerPair : m_requestHeaders) {
         if (_wcsicmp(headerPair.first.c_str(), L"content-type") == 0) {
-            if (m_httpContent != nullptr) {
+            if (m_contentType == HttpContentType::Buffer) {
                 m_httpContent->Headers->ContentType->MediaType = Platform::StringReference(headerPair.second.c_str());
             }
         } else {
