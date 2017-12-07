@@ -37,6 +37,7 @@ HoloJsAppView::HoloJsAppView(String ^ appUri)
     ImageStabilizationEnabled = false;
     WorldOriginRelativePosition = float3(0, 0, -2);
     EnableWebArProtocolHandler = false;
+    LaunchMode = HoloJsLaunchMode::AsActivated;
 }
 
 // The first method called when the IFrameworkView is being created.
@@ -52,6 +53,40 @@ void HoloJsAppView::Initialize(CoreApplicationView ^ applicationView)
     // http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh994930.aspx
 }
 
+void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow ^ window, bool isHolographicActivation)
+{
+    try {
+        if ((isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
+            (LaunchMode == HoloJsLaunchMode::Holographic)) {
+			// Get the default SpatialLocator.
+			SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
+
+			if (mLocator == nullptr) {
+				InitializeEGL(window);
+			}
+			else {
+				// Create a holographic space for the core window for the current view.
+				mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+
+				// Create a stationary frame of reference.
+				mStationaryReferenceFrame =
+					mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
+
+				// The HolographicSpace has been created, so EGL can be initialized in holographic mode.
+				InitializeEGL(mHolographicSpace);
+			}
+        } else {
+            // Initialize a flat view for the app
+            InitializeEGL(window);
+        }
+    } catch (Platform::Exception ^ ex) {
+        if (ex->HResult == HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)) {
+            // Device does not support holographic spaces. Initialize EGL to use the CoreWindow instead.
+            InitializeEGL(window);
+        }
+    }
+}
+
 // Called when the CoreWindow object is created (or re-created).
 void HoloJsAppView::SetWindow(CoreWindow ^ window)
 {
@@ -61,24 +96,9 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
     window->Closed +=
         ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsAppView::OnWindowClosed);
 
-    try {
-        // Create a holographic space for the core window for the current view.
-        mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
-
-        // Get the default SpatialLocator.
-        SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
-
-        // Create a stationary frame of reference.
-        mStationaryReferenceFrame =
-            mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
-
-        // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
-        InitializeEGL(mHolographicSpace);
-    } catch (Platform::Exception ^ ex) {
-        if (ex->HResult == HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)) {
-            // Device does not support holographic spaces. Initialize EGL to use the CoreWindow instead.
-            InitializeEGL(window);
-        }
+    if (!Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
+            Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
+        ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
     }
 }
 
@@ -180,6 +200,17 @@ void HoloJsAppView::Uninitialize() {}
 // Application lifecycle event handler.
 void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
 {
+    if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
+            Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
+        auto isHolographicActivation =
+            Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
+                args);
+
+        // Activate the window in the correct context, depending on where was the app activate from and launch settings
+        // set by the app itself
+        ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
+    }
+
     // On protocol activation, use the URI from the activation as the app URI
     if (args->Kind == ActivationKind::Protocol && EnableWebArProtocolHandler) {
         ProtocolActivatedEventArgs ^ eventArgs = dynamic_cast<ProtocolActivatedEventArgs ^>(args);
