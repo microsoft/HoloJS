@@ -58,23 +58,22 @@ void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow
     try {
         if ((isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
             (LaunchMode == HoloJsLaunchMode::Holographic)) {
-			// Get the default SpatialLocator.
-			SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
+            // Get the default SpatialLocator.
+            SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
 
-			if (mLocator == nullptr) {
-				InitializeEGL(window);
-			}
-			else {
-				// Create a holographic space for the core window for the current view.
-				mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+            if (mLocator == nullptr) {
+                InitializeEGL(window);
+            } else {
+                // Create a holographic space for the core window for the current view.
+                mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
 
-				// Create a stationary frame of reference.
-				mStationaryReferenceFrame =
-					mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
+                // Create a stationary frame of reference.
+                mStationaryReferenceFrame =
+                    mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
 
-				// The HolographicSpace has been created, so EGL can be initialized in holographic mode.
-				InitializeEGL(mHolographicSpace);
-			}
+                // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
+                InitializeEGL(mHolographicSpace);
+            }
         } else {
             // Initialize a flat view for the app
             InitializeEGL(window);
@@ -99,6 +98,9 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
     if (!Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
             Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
         ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
+    } else {
+        // Delay activating the window until OnActivated; there we'll figure out what view to create
+        m_windowActivationRequired = true;
     }
 }
 
@@ -206,9 +208,12 @@ void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivate
             Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
                 args);
 
-        // Activate the window in the correct context, depending on where was the app activate from and launch settings
-        // set by the app itself
-        ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
+        if (m_windowActivationRequired) {
+            // Activate the window in the correct context, depending on where was the app activate from and launch
+            // settings set by the app itself
+            ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
+            m_windowActivationRequired = false;
+        }
     }
 
     // On protocol activation, use the URI from the activation as the app URI
