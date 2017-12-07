@@ -75,6 +75,12 @@
     <ClCompile Include="VoiceInput.cpp">
       <Filter>Runtime\Input</Filter>
     </ClCompile>
+    <ClCompile Include="AudioContext.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioProjections.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -169,6 +175,12 @@
     <ClInclude Include="VoiceInput.h">
       <Filter>Runtime\Input</Filter>
     </ClInclude>
+    <ClInclude Include="AudioContext.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioProjections.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -197,6 +209,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\audio-context.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
@@ -236,6 +251,9 @@
     </Filter>
     <Filter Include="Runtime\Utilities">
       <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{dfdf3ffd-8473-471d-861b-d6b752a77ead}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

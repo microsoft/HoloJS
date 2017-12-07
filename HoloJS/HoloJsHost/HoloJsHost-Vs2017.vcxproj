@@ -210,6 +210,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AudioContext.h" />
+    <ClInclude Include="AudioProjections.h" />
     <ClInclude Include="CanvasProjections.h" />
     <ClInclude Include="HoloJsApp.h" />
     <ClInclude Include="ChakraForHoloJS.h" />
@@ -244,6 +246,8 @@
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioContext.cpp" />
+    <ClCompile Include="AudioProjections.cpp" />
     <ClCompile Include="CanvasProjections.cpp" />
     <ClCompile Include="HoloJsApp.cpp" />
     <ClCompile Include="FileSystemLoader.cpp" />
@@ -281,6 +285,9 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="ScriptingFramework\2d-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\audio-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\console.js">
