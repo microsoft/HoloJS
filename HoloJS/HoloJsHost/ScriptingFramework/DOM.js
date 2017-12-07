@@ -2253,7 +2253,6 @@ defineLazyProperty(global, "NodeList", function() {
 defineLazyProperty(idl, "NodeList", function() {
     return new IDLInterface({
         name: "NodeList",
-        proxyFactory: NodeListProxy,
         members: {
             item: function item(index) {
                 return wrap(unwrap(this).item(toULong(index)));
@@ -2278,7 +2277,6 @@ defineLazyProperty(global, "HTMLCollection", function() {
 defineLazyProperty(idl, "HTMLCollection", function() {
     return new IDLInterface({
         name: "HTMLCollection",
-        proxyFactory: HTMLCollectionProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2779,7 +2777,6 @@ defineLazyProperty(idl, "HTMLFormControlsCollection", function() {
     return new IDLInterface({
         name: "HTMLFormControlsCollection",
         superclass: idl.HTMLCollection,
-        proxyFactory: HTMLFormControlsCollectionProxy,
         members: {
             namedItem: function namedItem(name) {
                 return unwrap(this).namedItem(String(name));
@@ -2825,7 +2822,6 @@ defineLazyProperty(idl, "HTMLOptionsCollection", function() {
     return new IDLInterface({
         name: "HTMLOptionsCollection",
         superclass: idl.HTMLCollection,
-        proxyFactory: HTMLOptionsCollectionProxy,
         members: {
             get length() {
                 return unwrap(this).length;
@@ -2865,7 +2861,6 @@ defineLazyProperty(idl, "HTMLPropertiesCollection", function() {
     return new IDLInterface({
         name: "HTMLPropertiesCollection",
         superclass: idl.HTMLCollection,
-        proxyFactory: HTMLPropertiesCollectionProxy,
         members: {
             namedItem: function namedItem(name) {
                 return wrap(unwrap(this).namedItem(String(name)));
@@ -2911,7 +2906,6 @@ defineLazyProperty(global, "DOMStringMap", function() {
 defineLazyProperty(idl, "DOMStringMap", function() {
     return new IDLInterface({
         name: "DOMStringMap",
-        proxyFactory: DOMStringMapProxy,
         members: {
         },
     });
@@ -2928,7 +2922,6 @@ defineLazyProperty(global, "DOMElementMap", function() {
 defineLazyProperty(idl, "DOMElementMap", function() {
     return new IDLInterface({
         name: "DOMElementMap",
-        proxyFactory: DOMElementMapProxy,
         members: {
         },
     });
@@ -22305,7 +22298,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-November-2017 09:22:26 */
+/* Build time: 6-December-2017 05:42:43 */
 var parserlib = {};
 (function(){
 
@@ -23209,7 +23202,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 21-November-2017 09:22:26 */
+/* Build time: 6-December-2017 05:42:43 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -28385,7 +28378,6 @@ function Window() {
     this.document = new impl.DOMImplementation().createHTMLDocument("");
     this.document._scripting_enabled = true;
     this.document.defaultView = this;
-    this.location = new Location(this, "about:blank");
 
     // These numbers must match native code
     this.input = { 
@@ -28572,7 +28564,8 @@ wmset(idlToImplMap, global, w);
      });
  });
 
-Object.defineProperty(global, "location", {
+ // Remove the location property for HoloJs's DOM
+/*Object.defineProperty(global, "location", {
     get: function() {
         return wrap(unwrap(this).location);
     },
@@ -28581,7 +28574,7 @@ Object.defineProperty(global, "location", {
     },
     enumerable: false,
     configurable: true, // XXX: check this
-});
+});*/
 
 
 Object.defineProperty(global, "onload", {

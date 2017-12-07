@@ -34,8 +34,10 @@ class XmlHttpRequest : public HologramJS::Utilities::ElementWithEvents, public H
     // The payload that came from script; keep a reference to it for the duration of the request
     JsValueRef m_refScriptPayloadValue;
     Windows::Web::Http::IHttpContent ^ m_httpContent;
+    enum class HttpContentType { NoContent, String, Buffer };
+    HttpContentType m_contentType = HttpContentType::NoContent;
+
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> m_contentBuffer;
-    bool m_contentIsBufferType;
     Windows::Storage::Streams::IBuffer ^ m_contentIBuffer;
     bool CreateHttpContent(JsValueRef scriptContent);
 
