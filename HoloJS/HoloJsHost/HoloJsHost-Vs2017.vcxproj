@@ -124,12 +124,12 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj /await %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\ANGLE\include;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\LabSound\include;..\..\ANGLE\include;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>..\prebuilt\angle\$(Platform)\$(Configuration)\libGLESv2.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib;mfuuid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>..\prebuilt\labSound\$(Platform)\$(Configuration)\libnyquist.lib;..\prebuilt\labSound\$(Platform)\$(Configuration)\labSound.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libGLESv2.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib;mfuuid.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,12 +141,12 @@
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalOptions>/bigobj /await %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>28204</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\ANGLE\include;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\LabSound\include;..\..\ANGLE\include;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>..\prebuilt\angle\$(Platform)\$(Configuration)\libGLESv2.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib;mfuuid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>..\prebuilt\labSound\$(Platform)\$(Configuration)\libnyquist.lib;..\prebuilt\labSound\$(Platform)\$(Configuration)\labSound.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libGLESv2.lib;..\prebuilt\angle\$(Platform)\$(Configuration)\libEGL.lib;WindowsApp.lib;%(AdditionalDependencies);windowscodecs.lib;mfuuid.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
