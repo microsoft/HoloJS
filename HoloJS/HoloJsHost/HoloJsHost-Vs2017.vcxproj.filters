@@ -81,6 +81,18 @@
     <ClCompile Include="AudioProjections.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="AudioNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioBufferSourceNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioParam.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioScheduledSourceNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -179,6 +191,30 @@
       <Filter>Audio</Filter>
     </ClInclude>
     <ClInclude Include="AudioProjections.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="GainNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioDestinationNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundBuffer.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioBufferSourceNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="PannerNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioParam.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioScheduledSourceNode.h">
       <Filter>Audio</Filter>
     </ClInclude>
   </ItemGroup>

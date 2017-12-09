@@ -1,17 +1,26 @@
 #include "pch.h"
 #include "AudioProjections.h"
 #include "AudioContext.h"
+#include "AudioNode.h"
+#include "AudioBufferSourceNode.h"
+#include "AudioParam.h"
+#include "AudioScheduledSourceNode.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 
 using namespace HologramJS::Utilities;
-
 using namespace HologramJS::Audio;
 
 bool AudioProjections::Initialize()
 {
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext", L"audio", createContext));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"decodeAudioData", L"audio", decodeAudioData));
+
+    RETURN_IF_FALSE(AudioNode::InitializeProjections());
+    RETURN_IF_FALSE(AudioContext::InitializeProjections());
+    RETURN_IF_FALSE(AudioBufferSourceNode::InitializeProjections());
+    RETURN_IF_FALSE(AudioParam::InitializeProjections());
+    RETURN_IF_FALSE(AudioScheduledSourceNode::InitializeProjections());
 
     return true;
 }

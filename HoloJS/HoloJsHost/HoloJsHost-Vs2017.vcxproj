@@ -210,9 +210,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AudioBufferSourceNode.h" />
     <ClInclude Include="AudioContext.h" />
+    <ClInclude Include="AudioDestinationNode.h" />
+    <ClInclude Include="AudioNode.h" />
+    <ClInclude Include="AudioParam.h" />
     <ClInclude Include="AudioProjections.h" />
+    <ClInclude Include="AudioScheduledSourceNode.h" />
     <ClInclude Include="CanvasProjections.h" />
+    <ClInclude Include="GainNode.h" />
     <ClInclude Include="HoloJsApp.h" />
     <ClInclude Include="ChakraForHoloJS.h" />
     <ClInclude Include="ErrorHandling.h" />
@@ -226,12 +232,14 @@
     <ClInclude Include="KeyboardInput.h" />
     <ClInclude Include="MouseInput.h" />
     <ClInclude Include="ObjectEvents.h" />
+    <ClInclude Include="PannerNode.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderingContext2D.h" />
     <ClInclude Include="ScriptErrorHandling.h" />
     <ClInclude Include="ScriptHostUtilities.h" />
     <ClInclude Include="ScriptResourceTracker.h" />
     <ClInclude Include="ScriptsLoader.h" />
+    <ClInclude Include="SoundBuffer.h" />
     <ClInclude Include="SpatialInput.h" />
     <ClInclude Include="SpatialMapping.h" />
     <ClInclude Include="System.h" />
@@ -246,8 +254,12 @@
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AudioBufferSourceNode.cpp" />
     <ClCompile Include="AudioContext.cpp" />
+    <ClCompile Include="AudioNode.cpp" />
+    <ClCompile Include="AudioParam.cpp" />
     <ClCompile Include="AudioProjections.cpp" />
+    <ClCompile Include="AudioScheduledSourceNode.cpp" />
     <ClCompile Include="CanvasProjections.cpp" />
     <ClCompile Include="HoloJsApp.cpp" />
     <ClCompile Include="FileSystemLoader.cpp" />
