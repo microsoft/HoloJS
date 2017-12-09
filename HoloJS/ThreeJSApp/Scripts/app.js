@@ -1,5 +1,5 @@
 
-let isHoloJs = (typeof holographic !== 'undefined');
+let isHoloJs = typeof holographic !== 'undefined';
 
 let canvas = document.createElement(isHoloJs ? 'exp-holo-canvas' : 'canvas');
 if (!isHoloJs) {
@@ -10,7 +10,7 @@ if (!isHoloJs) {
 
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = (isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000));
+let camera = isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 let loader = new THREE.TextureLoader();
 let material = new THREE.MeshStandardMaterial({ vertexColors: THREE.VertexColors, map: new THREE.DataTexture(new Uint8Array(3).fill(255), 1, 1, THREE.RGBFormat) });
@@ -282,4 +282,26 @@ function onVoiceCommand(voiceEvent) {
     console.log("Voice command: " + voiceEvent.command + "; confidence: " + voiceEvent.confidence);
 }
 
+function startAudio() {
+    //Create an AudioListener and add it to the camera
+    var listener = new THREE.AudioListener();
+    camera.add(listener);
+
+    //Create the PositionalAudio object (passing in the listener)
+    var sound = new THREE.PositionalAudio(listener);
+
+    //Load a sound and set it as the PositionalAudio object's buffer
+    var audioLoader = new THREE.AudioLoader();
+    audioLoader.load('https://upload.wikimedia.org/wikipedia/en/4/45/ACDC_-_Back_In_Black-sample.ogg', function (buffer) {
+        sound.setBuffer(buffer);
+        sound.setRefDistance(20);
+        sound.play();
+    });
+
+    //Finally add the sound to the mesh
+    cube.add(sound);
+}
+
 start();
+
+startAudio();
