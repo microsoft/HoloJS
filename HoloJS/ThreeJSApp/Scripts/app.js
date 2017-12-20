@@ -45,10 +45,10 @@ function onVoiceCommand(voiceEvent) {
     console.log("Voice command: " + voiceEvent.command + "; confidence: " + voiceEvent.confidence);
 }
 
-//var sample = new ShadowsExample(scene, renderer);
+var sample = new ShadowsExample(scene, renderer);
 //var sample = new BasicCubeExample(scene, renderer);
 //var sample = new CanvasRenderingExample(scene, renderer);
-var sample = new LightsExample(scene, renderer);
+//var sample = new LightsExample(scene, renderer);
 //var surfaceReconstructionExample = new SurfaceReconstructionExample(scene, renderer);
 
 start();
