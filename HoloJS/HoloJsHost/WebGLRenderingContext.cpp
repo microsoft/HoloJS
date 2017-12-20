@@ -390,7 +390,12 @@ void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* r
 
 void WebGLRenderingContext::renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
-    glRenderbufferStorage(target, internalformat, width, height);
+    if (internalformat = GL_DEPTH_STENCIL_OES) {
+        glRenderbufferStorage(target,  GL_DEPTH24_STENCIL8_OES, width, height);
+    }
+    else {
+        glRenderbufferStorage(target, internalformat, width, height);
+    }
 }
 
 WebGLFramebuffer* WebGLRenderingContext::createFramebuffer() { return new WebGLFramebuffer(); }
