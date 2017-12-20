@@ -71,6 +71,21 @@
     <None Include="Scripts\HolographicCamera.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\shadows.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\basic-cube.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\canvas-rendering.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\lights.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\surface-reconstruction.js">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
