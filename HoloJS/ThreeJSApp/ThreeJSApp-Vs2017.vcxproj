@@ -228,6 +228,9 @@
     <None Include="Scripts\shadows.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\sound.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\surface-reconstruction.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

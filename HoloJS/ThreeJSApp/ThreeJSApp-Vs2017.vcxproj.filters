@@ -86,6 +86,9 @@
     <None Include="Scripts\surface-reconstruction.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\sound.js">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
