@@ -93,6 +93,9 @@
     <ClCompile Include="AudioScheduledSourceNode.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="PannerNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />

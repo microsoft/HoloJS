@@ -12,7 +12,7 @@ window.AudioContext = function () {
         return new PannerNode(this);
     };
 
-    this.listener = new AudioListener();
+    this.listener = new AudioListener(this);
 
     this.decodeAudioData = function (data, success, error) {
         holographic.nativeInterface.audio.decodeAudioData(
@@ -27,14 +27,11 @@ window.AudioContext = function () {
     this.createBufferSource = function () {
         return new AudioBufferSourceNode(this);
     };
-
-    console.log("Created audio context");
 };
 
 function AudioNode(audioContext) {
     this.connect = function (destination, outputIndex, inputIndex) {
         holographic.nativeInterface.audioNode.connect(this.nativeAudioNode, destination.nativeAudioNode, outputIndex, inputIndex);
-        console.log("audio node connect called");
     };
 
     this.disconnect = function (destination, output, input) {
@@ -53,28 +50,28 @@ function PannerNode(audioContext) {
     AudioNode.call(this, audioContext);
     this.nativeAudioNode = holographic.nativeInterface.audioContext.createPanner(audioContext.nativeContext);
 
-    this.setPosition = function () {
-        console.log("panner set position");
+    this.setPosition = function (x, y, z) {
+        holographic.nativeInterface.pannerNode.setPosition(this.nativeAudioNode, x, y, z);
     };
 
-    this.setOrientation = function () {
-        console.log("panner set orientation");
+    this.setOrientation = function (x, y, z) {
+        holographic.nativeInterface.pannerNode.setOrientation(this.nativeAudioNode, x, y, z);
     };
 
-    this.setVelocity = function () {
-        console.log("panner set velocity");
+    this.setVelocity = function (x, y, z) {
+        holographic.nativeInterface.pannerNode.setVelocity(this.nativeAudioNode, x, y, z);
     };
 }
 
 function AudioListener(audioContext) {
     AudioNode.call(this, audioContext);
 
-    this.setPosition = function () {
-        console.log("panner set position");
+    this.setPosition = function (x, y, z) {
+        holographic.nativeInterface.audioContext.listener_setPosition(this.context.nativeContext, x, y, z);
     };
 
-    this.setOrientation = function () {
-        console.log("panner set orientation");
+    this.setOrientation = function (x, y, z, upX, upY, upZ) {
+        holographic.nativeInterface.audioContext.listener_setOrientation(this.context.nativeContext, x, y, z, upX, upY, upZ);
     };
 }
 
@@ -96,6 +93,14 @@ function AudioBufferSourceNode(audioContext) {
     AudioScheduledSourceNode.call(this);
     this.nativeAudioNode = this.nativeAudioBufferSourceNode = holographic.nativeInterface.audioContext.createBufferSource(audioContext.nativeContext);
 
+    function registered_onended() {
+        if (typeof this.onended !== 'undefined') {
+            this.onended();
+        }
+    }
+
+    holographic.nativeInterface.audioBufferSourceNode.register_onended(this.nativeAudioBufferSourceNode, registered_onended.bind(this));
+
     Object.defineProperty(this, 'buffer', {
         get: function () {
             return this._buffer;
@@ -108,11 +113,11 @@ function AudioBufferSourceNode(audioContext) {
 
     this.start = function (when) {
         holographic.nativeInterface.audioBufferSourceNode.start(this.nativeAudioBufferSourceNode, when);
-    }
+    };
 
     this.stop = function (when) {
         holographic.nativeInterface.audioBufferSourceNode.stop(this.nativeAudioBufferSourceNode, when);
-    }
+    };
 
     this.playbackRate = new AudioParam(holographic.nativeInterface.audioBufferSourceNode.getPlaybackRate(this.nativeAudioBufferSourceNode));
 }
@@ -122,5 +127,5 @@ function AudioParam(nativeAudioParam) {
 
     this.setValueAtTime = function (value, startTime) {
         holographic.nativeInterface.audioParam.setValueAtTime(this.nativeAudioParam, value, startTime);
-    }
+    };
 }

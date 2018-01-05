@@ -7,6 +7,21 @@
 
 using namespace HologramJS::Audio;
 using namespace HologramJS::Utilities;
+using namespace std::placeholders;
+using namespace Windows::UI::Core;
+using namespace Windows::ApplicationModel::Core;
+
+AudioBufferSourceNode::AudioBufferSourceNode(std::shared_ptr<lab::AudioContext> context,
+                                             std::shared_ptr<lab::AudioBufferSourceNode> audioBufferSourceNode)
+    : m_audioBufferSourceNode(audioBufferSourceNode), AudioNode(context, audioBufferSourceNode)
+{
+    m_audioBufferSourceNode->onFinished = [=](lab::AudioScheduledSourceNode* source) {
+        if (m_scriptOnEndedFunction != JS_INVALID_REFERENCE) {
+            CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+                CoreDispatcherPriority::Normal, ref new DispatchedHandler([this] { callbackScriptOnFinished(); }));
+        }
+    };
+}
 
 bool AudioBufferSourceNode::InitializeProjections()
 {
@@ -16,6 +31,8 @@ bool AudioBufferSourceNode::InitializeProjections()
 
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"start", L"audioBufferSourceNode", start));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stop", L"audioBufferSourceNode", stop));
+    RETURN_IF_FALSE(
+        ScriptHostUtilities::ProjectFunction(L"register_onended", L"audioBufferSourceNode", register_onended));
 
     return true;
 }
@@ -81,4 +98,26 @@ JsValueRef CHAKRA_CALLBACK AudioBufferSourceNode::stop(
     audioBufferSourceNode->m_audioBufferSourceNode->stop(when);
 
     return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK AudioBufferSourceNode::register_onended(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_IF_FALSE(argumentCount == 3);
+
+    auto audioBufferSourceNode = ScriptResourceTracker::ExternalToObject<AudioBufferSourceNode>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(audioBufferSourceNode);
+
+    audioBufferSourceNode->m_scriptOnEndedFunction = arguments[2];
+    RETURN_IF_JS_ERROR(JsAddRef(audioBufferSourceNode->m_scriptOnEndedFunction, nullptr));
+
+    return JS_INVALID_REFERENCE;
+}
+
+void AudioBufferSourceNode::callbackScriptOnFinished()
+{
+    EXIT_IF_TRUE(m_scriptOnEndedFunction == JS_INVALID_REFERENCE);
+
+    JsValueRef result;
+    HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_scriptOnEndedFunction, &m_scriptOnEndedFunction, 1, &result));
 }

@@ -4,6 +4,7 @@
 #include "AudioNode.h"
 #include "AudioBufferSourceNode.h"
 #include "AudioParam.h"
+#include "PannerNode.h"
 #include "AudioScheduledSourceNode.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
@@ -21,6 +22,7 @@ bool AudioProjections::Initialize()
     RETURN_IF_FALSE(AudioBufferSourceNode::InitializeProjections());
     RETURN_IF_FALSE(AudioParam::InitializeProjections());
     RETURN_IF_FALSE(AudioScheduledSourceNode::InitializeProjections());
+    RETURN_IF_FALSE(PannerNode::InitializeProjections());
 
     return true;
 }

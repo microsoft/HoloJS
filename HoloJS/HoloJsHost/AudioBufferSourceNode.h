@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AudioNode.h"
+#include "ChakraForHoloJS.h"
 #include "AudioScheduledSourceNode.h"
 #include "LabSound/extended/LabSound.h"
 
@@ -9,12 +10,13 @@ namespace Audio {
 class AudioBufferSourceNode : public AudioNode {
    public:
     AudioBufferSourceNode(std::shared_ptr<lab::AudioContext> context,
-                          std::shared_ptr<lab::AudioBufferSourceNode> audioBufferSourceNode)
-        : m_audioBufferSourceNode(audioBufferSourceNode),
-          AudioNode(context, audioBufferSourceNode)
-    {
+                          std::shared_ptr<lab::AudioBufferSourceNode> audioBufferSourceNode);
+
+    virtual ~AudioBufferSourceNode() {
+        if (m_scriptOnEndedFunction != JS_INVALID_REFERENCE) {
+            JsRelease(m_scriptOnEndedFunction, nullptr);
+        }
     }
-    virtual ~AudioBufferSourceNode() {}
 
     static bool InitializeProjections();
 
@@ -44,6 +46,17 @@ class AudioBufferSourceNode : public AudioNode {
                                            JsValueRef* arguments,
                                            unsigned short argumentCount,
                                            PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK register_onended(JsValueRef callee,
+                                                       bool isConstructCall,
+                                                       JsValueRef* arguments,
+                                                       unsigned short argumentCount,
+                                                       PVOID callbackData);
+
+    void onFinished(AudioBufferSourceNode*) {}
+
+    void callbackScriptOnFinished();
+    JsValueRef m_scriptOnEndedFunction = JS_INVALID_REFERENCE;
 };
 
 }  // namespace Audio

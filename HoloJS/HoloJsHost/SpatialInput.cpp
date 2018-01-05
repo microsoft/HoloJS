@@ -170,9 +170,9 @@ void SpatialInput::QueueEventOrFireCallback(SpatialInputEventType type,
     JsValueRef* spatialInputTypeParam = &parameters[7];
 
     const auto location = args->State->Properties->TryGetLocation(m_frameOfReference->CoordinateSystem);
-    const float x = location ? location->Position->Value.x : 0;
-    const float y = location ? location->Position->Value.y : 0;
-    const float z = location ? location->Position->Value.z : 0;
+    const float x = location && location->Position ? location->Position->Value.x : 0;
+    const float y = location && location->Position ? location->Position->Value.y : 0;
+    const float z = location && location->Position ? location->Position->Value.z : 0;
 
     JsContextRef currentContext = nullptr;
     EXIT_IF_JS_ERROR(JsGetCurrentContext(&currentContext));

@@ -45,6 +45,18 @@ class AudioContext : public HologramJS::Utilities::IRelease {
                                                          unsigned short argumentCount,
                                                          PVOID callbackData);
 
+    static JsValueRef CHAKRA_CALLBACK listener_setPosition(JsValueRef callee,
+                                                           bool isConstructCall,
+                                                           JsValueRef* arguments,
+                                                           unsigned short argumentCount,
+                                                           PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK listener_setOrientation(JsValueRef callee,
+                                                              bool isConstructCall,
+                                                              JsValueRef* arguments,
+                                                              unsigned short argumentCount,
+                                                              PVOID callbackData);
+
     void callbackScriptOnDecodeSuccess(std::shared_ptr<lab::SoundBuffer> soundBuffer, JsValueRef callback);
 
     JsValueRef createGain();
