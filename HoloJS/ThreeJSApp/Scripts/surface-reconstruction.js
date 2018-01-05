@@ -134,4 +134,7 @@ function SurfaceReconstructionExample(scene, renderer) {
     // Listen to spatial input events (hands)
     // On press, spatial mapping data is requested and the visible meshes are updated
     canvas.addEventListener("sourcepress", onSpatialSourcePress);
+
+    let ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+    scene.add(ambientLight);
 }

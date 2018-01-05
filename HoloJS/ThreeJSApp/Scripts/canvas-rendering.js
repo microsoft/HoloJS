@@ -45,6 +45,9 @@ function CanvasRenderingExample(scene, renderer) {
     canvasCube.position.set(0, 0.3, -1.5);
     scene.add(canvasCube);
 
+    var ambient = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambient);
+
     this.update = function() {
 
     }
