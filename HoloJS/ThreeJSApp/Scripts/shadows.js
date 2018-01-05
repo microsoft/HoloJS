@@ -1,40 +1,37 @@
 function ShadowsExample(scene, renderer) {
 
-    var light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 5, 0);
-    light.castShadow = true;
-    scene.add(light);
-    var helper = new THREE.CameraHelper(light.shadow.camera);
-    scene.add(helper);
-
-    var material = new THREE.MeshPhongMaterial({
-        color: 0xa0adaf,
-        shininess: 10,
-        specular: 0x111111,
-        side: THREE.BackSide
-    });
-
-    let big_sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.5, 20, 20), material.clone());
-    big_sphere.position.set(0, 0, 0);
-    big_sphere.material.color.set(0xff0000);
-    big_sphere.material.roughness = 0.3;
-    big_sphere.material.metalness = 0.2;
-    big_sphere.castShadow = true;
-    big_sphere.receiveShadow = true;
-    scene.add(big_sphere);
-
-    let small_sphere = new THREE.Mesh(new THREE.SphereBufferGeometry(0.1, 20, 20), material.clone());
-    small_sphere.position.set(0, 2, 0);
-    small_sphere.material.color.set(0xff0000);
-    small_sphere.material.roughness = 0.3;
-    small_sphere.material.metalness = 0.2;
-    small_sphere.castShadow = true;
-    small_sphere.receiveShadow = true;
-    scene.add(small_sphere);
-
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.BasicShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    this.update = function (delta, elapsed) {
-    };
+    spotLight = new THREE.SpotLight(0xffffff, 1);
+    spotLight.position.set(1, 2, 3);
+    spotLight.angle = Math.PI / 4;
+    spotLight.penumbra = 0.05;
+    spotLight.decay = 0.2;
+    spotLight.distance = 10;
+
+    spotLight.castShadow = true;
+    spotLight.shadow.mapSize.width = 1024;
+    spotLight.shadow.mapSize.height = 1024;
+    spotLight.shadow.camera.near = 1;
+    spotLight.shadow.camera.far = 10;
+    scene.add(spotLight);
+
+    var material = new THREE.MeshPhongMaterial({ color: 0x808080, dithering: true });
+    var geometry = new THREE.BoxGeometry(10, 0.1, 10);
+
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(0, -1, 0);
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+
+    var material = new THREE.MeshPhongMaterial({ color: 0x4080ff, dithering: true });
+    var geometry = new THREE.BoxGeometry(0.3, 0.1, 0.2);
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(-0.5, -0.5, -1);
+    mesh.castShadow = true;
+    scene.add(mesh);
+
+    var ambient = new THREE.AmbientLight(0xffffff, 0.1);
+    scene.add(ambient);
 }

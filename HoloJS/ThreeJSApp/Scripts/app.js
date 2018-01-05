@@ -28,7 +28,7 @@ function update(delta, elapsed) {
 
     if (camera.update) camera.update();
 
-    sample.update(delta, elapsed);
+    if (sample.update) sample.update(delta, elapsed);
 
     renderer.render(scene, camera);
 }
