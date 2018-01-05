@@ -1,8 +1,8 @@
 #pragma once
 
 #include "AudioNode.h"
-#include "ChakraForHoloJS.h"
 #include "AudioScheduledSourceNode.h"
+#include "ChakraForHoloJS.h"
 #include "LabSound/extended/LabSound.h"
 
 namespace HologramJS {
@@ -12,7 +12,8 @@ class AudioBufferSourceNode : public AudioNode {
     AudioBufferSourceNode(std::shared_ptr<lab::AudioContext> context,
                           std::shared_ptr<lab::AudioBufferSourceNode> audioBufferSourceNode);
 
-    virtual ~AudioBufferSourceNode() {
+    virtual ~AudioBufferSourceNode()
+    {
         if (m_scriptOnEndedFunction != JS_INVALID_REFERENCE) {
             JsRelease(m_scriptOnEndedFunction, nullptr);
         }
