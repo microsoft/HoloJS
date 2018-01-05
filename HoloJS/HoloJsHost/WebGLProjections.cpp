@@ -1314,8 +1314,18 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::uniform1i(
     WebGLUniformLocation* location = ScriptResourceTracker::ExternalToObject<WebGLUniformLocation>(arguments[2]);
     RETURN_INVALID_REF_IF_NULL(location);
 
-    GLint x = ScriptHostUtilities::GLintFromJsRef(arguments[3]);
-    context->uniform1i(location, x);
+    auto value = arguments[3];
+    bool boolValue;
+    int intValue;
+
+    // Sometimes uniform1i is called with a boolean value; convert it to 1|0 here
+    if (JsNumberToInt(value, &intValue) == JsNoError) {
+        context->uniform1i(location, intValue);
+    }
+    else if (JsBooleanToBool(value, &boolValue) == JsNoError) {
+        context->uniform1i(location, boolValue ? 1 : 0);
+    }
+
     return JS_INVALID_REFERENCE;
 }
 

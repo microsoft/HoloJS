@@ -95,6 +95,7 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
     window->Closed +=
         ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsAppView::OnWindowClosed);
 
+#ifndef HOLOJS_VS2015
     if (!Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
             Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
         ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
@@ -102,6 +103,9 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
         // Delay activating the window until OnActivated; there we'll figure out what view to create
         m_windowActivationRequired = true;
     }
+#else
+	ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
+#endif
 }
 
 void HoloJsAppView::LoadAndExecuteScript()
@@ -202,6 +206,7 @@ void HoloJsAppView::Uninitialize() {}
 // Application lifecycle event handler.
 void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
 {
+#ifndef HOLOJS_VS2015
     if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
             Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
         auto isHolographicActivation =
@@ -215,6 +220,7 @@ void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivate
             m_windowActivationRequired = false;
         }
     }
+#endif
 
     // On protocol activation, use the URI from the activation as the app URI
     if (args->Kind == ActivationKind::Protocol && EnableWebArProtocolHandler) {
