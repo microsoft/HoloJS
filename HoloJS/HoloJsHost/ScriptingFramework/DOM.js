@@ -13620,15 +13620,15 @@ defineLazyProperty(impl, "HTMLImageElement", function() {
                 var isBlob = false;
                 for (var index = 0; index < URL.objects.length; index++) {
                     if (value === URL.objects[index].key) {
-                        holographic.nativeInterface.image.setImageSourceFromBlob(this.native, URL.objects[index].data);
                         holographic.nativeInterface.eventing.setCallback(this.native, this.nativeCallback.bind(this));
+                        holographic.nativeInterface.image.setImageSourceFromBlob(this.native, URL.objects[index].data);
                         isBlob = true;
                         break;
                     }
                 }
                 if (!isBlob) {
-                    holographic.nativeInterface.image.setImageSource(this.native, value);
                     holographic.nativeInterface.eventing.setCallback(this.native, this.nativeCallback.bind(this));
+                    holographic.nativeInterface.image.setImageSource(this.native, value);
                 }
             },
             get: function getSrc() {

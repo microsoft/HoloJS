@@ -24,6 +24,8 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                    Windows::Foundation::Rect& srcRect,
                    Windows::Foundation::Rect& destRect);
 
+    bool toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage);
+
     void clearRect(Windows::Foundation::Rect& rect);
 
     void fillRect(Windows::Foundation::Rect& rect, Windows::UI::Color& color);

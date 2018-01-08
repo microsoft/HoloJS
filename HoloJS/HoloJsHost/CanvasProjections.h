@@ -78,6 +78,12 @@ class CanvasProjections {
                                                 JsValueRef* arguments,
                                                 unsigned short argumentCount,
                                                 PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK toDataURL(JsValueRef callee,
+                                                bool isConstructCall,
+                                                JsValueRef* arguments,
+                                                unsigned short argumentCount,
+                                                PVOID callbackData);
 };
 }  // namespace Canvas
 }  // namespace HologramJS
