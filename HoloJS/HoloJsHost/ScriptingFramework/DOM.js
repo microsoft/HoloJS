@@ -697,6 +697,10 @@ function OptionaltoLong(x){
     return x === undefined ? undefined : toLong(x);
 }
 
+function OptionaltoDouble(x){
+    return x === undefined ? undefined : toDouble(x);
+}
+
 function OptionalBoolean(x) {
     return (x === undefined) ? undefined : Boolean(x);
 }
@@ -5151,6 +5155,15 @@ defineLazyProperty(idl, "HTMLCanvasElement", function() {
 
             getContext: function getContext(type) {
                 return unwrap(this).getContext(String(type));
+            },
+
+            toDataURL: function toDataURL(
+                                    type,
+                                    encoderOptions)
+            {
+                return unwrap(this).toDataURL(
+                    String(type),
+                    OptionaltoDouble(encoderOptions));
             },
 
         },
@@ -13233,6 +13246,10 @@ defineLazyProperty(impl, "HTMLCanvasElement", function() {
                 holographic.nativeInterface.canvas2d.setHeight(this.context2D.ctxNative, value);
             }
         ),
+
+        toDataURL: constant(function toDataURL(type, encoderOptions) {
+            return holographic.nativeInterface.canvas2d.toDataURL(this.context2D.ctxNative, type, encoderOptions);
+        })
     });
 
     return HTMLCanvasElement;
@@ -22298,7 +22315,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 6-December-2017 05:42:43 */
+/* Build time: 8-January-2018 05:48:08 */
 var parserlib = {};
 (function(){
 
@@ -23202,7 +23219,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 6-December-2017 05:42:43 */
+/* Build time: 8-January-2018 05:48:08 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
