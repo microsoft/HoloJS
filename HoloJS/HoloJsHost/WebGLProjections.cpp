@@ -1708,7 +1708,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::lineWidth(
 JsValueRef CHAKRA_CALLBACK WebGLProjections::polygonOffset(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
 
     WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
     RETURN_INVALID_REF_IF_NULL(context);
