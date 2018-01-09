@@ -568,6 +568,12 @@ class WebGLProjections {
                                                 unsigned short argumentCount,
                                                 PVOID callbackData);
 
+    static JsValueRef CHAKRA_CALLBACK polygonOffset(JsValueRef callee,
+                                                    bool isConstructCall,
+                                                    JsValueRef* arguments,
+                                                    unsigned short argumentCount,
+                                                    PVOID callbackData);
+
     static const GLenum UNPACK_FLIP_Y_WEBGL = 0x9240;
     static const GLenum UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
 };

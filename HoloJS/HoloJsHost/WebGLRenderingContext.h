@@ -208,6 +208,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
     void lineWidth(GLfloat width);
 #pragma endregion
 
+    void polygonOffset(GLfloat factor, GLfloat units);
+
    private:
     const GLenum UNSIGNED_BYTE = 0x1401;
     const GLenum UNPACK_FLIP_Y_WEBGL = 0x9240;

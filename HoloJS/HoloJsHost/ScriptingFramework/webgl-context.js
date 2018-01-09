@@ -449,6 +449,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
         return holographic.nativeInterface.webgl.lineWidth(this.glContext, width);
     };
 
+    this.polygonOffset = function (factor, units) {
+        return holographic.nativeInterface.webgl.polygonOffset(this.glContext, factor, units);
+    };
+
     this.DEPTH_BUFFER_BIT = 0x00000100;
     this.STENCIL_BUFFER_BIT = 0x00000400;
     this.COLOR_BUFFER_BIT = 0x00004000;

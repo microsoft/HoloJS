@@ -503,3 +503,5 @@ void WebGLRenderingContext::stencilMask(GLuint mask) { glStencilMask(mask); }
 void WebGLRenderingContext::stencilOp(GLenum fail, GLenum zfail, GLenum zpass) { glStencilOp(fail, zfail, zpass); }
 
 void WebGLRenderingContext::lineWidth(GLfloat width) { glLineWidth(width); }
+
+void WebGLRenderingContext::polygonOffset(GLfloat factor, GLfloat units) { glPolygonOffset(factor, units); }
