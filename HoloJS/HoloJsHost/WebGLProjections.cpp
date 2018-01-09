@@ -115,6 +115,7 @@ bool WebGLProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"stencilOp", L"webgl", stencilOp));
 
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"lineWidth", L"webgl", lineWidth));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"polygonOffset", L"webgl", polygonOffset));
 
     return true;
 }
@@ -1700,6 +1701,21 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::lineWidth(
 
     GLfloat width = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
     context->lineWidth(width);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK WebGLProjections::polygonOffset(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLfloat factor = ScriptHostUtilities::GLfloatFromJsRef(arguments[2]);
+    GLfloat units = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
+    context->polygonOffset(factor, units);
 
     return JS_INVALID_REFERENCE;
 }
