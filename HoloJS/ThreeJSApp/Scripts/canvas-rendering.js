@@ -1,6 +1,6 @@
 function CanvasRenderingExample(scene, renderer) {
 
-    var canvas = document.createElement('canvas');
+    let canvas = document.createElement('canvas');
     canvas.width = 300;
     canvas.height = 300;
     let ctx = canvas.getContext('2d');
@@ -27,7 +27,6 @@ function CanvasRenderingExample(scene, renderer) {
     image.onload = () => {
         ctx.drawImage(image, 150, 150, 100, 100);
         texture.needsUpdate = true;
-        canvas.toDataURL('image/png');
     };
 
     let texture = new THREE.Texture(canvas);
