@@ -37,11 +37,17 @@ function SoundExample(scene, renderer) {
 
     //Load a sound and set it as the PositionalAudio object's buffer
     var audioLoader = new THREE.AudioLoader();
-    audioLoader.load('https://upload.wikimedia.org/wikipedia/en/4/45/ACDC_-_Back_In_Black-sample.ogg', function (buffer) {
+    /*audioLoader.load('http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02-128k.ogg', function (buffer) {
         sound.setBuffer(buffer);
         sound.setRefDistance(20);
         sound.play();
-    });
+    });*/
+
+    audioLoader.load('http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/a2002011001-e02.wav', function (buffer) {
+        sound.setBuffer(buffer);
+        sound.setRefDistance(20);
+        sound.play();
+    });    
 
     //Finally add the sound to cube
     cube.add(sound);

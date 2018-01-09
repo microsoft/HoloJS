@@ -36,15 +36,23 @@ JsValueRef CHAKRA_CALLBACK AudioProjections::createContext(
 JsValueRef CHAKRA_CALLBACK AudioProjections::decodeAudioData(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-    RETURN_INVALID_REF_IF_TRUE(argumentCount < 3);
+    // decodeAudioData(callee, context, data, onSuccess, [onError]);
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 4 || argumentCount == 5);
 
     AudioContext* context = ScriptResourceTracker::ExternalToObject<AudioContext>(arguments[1]);
     RETURN_INVALID_REF_IF_NULL(context);
 
     JsValueRef data = arguments[2];
+    JsValueRef onSuccessCallback = arguments[3];
 
-    JsValueRef onSuccessCallback = argumentCount > 3 ? arguments[3] : JS_INVALID_REFERENCE;
-    JsValueRef onFailedCallback = argumentCount > 4 ? arguments[4] : JS_INVALID_REFERENCE;
+    JsValueRef onFailedCallback = JS_INVALID_REFERENCE;
+    if (argumentCount == 5) {
+        JsValueType onErrorType;
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetValueType(arguments[4], &onErrorType));
+        if (onErrorType != JsUndefined) {
+            onFailedCallback = arguments[4];
+        }
+    }
 
     context->DecodeAudioData(data, onSuccessCallback, onFailedCallback);
 

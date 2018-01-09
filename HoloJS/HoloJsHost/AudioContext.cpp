@@ -14,6 +14,7 @@ using namespace HologramJS::Utilities;
 using namespace Windows::UI::Core;
 using namespace Windows::ApplicationModel::Core;
 using namespace std;
+using namespace concurrency;
 
 AudioContext::AudioContext() { m_context = lab::MakeAudioContext(); }
 
@@ -134,32 +135,80 @@ bool AudioContext::DecodeAudioData(JsValueRef data, JsValueRef onSuccess, JsValu
 {
     JsValueType dataType;
     RETURN_IF_JS_ERROR(JsGetValueType(data, &dataType));
-
-    if (dataType != JsArrayBuffer) {
-        return false;
-    }
-
-    if (onSuccess == JS_INVALID_REFERENCE) {
-        return false;
-    }
+    RETURN_IF_TRUE(dataType != JsArrayBuffer);
 
     RETURN_IF_JS_ERROR(JsAddRef(onSuccess, nullptr));
+    RETURN_IF_JS_ERROR(JsAddRef(data, nullptr));
 
-    byte* buffer;
-    unsigned int bufferLength;
-    RETURN_IF_JS_ERROR(JsGetArrayBufferStorage(data, &buffer, &bufferLength));
+    if (onError != JS_INVALID_REFERENCE) {
+        RETURN_IF_JS_ERROR(JsAddRef(onError, nullptr));
+    }
 
-    vector<uint8_t> capturedBuffer(bufferLength);
-    memcpy(capturedBuffer.data(), buffer, bufferLength);
-    shared_ptr<lab::SoundBuffer> soundBuffer =
-        make_shared<lab::SoundBuffer>(capturedBuffer, "ogg", m_context->sampleRate());
+    // Decode async
+    create_async([this, data, onSuccess, onError] {
+        byte* buffer;
+        unsigned int bufferLength;
+        if (JsGetArrayBufferStorage(data, &buffer, &bufferLength) == JsNoError) {
+            vector<uint8_t> capturedBuffer(bufferLength);
+            memcpy(capturedBuffer.data(), buffer, bufferLength);
 
-    CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
-        CoreDispatcherPriority::Normal, ref new DispatchedHandler([this, soundBuffer, onSuccess] {
-            callbackScriptOnDecodeSuccess(soundBuffer, onSuccess);
-        }));
+            // WAV magic: RIFF****WAVE
+            PCSTR wavMagic1 = "RIFF";
+            PCSTR wavMagic2 = "WAVE";
+            PCSTR oggMagic = "OggS";
+
+            PCSTR soundExtension = nullptr;
+
+            if (memcmp(capturedBuffer.data(), wavMagic1, strlen(wavMagic1)) == 0 &&
+                memcmp(capturedBuffer.data() + strlen(wavMagic1) + 4, wavMagic2, strlen(wavMagic2)) == 0) {
+                soundExtension = "wav";
+            } else if (memcmp(capturedBuffer.data(), oggMagic, strlen(oggMagic)) == 0) {
+                soundExtension = "ogg";
+            }
+
+            if (soundExtension != nullptr) {
+                shared_ptr<lab::SoundBuffer> soundBuffer =
+                    make_shared<lab::SoundBuffer>(capturedBuffer, soundExtension, m_context->sampleRate());
+
+                CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+                    CoreDispatcherPriority::Normal, ref new DispatchedHandler([this, soundBuffer, onSuccess] {
+                        callbackScriptOnDecodeSuccess(soundBuffer, onSuccess);
+                        JsRelease(onSuccess, nullptr);
+                    }));
+
+                if (onError != JS_INVALID_REFERENCE) {
+                    JsRelease(onError, nullptr);
+                }
+
+                JsRelease(data, nullptr);
+
+                return;
+            }
+        }
+
+        if (onError != JS_INVALID_REFERENCE) {
+            CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(CoreDispatcherPriority::Normal,
+                                                                        ref new DispatchedHandler([this, onError] {
+                                                                            callbackScriptOnDecodeError(onError);
+                                                                            JsRelease(onError, nullptr);
+                                                                        }));
+        }
+
+        JsRelease(onSuccess, nullptr);
+        JsRelease(data, nullptr);
+    });
 
     return true;
+}
+
+void AudioContext::callbackScriptOnDecodeError(JsValueRef callback)
+{
+    EXIT_IF_TRUE(callback == JS_INVALID_REFERENCE);
+
+    JsValueRef result;
+    HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(callback, &callback, 1, &result));
+
+    JsRelease(callback, nullptr);
 }
 
 void AudioContext::callbackScriptOnDecodeSuccess(shared_ptr<lab::SoundBuffer> soundBuffer, JsValueRef callback)

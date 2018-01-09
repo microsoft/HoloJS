@@ -58,6 +58,7 @@ class AudioContext : public HologramJS::Utilities::IRelease {
                                                               PVOID callbackData);
 
     void callbackScriptOnDecodeSuccess(std::shared_ptr<lab::SoundBuffer> soundBuffer, JsValueRef callback);
+    void callbackScriptOnDecodeError(JsValueRef callback);
 
     JsValueRef createGain();
 
