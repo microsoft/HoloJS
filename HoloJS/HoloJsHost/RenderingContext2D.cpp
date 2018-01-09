@@ -263,6 +263,7 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(encoder->Commit());
 
     // Get the encoded memory block from the stream
+    // Note: if we could use GlobalLock/Unlock (RS2+), we could access the memoryStream directly
     vector<byte> encodedMemoryBlock;
     RETURN_IF_FAILED(getDataFromStream(imagingFactory.Get(), memoryStream.Get(), encodedMemoryBlock));
 
