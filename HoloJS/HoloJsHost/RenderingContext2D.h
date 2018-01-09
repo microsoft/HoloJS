@@ -73,6 +73,18 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
     unsigned int m_bpp = 4;
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
+
+    enum class EncodingType { PNG, JPEG, Unknown };
+
+    EncodingType getEncodingFromMimeType(const std::wstring& type);
+
+    void getImageDataBGR(std::vector<byte>& bgrPixels);
+
+    HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
+
+    HRESULT getDataUrlFromEncodedImage(std::vector<byte>& imageData,
+                                       const std::wstring& mimeType,
+                                       std::wstring* encodedImage);
 };
 }  // namespace Canvas
 }  // namespace HologramJS

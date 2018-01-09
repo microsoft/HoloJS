@@ -14,6 +14,7 @@ using namespace Windows::UI;
 using namespace HologramJS::Canvas;
 using namespace Microsoft::WRL;
 using namespace Windows::Security::Cryptography;
+using namespace std;
 
 RenderingContext2D::RenderingContext2D() { this->createRenderTarget(); }
 
@@ -113,20 +114,94 @@ Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(Rect& rect, un
     }
 }
 
+RenderingContext2D::EncodingType RenderingContext2D::getEncodingFromMimeType(const wstring& type)
+{
+    if (_wcsicmp(type.c_str(), L"image/png") == 0) {
+        return EncodingType::PNG;
+    } else if (_wcsicmp(type.c_str(), L"image/jpeg") == 0) {
+        return EncodingType::JPEG;
+    } else {
+        return EncodingType::Unknown;
+    }
+}
+
+void RenderingContext2D::getImageDataBGR(vector<byte>& bgrPixels)
+{
+    // Get the raw pixels from the underlying canvas
+    auto canvasPixels = m_canvasRenderTarget->GetPixelBytes();
+    auto canvasPixelsLength = canvasPixels->Length;
+    auto canvasPixelData = canvasPixels->begin();
+
+    // Convert from 32bpp RGBA to 24bpp BGR
+    bgrPixels.resize((canvasPixelsLength * 3) / 4);
+    for (int i = 0, j = 0; i < canvasPixelsLength; i += 4, j += 3) {
+        bgrPixels[j + 0] = canvasPixelData[i + 2];
+        bgrPixels[j + 1] = canvasPixelData[i + 1];
+        bgrPixels[j + 2] = canvasPixelData[i + 0];
+    }
+}
+
+HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, vector<byte>& data)
+{
+    // Figure out long is the encoded stream
+    LARGE_INTEGER seekSize;
+    seekSize.QuadPart = 0;
+    ULARGE_INTEGER streamLength;
+    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_CUR, &streamLength));
+
+    // Allocate a memory block to copy the encoded image stream to
+    data.resize(streamLength.QuadPart);
+
+    // Create a WIC stream over the memory block
+    ComPtr<IWICStream> byteAccessWicStream = NULL;
+    RETURN_IF_FAILED(imagingFactory->CreateStream(byteAccessWicStream.ReleaseAndGetAddressOf()));
+    RETURN_IF_FAILED(byteAccessWicStream->InitializeFromMemory(data.data(), streamLength.QuadPart));
+
+    // Get the vanilla stream from the WIC stream
+    ComPtr<IStream> byteAccessStream;
+    RETURN_IF_FAILED(byteAccessWicStream.As(&byteAccessStream));
+
+    // Copy the encoded image stream to the byte accessible stream
+    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_SET, nullptr));
+    RETURN_IF_FAILED(stream->CopyTo(byteAccessStream.Get(), streamLength, nullptr, nullptr));
+
+    return S_OK;
+}
+
+HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData, const wstring& mimeType, wstring* encodedImage)
+{
+    // Create an IBuffer over the image memory block
+    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
+    Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
+        &imageBuffer, imageData.data(), static_cast<unsigned int>(imageData.size()));
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
+    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+    // base64 encode the resulting image
+    auto encodedImagePlatString = CryptographicBuffer::EncodeToBase64String(imageIBuffer);
+
+    // Create the dataURL
+    encodedImage->reserve(encodedImagePlatString->Length() + 128);
+    encodedImage->assign(L"data:");
+    encodedImage->append(mimeType);
+    encodedImage->append(L";base64,");
+    encodedImage->append(encodedImagePlatString->Data());
+
+    return S_OK;
+}
+
 bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage)
 {
     RETURN_IF_TRUE(m_isOptimizedBitmap);
 
-    enum class EncodingType { PNG, JPEG, Unknown } encodingType = EncodingType::Unknown;
-
-    if (_wcsicmp(type.c_str(), L"image/png") == 0) {
-        encodingType = EncodingType::PNG;
-    } else if (_wcsicmp(type.c_str(), L"image/jpeg") == 0) {
-        encodingType = EncodingType::JPEG;
-    }
+    const auto encodingType = getEncodingFromMimeType(type);
 
     // Only PNG and Jpeg are supported
     RETURN_IF_TRUE(encodingType == EncodingType::Unknown);
+
+    // Convert from 32bpp RGBA to 24bpp BGR
+    std::vector<byte> bgrPixels;
+    getImageDataBGR(bgrPixels);
 
     ComPtr<IWICImagingFactory> imagingFactory = NULL;
     RETURN_IF_FAILED(CoCreateInstance(CLSID_WICImagingFactory,
@@ -135,26 +210,11 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
                                       IID_IWICImagingFactory,
                                       (LPVOID*)imagingFactory.ReleaseAndGetAddressOf()));
 
-    // Get the raw pixels from the underlying canvas
-    auto canvasPixels = m_canvasRenderTarget->GetPixelBytes();
-    auto canvasPixelsLength = canvasPixels->Length;
-    auto canvasPixelData = canvasPixels->begin();
-
-    // Convert from 32bpp RGBA to 24bpp BGR
-    std::vector<byte> bgrPixels((canvasPixelsLength * 3) / 4);
-
-    for (int i = 0, j = 0; i < canvasPixelsLength; i += 4, j += 3) {
-        bgrPixels[j + 0] = canvasPixelData[i + 2];
-        bgrPixels[j + 1] = canvasPixelData[i + 1];
-        bgrPixels[j + 2] = canvasPixelData[i + 0];
-    }
-
-    // Create a memory stream to hold the encoded image
+    // Create a memory stream to hold the encoded image, then wrap a WIC stream around it
     ComPtr<IStream> memoryStream;
-    HRESULT hr = ::CreateStreamOnHGlobal(nullptr, true /*delete on release*/, memoryStream.ReleaseAndGetAddressOf());
-    
-    // Create a WIC stream over our memory stream
-    ComPtr<IWICStream> imageStream = NULL;
+    RETURN_IF_FAILED(
+        ::CreateStreamOnHGlobal(nullptr, true /*delete on release*/, memoryStream.ReleaseAndGetAddressOf()));
+    ComPtr<IWICStream> imageStream;
     RETURN_IF_FAILED(imagingFactory->CreateStream(imageStream.ReleaseAndGetAddressOf()));
     RETURN_IF_FAILED(imageStream->InitializeFromIStream(memoryStream.Get()));
 
@@ -193,46 +253,20 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
     RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
 
-    // Write the canvas pizes to the encoder
+    // Write the canvas pixels to the encoder
     auto height = m_canvasRenderTarget->Size.Height;
     auto stride = bgrPixels.size() / m_canvasRenderTarget->Size.Height;
-    hr = bitmapFrame->WritePixels(height, stride, bgrPixels.size(), bgrPixels.data());
+    RETURN_IF_FAILED(bitmapFrame->WritePixels(height, stride, bgrPixels.size(), bgrPixels.data()));
 
     // Finalize the encoding operation
     RETURN_IF_FAILED(bitmapFrame->Commit());
     RETURN_IF_FAILED(encoder->Commit());
 
-    // Figure out long is the encoded stream
-    LARGE_INTEGER seekSize;
-    seekSize.QuadPart = 0;
-    ULARGE_INTEGER streamLength;
-    RETURN_IF_FAILED(imageStream->Seek(seekSize, STREAM_SEEK_END, &streamLength));
+    // Get the encoded memory block from the stream
+    vector<byte> encodedMemoryBlock;
+    RETURN_IF_FAILED(getDataFromStream(imagingFactory.Get(), memoryStream.Get(), encodedMemoryBlock));
 
-    // Get the underlying memory handle and pointer to the bits
-    HGLOBAL streamMemHandle;
-    RETURN_IF_FAILED(GetHGlobalFromStream(memoryStream.Get(), &streamMemHandle));
-    byte* streamMemPtr = reinterpret_cast<byte*>(GlobalLock(streamMemHandle));
-    RETURN_IF_NULL(streamMemPtr);
-
-    // Create an IBuffer over the bits
-    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
-    Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
-        &imageBuffer, streamMemPtr, static_cast<unsigned int>(streamLength.QuadPart));
-    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
-    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
-
-    // base64 encode the resulting image
-    auto encodedImagePlatString = CryptographicBuffer::EncodeToBase64String(imageIBuffer);
-
-    // Release the memory lock
-    GlobalUnlock(streamMemHandle);
-
-    // Create the dataURL
-    encodedImage->reserve(encodedImagePlatString->Length() + 128);
-    encodedImage->assign(L"data:");
-    encodedImage->append(type);
-    encodedImage->append(L";base64,");
-    encodedImage->append(encodedImagePlatString->Data());
+    RETURN_IF_FAILED(getDataUrlFromEncodedImage(encodedMemoryBlock, type, encodedImage));
 
     return true;
 }
