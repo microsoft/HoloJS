@@ -193,7 +193,7 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
     RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
 
-    // Write the canvas pizes to the encoder
+    // Write the canvas size to the encoder
     auto height = m_canvasRenderTarget->Size.Height;
     auto stride = bgrPixels.size() / m_canvasRenderTarget->Size.Height;
     hr = bitmapFrame->WritePixels(height, stride, bgrPixels.size(), bgrPixels.data());
@@ -202,7 +202,7 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(bitmapFrame->Commit());
     RETURN_IF_FAILED(encoder->Commit());
 
-    // Figure out long is the encoded stream
+    // Figure out how long is the encoded stream
     LARGE_INTEGER seekSize;
     seekSize.QuadPart = 0;
     ULARGE_INTEGER streamLength;
