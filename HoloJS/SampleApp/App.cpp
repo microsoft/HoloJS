@@ -98,15 +98,12 @@ void App::LoadAndExecuteScript()
         m_holoScriptHost->Shutdown();
     }
 
-    m_holoScriptHost = ref new HologramJS::HologramScriptHost();
-    m_holoScriptHost->Initialize();
-
-    m_holoScriptHost->EnableHolographicExperimental(mStationaryReferenceFrame, true /*auto-stereo*/);
-
     eglQuerySurface(mEglDisplay, mEglSurface, EGL_WIDTH, &mPanelWidth);
     eglQuerySurface(mEglDisplay, mEglSurface, EGL_HEIGHT, &mPanelHeight);
 
-    m_holoScriptHost->ResizeWindow(mPanelWidth, mPanelHeight);
+    m_holoScriptHost = ref new HologramJS::HologramScriptHost();
+    m_holoScriptHost->InitializeSystem();
+    m_holoScriptHost->InitializeRendering(mStationaryReferenceFrame, HologramJS::StereoEffectMode::Auto, mPanelWidth, mPanelHeight);
 
     m_holoScriptHost->RunApp(ref new String(L"scripts\\app.json"));
 }
