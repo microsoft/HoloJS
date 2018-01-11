@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "WebGLRenderingContext.h"
+#include "WindowElement.h"
 
 using namespace HologramJS::WebGL;
 using namespace HologramJS::API;
@@ -7,12 +8,80 @@ using namespace Platform;
 using namespace std;
 using namespace Windows::Graphics::Imaging;
 
+WebGLRenderingContext::WebGLRenderingContext(shared_ptr<WindowElement> windowElement, RenderMode renderMode)
+{
+    m_windowElement = windowElement;
+    m_renderMode = renderMode;
+}
+
+bool WebGLRenderingContext::InitializeRendering()
+{
+    if (m_renderMode != RenderMode::AdvancedStereo) {
+        return true;
+    }
+
+    // Create off-screen rendering resources
+    m_frameBuffer = std::make_unique<WebGLFramebuffer>();
+    m_frameBuffer->bindFramebuffer(GL_FRAMEBUFFER);
+
+    m_renderTexture = std::make_unique<WebGLTexture>();
+    m_renderTexture->bind(GL_TEXTURE_2D);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    texParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    generateMipmap(GL_TEXTURE_2D);
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA,
+                 m_windowElement->Width(),
+                 m_windowElement->Height(),
+                 0,
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 nullptr);
+
+    m_renderBuffer = std::make_unique<WebGLRenderbuffer>();
+    m_renderBuffer->bindRenderbuffer(GL_RENDERBUFFER);
+    renderbufferStorage(
+        GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, m_windowElement->Width(), m_windowElement->Height());
+
+    framebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_renderTexture.get(), 0);
+    framebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_renderBuffer.get());
+
+    return true;
+}
+
+void WebGLRenderingContext::ScriptRenderComplete()
+{
+    if (m_renderMode != RenderMode::AdvancedStereo) {
+        return;
+    }
+
+    // Copy from the offscreen framebuffer to the window
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_frameBuffer->id);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glViewport(0, 0, m_windowElement->Width(), m_windowElement->Height());
+    glBlitFramebuffer(0,
+                      0,
+                      m_windowElement->Width(),
+                      m_windowElement->Height(),
+                      0,
+                      0,
+                      m_windowElement->Width(),
+                      m_windowElement->Height(),
+                      GL_COLOR_BUFFER_BIT,
+                      GL_NEAREST);
+
+    m_frameBuffer->bindFramebuffer(GL_FRAMEBUFFER);
+}
+
 WebGLTexture* WebGLRenderingContext::createTexture() { return new WebGLTexture(); }
 
 void WebGLRenderingContext::bindTexture(GLenum target, WebGLTexture* texture)
 {
-    if (texture == nullptr) {
-        glBindTexture(target, 0);
+    if (texture == nullptr || texture->id == 0) {
+        m_renderTexture->bind(target);
     } else {
         glBindTexture(target, texture->id);
     }
@@ -262,7 +331,7 @@ GLint WebGLRenderingContext::getAttribLocation(WebGLProgram* program, std::wstri
     return program->GetAttribLocation(ansiName.c_str());
 }
 
-void WebGLRenderingContext::useProgram(WebGLProgram* program) { program->Use(); }
+void WebGLRenderingContext::useProgram(WebGLProgram* program) { program->Use(); lastUsedProgram = program->id; }
 
 void WebGLRenderingContext::validateProgram(WebGLProgram* program) { program->Validate(); }
 
@@ -381,8 +450,8 @@ WebGLRenderbuffer* WebGLRenderingContext::createRenderbuffer() { return new WebG
 
 void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* renderbuffer)
 {
-    if (renderbuffer == nullptr) {
-        glBindRenderbuffer(target, 0);
+    if (renderbuffer == nullptr || renderbuffer->id == 0) {
+        m_renderBuffer->bindRenderbuffer(target);
     } else {
         renderbuffer->bindRenderbuffer(target);
     }
@@ -390,10 +459,9 @@ void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* r
 
 void WebGLRenderingContext::renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
-    if (internalformat = GL_DEPTH_STENCIL_OES) {
-        glRenderbufferStorage(target,  GL_DEPTH24_STENCIL8_OES, width, height);
-    }
-    else {
+    if (internalformat = GL_DEPTH_STENCIL) {
+        glRenderbufferStorage(target, GL_DEPTH24_STENCIL8, width, height);
+    } else {
         glRenderbufferStorage(target, internalformat, width, height);
     }
 }
@@ -402,8 +470,9 @@ WebGLFramebuffer* WebGLRenderingContext::createFramebuffer() { return new WebGLF
 
 void WebGLRenderingContext::bindFramebuffer(GLenum target, WebGLFramebuffer* framebuffer)
 {
-    if (framebuffer == nullptr) {
-        glBindFramebuffer(target, 0);
+    if (framebuffer == nullptr || framebuffer->id == 0) {
+        // Bind to the off-screen framebuffer
+        m_frameBuffer->bindFramebuffer(target);
     } else {
         framebuffer->bindFramebuffer(target);
     }

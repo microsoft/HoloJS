@@ -28,6 +28,9 @@ class WindowElement {
                float4x4 rightViewMatrix,
                float4x4 rightProjectionMatrix);
 
+    int Height() const { return m_height; }
+    int Width() const { return m_width; }
+
     Input::KeyboardInput& KeyboardRouter() { return m_keyboardInput; }
     Input::MouseInput& MouseRouter() { return m_mouseInput; }
 

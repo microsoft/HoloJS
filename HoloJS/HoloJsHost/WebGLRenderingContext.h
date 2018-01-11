@@ -2,14 +2,18 @@
 
 #include "ChakraForHoloJS.h"
 #include "IRelease.h"
-#include "WebGLObjects.h"
 #include "ImageElement.h"
+#include "WindowElement.h"
+#include "WebGLObjects.h"
 
 namespace HologramJS {
 namespace WebGL {
+
+enum class RenderMode : int { Flat, AutoStereo, AdvancedStereo };
+
 class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
    public:
-    WebGLRenderingContext() {}
+    WebGLRenderingContext(std::shared_ptr<API::WindowElement> windowElement, HologramJS::WebGL::RenderMode renderMode);
 
     void Release() {}
 
@@ -17,6 +21,10 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
     // Object^ getExtension(Platform::String^ name);
     JsValueRef getParameter(GLenum pname);
+
+    void ScriptRenderComplete();
+
+    bool InitializeRendering();
 
 #pragma region Frame and render buffers
     WebGLRenderbuffer* createRenderbuffer();
@@ -216,6 +224,25 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
     const GLenum UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
 
     bool FlipYEnabled = false;
+
+    HologramJS::WebGL::RenderMode m_renderMode;
+
+    std::unique_ptr<WebGLFramebuffer> m_frameBuffer;
+    std::unique_ptr<WebGLTexture> m_renderTexture;
+    std::unique_ptr<WebGLRenderbuffer> m_renderBuffer;
+    std::shared_ptr<API::WindowElement> m_windowElement;
+    std::unique_ptr<WebGLShader> m_quadRenderVertexShader;
+    std::unique_ptr<WebGLShader> m_quadRenderFragmentShader;
+    std::unique_ptr<WebGLProgram> m_quadRenderProgram;
+    std::unique_ptr<WebGLBuffer> m_quadBuffer;
+    std::unique_ptr<WebGLBuffer> m_quadTexCoordBuffer;
+    std::unique_ptr<WebGLUniformLocation> m_quadRendererSamplerUniform;
+    GLint m_quadRenderPositionAttrib;
+    GLint m_quadRenderTextureCoordAttrib;
+
+    bool InitializeFullScreenQuadRendering();
+
+    GLint lastUsedProgram = -1;
 };
 }  // namespace WebGL
 }  // namespace HologramJS

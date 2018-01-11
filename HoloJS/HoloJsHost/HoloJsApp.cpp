@@ -33,7 +33,7 @@ HoloJsAppView::HoloJsAppView(String ^ appUri)
       m_EglSurface(EGL_NO_SURFACE),
       m_appUri(appUri)
 {
-    AutoStereoEnabled = true;
+    StereoMode = StereoEffectMode::Auto;
     ImageStabilizationEnabled = false;
     WorldOriginRelativePosition = float3(0, 0, -2);
     EnableWebArProtocolHandler = false;
@@ -113,15 +113,12 @@ void HoloJsAppView::LoadAndExecuteScript()
         m_holoScriptHost->Shutdown();
     }
 
-    m_holoScriptHost = ref new HologramJS::HologramScriptHost();
-    m_holoScriptHost->Initialize();
-
-    m_holoScriptHost->EnableHolographicExperimental(mStationaryReferenceFrame, AutoStereoEnabled);
-
     eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_WIDTH, &m_PanelWidth);
     eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_HEIGHT, &m_PanelHeight);
 
-    m_holoScriptHost->ResizeWindow(m_PanelWidth, m_PanelHeight);
+    m_holoScriptHost = ref new HologramJS::HologramScriptHost();
+    m_holoScriptHost->InitializeSystem();
+    m_holoScriptHost->InitializeRendering(mStationaryReferenceFrame, StereoMode, m_PanelWidth, m_PanelHeight);
 
     if (OnBeforeRun) {
         OnBeforeRun();
@@ -386,7 +383,7 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
     if (mStationaryReferenceFrame != nullptr) {
         surfaceCreationProperties->Insert(ref new String(EGLBaseCoordinateSystemProperty), mStationaryReferenceFrame);
         surfaceCreationProperties->Insert(ref new String(EGLAutomaticStereoRenderingProperty),
-                                          PropertyValue::CreateBoolean(AutoStereoEnabled));
+                                          PropertyValue::CreateBoolean(StereoMode == StereoEffectMode::Auto));
         surfaceCreationProperties->Insert(ref new String(EGLAutomaticDepthBasedImageStabilizationProperty),
                                           PropertyValue::CreateBoolean(ImageStabilizationEnabled));
     }

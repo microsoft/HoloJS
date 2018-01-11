@@ -23,7 +23,7 @@ HologramScriptHost::~HologramScriptHost() { Shutdown(); }
 
 void HologramScriptHost::Shutdown()
 {
-    m_window.Close();
+    m_window->Close();
 
     if (m_jsContext != nullptr) {
         JsSetCurrentContext(nullptr);
@@ -36,7 +36,7 @@ void HologramScriptHost::Shutdown()
     }
 }
 
-bool HologramScriptHost::Initialize()
+bool HologramScriptHost::InitializeSystem()
 {
     RETURN_IF_JS_ERROR(JsCreateRuntime(JsRuntimeAttributeNone, nullptr, &m_jsRuntime));
     RETURN_IF_JS_ERROR(JsCreateContext(m_jsRuntime, &m_jsContext));
@@ -54,16 +54,56 @@ bool HologramScriptHost::Initialize()
     RETURN_IF_FALSE(API::ImageElement::Initialize());
     RETURN_IF_FALSE(API::VideoElement::Initialize());
 
-    RETURN_IF_FALSE(WebGL::WebGLProjections::Initialize());
-    RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
-
-    RETURN_IF_FALSE(m_window.Initialize());
-
     RETURN_IF_FALSE(m_system.Initialize());
 
     RETURN_IF_FALSE(m_timers.Initialize());
 
     return true;
+}
+
+bool HologramScriptHost::InitializeRendering(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
+                                                 frameOfReference,
+                                             StereoEffectMode stereoMode,
+                                             int width,
+                                             int height)
+{
+    m_window = make_unique<API::WindowElement>();
+    RETURN_IF_FALSE(m_window->Initialize());
+    m_window->Resize(width, height);
+
+    WebGL::RenderMode renderMode =
+        (frameOfReference == nullptr ? WebGL::RenderMode::Flat
+                                     : (stereoMode == StereoEffectMode::Auto ? WebGL::RenderMode::AutoStereo
+                                                                             : WebGL::RenderMode::AdvancedStereo));
+
+    m_webglProjections = make_unique<WebGL::WebGLProjections>();
+
+    WebGL::WebGLRenderingContext* systemRenderingContext = new WebGL::WebGLRenderingContext(m_window, renderMode);
+    RETURN_IF_NULL(systemRenderingContext);
+
+    TryInitializeWebGlContext();
+
+    RETURN_IF_FALSE(m_webglProjections->Initialize(systemRenderingContext));
+    RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
+
+    EnableHolographicExperimental(frameOfReference, renderMode);
+
+    return true;
+}
+
+bool HologramScriptHost::TryInitializeWebGlContext()
+{
+    if (m_webGlContextInitialized) {
+        return true;
+    }
+
+    if (m_window->Width() > 0 && m_window->Width() < 0xffffff && m_window->Height() > 0 && m_window->Height() < 0xffffff) {
+        RETURN_IF_FALSE(m_webglProjections->GetSystemRenderingContext()->InitializeRendering());
+        m_webGlContextInitialized = true;
+    }
+    else {
+        return false;
+    }
 }
 
 IAsyncOperation<bool> ^ HologramScriptHost::RunApp(Platform::String ^ appUri)
@@ -97,7 +137,7 @@ task<bool> HologramScriptHost::RunLocalScriptApp(wstring jsonFilePath)
         API::ImageElement::BasePath = basePath;
         API::VideoElement::BasePath = basePath;
 
-        m_window.SetBaseUrl(basePath);
+        m_window->SetBaseUrl(basePath);
 
         loader->ExecuteScripts();
     }
@@ -124,7 +164,7 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
         // Build base path without the .json file name it in
         wstring basePath = ScriptsLoader::GetBaseUriForJsonUri(jsonUriString);
 
-        m_window.SetBaseUrl(basePath);
+        m_window->SetBaseUrl(basePath);
 
         API::XmlHttpRequest::BaseUrl.assign(basePath);
         API::ImageElement::BaseUrl.assign(basePath);
@@ -137,7 +177,7 @@ task<bool> HologramScriptHost::RunWebScriptApp(wstring jsonUri)
 }
 
 bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfReference ^ frameOfReference,
-                                                       bool autoStereoEnabled)
+                                                       WebGL::RenderMode renderMode)
 {
     JsValueRef globalObject;
     RETURN_IF_JS_ERROR(JsGetGlobalObject(&globalObject));
@@ -150,16 +190,12 @@ bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfR
     RETURN_IF_JS_ERROR(JsGetPropertyIdFromName(L"renderMode", &renderModePropertyId));
     JsValueRef renderModeValue;
 
-    enum class RenderMode : int { Flat, AutoStereo, AdvancedStereo };
-    const auto renderMode =
-        (frameOfReference == nullptr ? RenderMode::Flat
-                                     : (autoStereoEnabled ? RenderMode::AutoStereo : RenderMode::AdvancedStereo));
     RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(renderMode), &renderModeValue));
 
     RETURN_IF_JS_ERROR(JsSetProperty(holographicRef, renderModePropertyId, renderModeValue, true));
 
     if (frameOfReference != nullptr) {
-        m_window.SetStationaryFrameOfReference(frameOfReference);
+        m_window->SetStationaryFrameOfReference(frameOfReference);
     }
 
     return true;

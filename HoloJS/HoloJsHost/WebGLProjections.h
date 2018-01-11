@@ -1,14 +1,31 @@
 #pragma once
 
 #include "ChakraForHoloJS.h"
+#include "WebGLRenderingContext.h"
 
 namespace HologramJS {
 namespace WebGL {
+
 class WebGLProjections {
    public:
-    static bool Initialize();
+    bool Initialize(HologramJS::WebGL::WebGLRenderingContext* renderingContext);
+    void Cleanup()
+    {
+        if (m_scriptRenderingContext != JS_INVALID_REFERENCE) {
+            JsRelease(m_scriptRenderingContext, nullptr);
+        }
+    }
+
+    ~WebGLProjections() {}
+
+    void ScriptRenderComplete();
+
+    static HologramJS::WebGL::WebGLRenderingContext* GetSystemRenderingContext() { return m_systemRenderingContext; }
 
    private:
+    static HologramJS::WebGL::WebGLRenderingContext* m_systemRenderingContext;
+    static JsValueRef m_scriptRenderingContext;
+
     static JsValueRef CHAKRA_CALLBACK createContext(JsValueRef callee,
                                                     bool isConstructCall,
                                                     JsValueRef* arguments,

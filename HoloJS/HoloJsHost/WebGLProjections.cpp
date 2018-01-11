@@ -13,9 +13,22 @@ using namespace HologramJS::WebGL;
 using namespace HologramJS::Canvas;
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
+using namespace std;
 
-bool WebGLProjections::Initialize()
-{
+JsValueRef WebGLProjections::m_scriptRenderingContext = JS_INVALID_REFERENCE;
+HologramJS::WebGL::WebGLRenderingContext* WebGLProjections::m_systemRenderingContext;
+
+bool WebGLProjections::Initialize(WebGLRenderingContext* renderingContext)
+{ 
+    m_systemRenderingContext = renderingContext;
+
+    // The lifetime of m_systemRenderingContext is managed by the script once we project it
+    m_scriptRenderingContext = ScriptResourceTracker::ObjectToDirectExternal(renderingContext);
+    RETURN_IF_TRUE(m_scriptRenderingContext == JS_INVALID_REFERENCE);
+
+    // Add a reference to prevent the context from being released
+    RETURN_IF_JS_ERROR(JsAddRef(m_scriptRenderingContext, nullptr));
+
     // WebGL context projections
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createContext", L"webgl", createContext));
 
@@ -120,11 +133,17 @@ bool WebGLProjections::Initialize()
     return true;
 }
 
+void WebGLProjections::ScriptRenderComplete()
+{
+    m_systemRenderingContext->ScriptRenderComplete();
+}
+
 JsValueRef CHAKRA_CALLBACK WebGLProjections::createContext(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-    return ScriptResourceTracker::ObjectToDirectExternal(new WebGLRenderingContext());
+    return m_scriptRenderingContext;
 }
+
 JsValueRef CHAKRA_CALLBACK WebGLProjections::getShaderPrecisionFormat(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
@@ -418,7 +437,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D3(
     RETURN_INVALID_REF_IF_NULL(context2D);
 
     unsigned int canvasStride;
-    Windows::Foundation::Rect rect(0, 0, width, height);
+    Windows::Foundation::Rect rect(0, 0, static_cast<float>(width), static_cast<float>(height));
     auto canvasPixels = context2D->getImageData(rect, &canvasStride);
 
     context->texImage2D(

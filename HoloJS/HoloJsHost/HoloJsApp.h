@@ -25,7 +25,7 @@ enum class HoloJsLaunchMode { AsActivated, Flat, Holographic };
     virtual void Uninitialize();
 
     // Enable auto stereo rendering
-    property bool AutoStereoEnabled;
+    property StereoEffectMode StereoMode;
 
     // Enable depth based image stabilization
     property bool ImageStabilizationEnabled;

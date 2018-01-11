@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IRelease.h"
 #include "ChakraForHoloJS.h"
+#include "IRelease.h"
 
 namespace HologramJS {
 namespace WebGL {
@@ -43,7 +43,7 @@ class WebGLTexture : public HologramJS::Utilities::IRelease {
     virtual ~WebGLTexture() {}
     void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLint level);
 
-    void Bind(GLenum target);
+    void bind(GLenum target);
     GLuint id;
 };
 
@@ -61,7 +61,10 @@ class WebGLShader : public HologramJS::Utilities::IRelease {
    public:
     WebGLShader(GLenum type);
     virtual void Release();
-    virtual ~WebGLShader() {}
+    virtual ~WebGLShader()
+    {
+        if (!deleted) Delete();
+    }
 
     void SetSource(PCSTR source);
     void Compile();
@@ -71,6 +74,9 @@ class WebGLShader : public HologramJS::Utilities::IRelease {
 
     GLuint id;
     GLenum type;
+
+   private:
+    bool deleted = false;
 };
 
 class WebGLActiveInfo : public HologramJS::Utilities::IRelease {
@@ -95,7 +101,10 @@ class WebGLProgram : public HologramJS::Utilities::IRelease {
    public:
     WebGLProgram();
     virtual void Release();
-    virtual ~WebGLProgram() {}
+    virtual ~WebGLProgram()
+    {
+        if (!deleted) Delete();
+    }
 
     void AttachShader(WebGLShader* shader);
     void BindAttribLocation(GLuint index, PCSTR name);
@@ -114,6 +123,9 @@ class WebGLProgram : public HologramJS::Utilities::IRelease {
     GLint GetAttribLocation(PCSTR name);
 
     GLuint id;
+
+   private:
+    bool deleted = false;
 };
 
 class ANGLE_instanced_arrays {

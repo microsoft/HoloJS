@@ -23,7 +23,7 @@ void WebGLTexture::framebufferTexture2D(GLenum target, GLenum attachment, GLenum
     glFramebufferTexture2D(target, attachment, textarget, this->id, level);
 }
 
-void WebGLTexture::Bind(GLenum target) { glBindTexture(target, id); }
+void WebGLTexture::bind(GLenum target) { glBindTexture(target, id); }
 
 WebGLBuffer::WebGLBuffer() { glGenBuffers(1, &id); }
 
@@ -62,7 +62,11 @@ JsValueRef WebGLProgram::GetParameter(GLenum pname)
     }
 }
 
-void WebGLProgram::Delete() { glDeleteProgram(id); }
+void WebGLProgram::Delete()
+{
+    glDeleteProgram(id);
+    deleted = true;
+}
 
 std::wstring WebGLProgram::GetInfoLog()
 {
@@ -197,7 +201,11 @@ std::wstring WebGLShader::GetInfoLog()
     }
 }
 
-void WebGLShader::Delete() { glDeleteShader(id); }
+void WebGLShader::Delete()
+{
+    glDeleteShader(id);
+    deleted = true;
+}
 
 WebGLActiveInfo::WebGLActiveInfo() {}
 
@@ -207,18 +215,18 @@ ANGLE_instanced_arrays::ANGLE_instanced_arrays() {}
 
 void ANGLE_instanced_arrays::drawArraysInstancedANGLE(GLenum mode, GLint first, GLsizei count, GLsizei primcount)
 {
-    glDrawArraysInstancedANGLE(mode, first, count, primcount);
+    // glDrawArraysInstancedANGLE(mode, first, count, primcount);
 }
 
 void ANGLE_instanced_arrays::drawElementsInstancedANGLE(
     GLenum mode, GLsizei count, GLenum type, GLint indices, GLsizei primcount)
 {
-    glDrawElementsInstancedANGLE(mode, count, type, (const void*)indices, primcount);
+    // glDrawElementsInstancedANGLE(mode, count, type, (const void*)indices, primcount);
 }
 
 void ANGLE_instanced_arrays::vertexAttribDivisorANGLE(GLuint index, GLuint divisor)
 {
-    glVertexAttribDivisorANGLE(index, divisor);
+    // glVertexAttribDivisorANGLE(index, divisor);
 }
 
 WebGLRenderbuffer::WebGLRenderbuffer() { glGenRenderbuffers(1, &id); }
