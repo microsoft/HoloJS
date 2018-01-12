@@ -1,4 +1,4 @@
 [submodule "angle"]
 	path = angle
 	url = https://github.com/Almost-Done/angle.git
-	branch = holojs/master
+	branch = holojs/instanced-passthrough-shader
