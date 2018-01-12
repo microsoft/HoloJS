@@ -14,6 +14,8 @@ using namespace Windows::Graphics::Imaging;
 using namespace Windows::Media::Capture;
 using namespace Windows::Media::MediaProperties;
 using namespace Windows::Storage::Streams;
+using namespace Windows::Security::Cryptography;
+using namespace Windows::UI::Core;
 
 bool ImageElement::UseFileSystem = false;
 wstring ImageElement::BaseUrl = L"";
@@ -77,7 +79,29 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK ImageElement::getImageData(
 
 void ImageElement::LoadAsync()
 {
-    if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem) {
+    if (m_source.find(L"data:") == 0) {
+        // This might be a data URL; check if it's  one of the suported types
+        PCWSTR pngPrefix = L"data:image/png;base64,";
+        PCWSTR jpegPrefix = L"data:image/jpeg;base64,";
+
+        if (m_source.find(jpegPrefix) == 0) {
+            auto base64Data = Platform::StringReference(m_source.c_str() + wcslen(jpegPrefix), m_source.length() - wcslen(jpegPrefix));
+            auto imageData = CryptographicBuffer::DecodeFromBase64String(base64Data);
+            auto loadAsync = create_async([this, imageData]
+            {
+                LoadImageFromBuffer(imageData);
+            });
+        }
+        else if (m_source.find(pngPrefix) == 0) {
+            auto base64Data = Platform::StringReference(m_source.c_str() + wcslen(pngPrefix), m_source.length() - wcslen(pngPrefix));
+            auto imageData = CryptographicBuffer::DecodeFromBase64String(base64Data);
+            auto loadAsync = create_async([this, imageData]
+            {
+                LoadImageFromBuffer(imageData);
+            });
+        }
+    }
+    else if (ScriptsLoader::IsAbsoluteWebUri(m_source) || !UseFileSystem) {
         DownloadAsync();
     } else if (_wcsicmp(m_source.c_str(), L"camera://local/default") == 0) {
         GetFromCameraAsync();
@@ -180,7 +204,8 @@ void ImageElement::LoadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imag
     EXIT_IF_FAILED(m_bitmapSource->GetSize(&m_width, &m_height));
     EXIT_IF_FAILED(m_bitmapSource->GetPixelFormat(&m_sourceFormat));
 
-    FireOnLoadEvent();
+    Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+        CoreDispatcherPriority::Normal, ref new DispatchedHandler([this] { FireOnLoadEvent(); }));
 }
 
 void ImageElement::FireOnLoadEvent()

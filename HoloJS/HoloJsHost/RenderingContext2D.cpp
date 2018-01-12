@@ -12,6 +12,9 @@ using namespace Windows::Foundation::Numerics;
 using namespace Windows::Storage::Streams;
 using namespace Windows::UI;
 using namespace HologramJS::Canvas;
+using namespace Microsoft::WRL;
+using namespace Windows::Security::Cryptography;
+using namespace std;
 
 RenderingContext2D::RenderingContext2D() { this->createRenderTarget(); }
 
@@ -109,4 +112,180 @@ Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(Rect& rect, un
     } else {
         return nullptr;
     }
+}
+
+RenderingContext2D::EncodingType RenderingContext2D::getEncodingFromMimeType(const wstring& type)
+{
+    if (_wcsicmp(type.c_str(), L"image/png") == 0) {
+        return EncodingType::PNG;
+    } else if (_wcsicmp(type.c_str(), L"image/jpeg") == 0) {
+        return EncodingType::JPEG;
+    } else {
+        return EncodingType::Unknown;
+    }
+}
+
+void RenderingContext2D::getImageDataBGRFlipY(vector<byte>& bgrPixels)
+{
+    // Get the raw pixels from the underlying canvas
+    auto canvasPixels = m_canvasRenderTarget->GetPixelBytes();
+    auto canvasPixelsLength = canvasPixels->Length;
+    auto canvasPixelData = canvasPixels->begin();
+
+    const int dest_bpp = 3;
+    bgrPixels.resize((canvasPixelsLength * dest_bpp) / m_bpp);
+
+    // Convert from 32bpp RGBA to 24bpp BGR and flip vertical
+    for (int row_index = 0; row_index < m_height; row_index++) {
+        for (int column_index = 0; column_index < m_width; column_index++) {
+            const auto destination_row_offset = row_index * m_width * dest_bpp;
+            const auto source_row_offset = (m_height - row_index - 1) * m_width * m_bpp;
+
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 0] = canvasPixelData[source_row_offset + column_index * m_bpp + 2];
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 1] = canvasPixelData[source_row_offset + column_index * m_bpp + 1];
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 2] = canvasPixelData[source_row_offset + column_index * m_bpp + 0];
+        }
+    }
+}
+
+HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, vector<byte>& data)
+{
+    // Figure out long is the encoded stream
+    LARGE_INTEGER seekSize;
+    seekSize.QuadPart = 0;
+    ULARGE_INTEGER streamLength;
+    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_CUR, &streamLength));
+
+    // Allocate a memory block to copy the encoded image stream to
+    data.resize(streamLength.QuadPart);
+
+    // Create a WIC stream over the memory block
+    ComPtr<IWICStream> byteAccessWicStream = NULL;
+    RETURN_IF_FAILED(imagingFactory->CreateStream(byteAccessWicStream.ReleaseAndGetAddressOf()));
+    RETURN_IF_FAILED(byteAccessWicStream->InitializeFromMemory(data.data(), streamLength.QuadPart));
+
+    // Get the vanilla stream from the WIC stream
+    ComPtr<IStream> byteAccessStream;
+    RETURN_IF_FAILED(byteAccessWicStream.As(&byteAccessStream));
+
+    // Copy the encoded image stream to the byte accessible stream
+    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_SET, nullptr));
+    RETURN_IF_FAILED(stream->CopyTo(byteAccessStream.Get(), streamLength, nullptr, nullptr));
+
+    return S_OK;
+}
+
+HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData,
+                                                       const wstring& mimeType,
+                                                       wstring* encodedImage)
+{
+    // Create an IBuffer over the image memory block
+    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
+    Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
+        &imageBuffer, imageData.data(), static_cast<unsigned int>(imageData.size()));
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
+    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+    // base64 encode the resulting image
+    auto encodedImagePlatString = CryptographicBuffer::EncodeToBase64String(imageIBuffer);
+
+    // Create the dataURL
+    encodedImage->reserve(encodedImagePlatString->Length() + 128);
+    encodedImage->assign(L"data:");
+    encodedImage->append(mimeType);
+    encodedImage->append(L";base64,");
+    encodedImage->append(encodedImagePlatString->Data());
+
+    return S_OK;
+}
+
+HRESULT RenderingContext2D::initializeEncodingPropertyBag(IPropertyBag2* propertyBag,
+                                                          EncodingType encodingType,
+                                                          double encoderOptions)
+{
+    // If encoding to JPEG, set the image quality to what the caller requested;
+    // PNG does not support image quality settings
+    if (encodingType == EncodingType::JPEG) {
+        PROPBAG2 qualityOption = {0};
+        qualityOption.pstrName = L"ImageQuality";
+        VARIANT qualityValue;
+        VariantInit(&qualityValue);
+        qualityValue.vt = VT_R4;
+        qualityValue.fltVal = encoderOptions;
+        RETURN_IF_FAILED(propertyBag->Write(1, &qualityOption, &qualityValue));
+    }
+
+    return S_OK;
+}
+
+bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage)
+{
+    RETURN_IF_TRUE(m_isOptimizedBitmap);
+
+    const auto encodingType = getEncodingFromMimeType(type);
+
+    // Only PNG and Jpeg are supported
+    RETURN_IF_TRUE(encodingType == EncodingType::Unknown);
+
+    // Convert from 32bpp RGBA to 24bpp BGR
+    std::vector<byte> bgrPixels;
+    getImageDataBGRFlipY(bgrPixels);
+
+    ComPtr<IWICImagingFactory> imagingFactory = NULL;
+    RETURN_IF_FAILED(CoCreateInstance(CLSID_WICImagingFactory,
+                                      NULL,
+                                      CLSCTX_INPROC_SERVER,
+                                      IID_IWICImagingFactory,
+                                      (LPVOID*)imagingFactory.ReleaseAndGetAddressOf()));
+
+    // Create a memory stream to hold the encoded image, then wrap a WIC stream around it
+    ComPtr<IStream> memoryStream;
+    RETURN_IF_FAILED(
+        ::CreateStreamOnHGlobal(nullptr, true /*delete on release*/, memoryStream.ReleaseAndGetAddressOf()));
+    ComPtr<IWICStream> imageStream;
+    RETURN_IF_FAILED(imagingFactory->CreateStream(imageStream.ReleaseAndGetAddressOf()));
+    RETURN_IF_FAILED(imageStream->InitializeFromIStream(memoryStream.Get()));
+
+    // Create the encoder corresponding to the requested type
+    ComPtr<IWICBitmapEncoder> encoder = NULL;
+    RETURN_IF_FAILED(imagingFactory->CreateEncoder(
+        encodingType == EncodingType::JPEG ? GUID_ContainerFormatJpeg : GUID_ContainerFormatPng,
+        NULL,
+        encoder.ReleaseAndGetAddressOf()));
+
+    RETURN_IF_FAILED(encoder->Initialize(imageStream.Get(), WICBitmapEncoderNoCache));
+
+    ComPtr<IWICBitmapFrameEncode> bitmapFrame = NULL;
+    ComPtr<IPropertyBag2> propertyBag = NULL;
+    RETURN_IF_FAILED(
+        encoder->CreateNewFrame(bitmapFrame.ReleaseAndGetAddressOf(), propertyBag.ReleaseAndGetAddressOf()));
+
+    RETURN_IF_FAILED(initializeEncodingPropertyBag(propertyBag.Get(), encodingType, encoderOptions));
+
+    // Initialize the encoder
+    RETURN_IF_FAILED(bitmapFrame->Initialize(propertyBag.Get()));
+    RETURN_IF_FAILED(bitmapFrame->SetSize(m_canvasRenderTarget->Size.Width, m_canvasRenderTarget->Size.Height));
+
+    // Set the input format to the encoder and make sure the format is acceptable
+    WICPixelFormatGUID formatGUID = GUID_WICPixelFormat24bppBGR;
+    RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
+    RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
+
+    // Write the canvas pixels to the encoder
+    auto height = m_canvasRenderTarget->Size.Height;
+    auto stride = bgrPixels.size() / m_canvasRenderTarget->Size.Height;
+    RETURN_IF_FAILED(bitmapFrame->WritePixels(height, stride, bgrPixels.size(), bgrPixels.data()));
+
+    // Finalize the encoding operation
+    RETURN_IF_FAILED(bitmapFrame->Commit());
+    RETURN_IF_FAILED(encoder->Commit());
+
+    // Get the encoded memory block from the stream
+    // TODO: when we can use GlobalLock/Unlock (RS2+), access the memoryStream directly
+    vector<byte> encodedMemoryBlock;
+    RETURN_IF_FAILED(getDataFromStream(imagingFactory.Get(), memoryStream.Get(), encodedMemoryBlock));
+
+    RETURN_IF_FAILED(getDataUrlFromEncodedImage(encodedMemoryBlock, type, encodedImage));
+
+    return true;
 }
