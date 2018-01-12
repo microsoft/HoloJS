@@ -69,24 +69,26 @@ bool HologramScriptHost::InitializeRendering(Windows::Perception::Spatial::Spati
 {
     m_window = make_unique<API::WindowElement>();
     RETURN_IF_FALSE(m_window->Initialize());
-    m_window->Resize(width, height);
 
-    WebGL::RenderMode renderMode =
+    m_renderMode =
         (frameOfReference == nullptr ? WebGL::RenderMode::Flat
                                      : (stereoMode == StereoEffectMode::Auto ? WebGL::RenderMode::AutoStereo
                                                                              : WebGL::RenderMode::AdvancedStereo));
 
+    ResizeWindow(width, height);    
+
     m_webglProjections = make_unique<WebGL::WebGLProjections>();
 
-    WebGL::WebGLRenderingContext* systemRenderingContext = new WebGL::WebGLRenderingContext(m_window, renderMode);
+    WebGL::WebGLRenderingContext* systemRenderingContext = new WebGL::WebGLRenderingContext(m_window, m_renderMode);
     RETURN_IF_NULL(systemRenderingContext);
+
+    RETURN_IF_FALSE(m_webglProjections->Initialize(systemRenderingContext));
 
     TryInitializeWebGlContext();
 
-    RETURN_IF_FALSE(m_webglProjections->Initialize(systemRenderingContext));
     RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
 
-    EnableHolographicExperimental(frameOfReference, renderMode);
+    EnableHolographicExperimental(frameOfReference, m_renderMode);
 
     return true;
 }

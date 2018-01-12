@@ -31,7 +31,14 @@ enum class StereoEffectMode { Auto, WebVR };
 
     Windows::Foundation::IAsyncOperation<bool> ^ RunApp(Platform::String ^ jsonUri);
 
-    void ResizeWindow(int width, int height) { m_window->Resize(width, height); }
+    void ResizeWindow(int width, int height)
+    {
+        if (m_renderMode == WebGL::RenderMode::AdvancedStereo) {
+            m_window->Resize(width * 2, height);
+        } else {
+            m_window->Resize(width, height);
+        }
+    }
     void VSync(float4x4 midViewMatrix,
                float4x4 midProjectionMatrix,
                float4x4 leftViewMatrix,
@@ -56,6 +63,8 @@ enum class StereoEffectMode { Auto, WebVR };
     }
 
    private:
+    WebGL::RenderMode m_renderMode;
+
     JsRuntimeHandle m_jsRuntime = nullptr;
     JsContextRef m_jsContext = nullptr;
 

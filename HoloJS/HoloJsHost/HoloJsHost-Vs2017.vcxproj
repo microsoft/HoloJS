@@ -301,6 +301,9 @@
     <None Include="ScriptingFramework\webgl-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ScriptingFramework\webvr.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ScriptingFramework\window-holographic.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

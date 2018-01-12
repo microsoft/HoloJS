@@ -68,7 +68,7 @@ void WebGLRenderingContext::ScriptRenderComplete()
                       m_windowElement->Height(),
                       0,
                       0,
-                      m_windowElement->Width(),
+                      m_windowElement->Width() / 2,
                       m_windowElement->Height(),
                       GL_COLOR_BUFFER_BIT,
                       GL_NEAREST);
@@ -80,8 +80,8 @@ WebGLTexture* WebGLRenderingContext::createTexture() { return new WebGLTexture()
 
 void WebGLRenderingContext::bindTexture(GLenum target, WebGLTexture* texture)
 {
-    if (texture == nullptr || texture->id == 0) {
-        m_renderTexture->bind(target);
+    if (texture == nullptr) {
+        glBindTexture(target, 0);
     } else {
         glBindTexture(target, texture->id);
     }
@@ -451,7 +451,13 @@ WebGLRenderbuffer* WebGLRenderingContext::createRenderbuffer() { return new WebG
 void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* renderbuffer)
 {
     if (renderbuffer == nullptr || renderbuffer->id == 0) {
-        m_renderBuffer->bindRenderbuffer(target);
+        if (m_renderBuffer) {
+            m_renderBuffer->bindRenderbuffer(target);
+        }
+        else {
+            glBindRenderbuffer(target, 0);
+        }
+        
     } else {
         renderbuffer->bindRenderbuffer(target);
     }
@@ -472,7 +478,13 @@ void WebGLRenderingContext::bindFramebuffer(GLenum target, WebGLFramebuffer* fra
 {
     if (framebuffer == nullptr || framebuffer->id == 0) {
         // Bind to the off-screen framebuffer
-        m_frameBuffer->bindFramebuffer(target);
+        if (m_frameBuffer) {
+            m_frameBuffer->bindFramebuffer(target);
+        }
+        else {
+            glBindFramebuffer(target, 0);
+        }
+        
     } else {
         framebuffer->bindFramebuffer(target);
     }
