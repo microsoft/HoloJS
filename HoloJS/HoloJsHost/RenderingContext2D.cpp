@@ -125,19 +125,26 @@ RenderingContext2D::EncodingType RenderingContext2D::getEncodingFromMimeType(con
     }
 }
 
-void RenderingContext2D::getImageDataBGR(vector<byte>& bgrPixels)
+void RenderingContext2D::getImageDataBGRFlipY(vector<byte>& bgrPixels)
 {
     // Get the raw pixels from the underlying canvas
     auto canvasPixels = m_canvasRenderTarget->GetPixelBytes();
     auto canvasPixelsLength = canvasPixels->Length;
     auto canvasPixelData = canvasPixels->begin();
 
-    // Convert from 32bpp RGBA to 24bpp BGR
-    bgrPixels.resize((canvasPixelsLength * 3) / 4);
-    for (int i = 0, j = 0; i < canvasPixelsLength; i += 4, j += 3) {
-        bgrPixels[j + 0] = canvasPixelData[i + 2];
-        bgrPixels[j + 1] = canvasPixelData[i + 1];
-        bgrPixels[j + 2] = canvasPixelData[i + 0];
+    const int dest_bpp = 3;
+    bgrPixels.resize((canvasPixelsLength * dest_bpp) / m_bpp);
+
+    // Convert from 32bpp RGBA to 24bpp BGR and flip vertical
+    for (int row_index = 0; row_index < m_height; row_index++) {
+        for (int column_index = 0; column_index < m_width; column_index++) {
+            const auto destination_row_offset = row_index * m_width * dest_bpp;
+            const auto source_row_offset = (m_height - row_index - 1) * m_width * m_bpp;
+
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 0] = canvasPixelData[source_row_offset + column_index * m_bpp + 2];
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 1] = canvasPixelData[source_row_offset + column_index * m_bpp + 1];
+            bgrPixels[destination_row_offset + column_index * dest_bpp + 2] = canvasPixelData[source_row_offset + column_index * m_bpp + 0];
+        }
     }
 }
 
@@ -168,7 +175,9 @@ HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory
     return S_OK;
 }
 
-HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData, const wstring& mimeType, wstring* encodedImage)
+HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData,
+                                                       const wstring& mimeType,
+                                                       wstring* encodedImage)
 {
     // Create an IBuffer over the image memory block
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
@@ -190,6 +199,25 @@ HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData, 
     return S_OK;
 }
 
+HRESULT RenderingContext2D::initializeEncodingPropertyBag(IPropertyBag2* propertyBag,
+                                                          EncodingType encodingType,
+                                                          double encoderOptions)
+{
+    // If encoding to JPEG, set the image quality to what the caller requested;
+    // PNG does not support image quality settings
+    if (encodingType == EncodingType::JPEG) {
+        PROPBAG2 qualityOption = {0};
+        qualityOption.pstrName = L"ImageQuality";
+        VARIANT qualityValue;
+        VariantInit(&qualityValue);
+        qualityValue.vt = VT_R4;
+        qualityValue.fltVal = encoderOptions;
+        RETURN_IF_FAILED(propertyBag->Write(1, &qualityOption, &qualityValue));
+    }
+
+    return S_OK;
+}
+
 bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage)
 {
     RETURN_IF_TRUE(m_isOptimizedBitmap);
@@ -201,7 +229,7 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
 
     // Convert from 32bpp RGBA to 24bpp BGR
     std::vector<byte> bgrPixels;
-    getImageDataBGR(bgrPixels);
+    getImageDataBGRFlipY(bgrPixels);
 
     ComPtr<IWICImagingFactory> imagingFactory = NULL;
     RETURN_IF_FAILED(CoCreateInstance(CLSID_WICImagingFactory,
@@ -232,17 +260,7 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(
         encoder->CreateNewFrame(bitmapFrame.ReleaseAndGetAddressOf(), propertyBag.ReleaseAndGetAddressOf()));
 
-    // If encoding to JPEG, set the image quality to what the caller requested;
-    // PNG does not support image quality settings
-    if (encodingType == EncodingType::JPEG) {
-        PROPBAG2 option = {0};
-        option.pstrName = L"ImageQuality";
-        VARIANT varValue;
-        VariantInit(&varValue);
-        varValue.vt = VT_R4;
-        varValue.fltVal = encoderOptions;
-        RETURN_IF_FAILED(propertyBag->Write(1, &option, &varValue));
-    }
+    RETURN_IF_FAILED(initializeEncodingPropertyBag(propertyBag.Get(), encodingType, encoderOptions));
 
     // Initialize the encoder
     RETURN_IF_FAILED(bitmapFrame->Initialize(propertyBag.Get()));
