@@ -47,11 +47,11 @@ class WebSocket : public HologramJS::Utilities::ElementWithEvents, public Hologr
 
 	void FireOnError();
 
-	void FireOnMessage();
+	void FireOnMessage(Windows::Networking::Sockets::MessageWebSocketMessageReceivedEventArgs^ msgArgs);
 
 	void FireOnOpen();
 
-	void FireOnClose();
+	void FireOnClose(Windows::Networking::Sockets::WebSocketClosedEventArgs ^ closedArgs);
 };
 }  // namespace API
 }  // namespace HologramJS

@@ -7,12 +7,33 @@ using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
 using namespace std;
 using namespace concurrency;
+using namespace Windows::Networking::Sockets;
+using namespace Windows::Foundation;
+using namespace Windows::UI::Core;
 
 JsValueRef WebSocket::m_createFunction = JS_INVALID_REFERENCE;
 JsValueRef WebSocket::m_closeFunction = JS_INVALID_REFERENCE;
 JsValueRef WebSocket::m_sendFunction = JS_INVALID_REFERENCE;
 
-WebSocket::WebSocket() { m_webSocket = ref new Windows::Networking::Sockets::MessageWebSocket(); }
+WebSocket::WebSocket()
+{
+    m_webSocket = ref new MessageWebSocket();
+
+    m_webSocket->Closed += ref new TypedEventHandler<IWebSocket ^, WebSocketClosedEventArgs ^>(
+        [this](IWebSocket ^ socket, WebSocketClosedEventArgs ^ closedArgs) {
+            Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+                CoreDispatcherPriority::Normal,
+                ref new DispatchedHandler([this, closedArgs] { FireOnClose(closedArgs); }));
+        });
+
+    m_webSocket->MessageReceived +=
+        ref new TypedEventHandler<MessageWebSocket ^, MessageWebSocketMessageReceivedEventArgs ^>(
+            [this](MessageWebSocket^ socket, MessageWebSocketMessageReceivedEventArgs ^ msgArgs) {
+		Windows::ApplicationModel::Core::CoreApplication::MainView->CoreWindow->Dispatcher->RunAsync(
+			CoreDispatcherPriority::Normal,
+			ref new DispatchedHandler([this, msgArgs] { FireOnMessage(msgArgs); }));
+	});
+}
 
 bool WebSocket::Initialize()
 {
@@ -98,47 +119,50 @@ void WebSocket::FireOnError()
     }
 }
 
-void WebSocket::FireOnMessage() {
-	if (HasCallback()) {
-		vector<JsValueRef> parameters(2);
+void WebSocket::FireOnMessage(MessageWebSocketMessageReceivedEventArgs^ msgArgs)
+{
+    if (HasCallback()) {
+		auto dataReader = msgArgs->GetDataReader();
+		auto message = dataReader->ReadString(dataReader->UnconsumedBufferLength);
 
-		parameters[0] = m_scriptCallbackContext;
+		JsValueRef parameters[3];
+        parameters[0] = m_scriptCallbackContext;
+        EXIT_IF_JS_ERROR(JsPointerToString(L"message", wcslen(L"message"), &parameters[1]));
+		EXIT_IF_JS_ERROR(JsPointerToString(message->Data(), message->Length(), &parameters[2]));
 
-		JsValueRef* typeParam = &parameters[1];
-		EXIT_IF_JS_ERROR(JsPointerToString(L"message", wcslen(L"message"), typeParam));
-
-		JsValueRef result;
-		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-			m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-	}
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+    }
 }
 
-void WebSocket::FireOnOpen() {
-	if (HasCallback()) {
-		vector<JsValueRef> parameters(2);
+void WebSocket::FireOnOpen()
+{
+    if (HasCallback()) {
+        vector<JsValueRef> parameters(2);
 
-		parameters[0] = m_scriptCallbackContext;
+        parameters[0] = m_scriptCallbackContext;
 
-		JsValueRef* typeParam = &parameters[1];
-		EXIT_IF_JS_ERROR(JsPointerToString(L"open", wcslen(L"open"), typeParam));
+        JsValueRef* typeParam = &parameters[1];
+        EXIT_IF_JS_ERROR(JsPointerToString(L"open", wcslen(L"open"), typeParam));
 
-		JsValueRef result;
-		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-			m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-	}
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
+    }
 }
 
-void WebSocket::FireOnClose() {
-	if (HasCallback()) {
-		vector<JsValueRef> parameters(2);
+void WebSocket::FireOnClose(WebSocketClosedEventArgs ^ closedArgs)
+{
+    if (HasCallback()) {
+		JsValueRef parameters[4];
+        parameters[0] = m_scriptCallbackContext;
+        EXIT_IF_JS_ERROR(JsPointerToString(L"close", wcslen(L"close"), &parameters[1]));
+		EXIT_IF_JS_ERROR(JsPointerToString(closedArgs->Reason->Data(), closedArgs->Reason->Length(), &parameters[2]));
+		EXIT_IF_JS_ERROR(JsIntToNumber(closedArgs->Code, &parameters[3]));
 
-		parameters[0] = m_scriptCallbackContext;
-
-		JsValueRef* typeParam = &parameters[1];
-		EXIT_IF_JS_ERROR(JsPointerToString(L"close", wcslen(L"close"), typeParam));
-
-		JsValueRef result;
-		HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
-			m_scriptCallback, parameters.data(), static_cast<unsigned short>(parameters.size()), &result));
-	}
+        JsValueRef result;
+        HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+            m_scriptCallback, parameters, ARRAYSIZE(parameters), &result));
+    }
 }

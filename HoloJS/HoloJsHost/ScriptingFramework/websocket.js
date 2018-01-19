@@ -20,14 +20,14 @@ function WebSocket(url, protocols) {
             }
         } else if (type === "message") {
             if (typeof this.listeners.onmessage !== "undefined") {
-                this.listeners.onmessage();
+                this.listeners.onmessage({ data: arguments[1] });
             }
         } else if (type === "error") {
             if (typeof this.listeners.onerror !== "undefined") {
                 this.listeners.onerror();
             }
         }
-    }
+    };
 
     holographic.nativeInterface.eventing.setCallback(this.native, this.nativeCallback.bind(this));
 
