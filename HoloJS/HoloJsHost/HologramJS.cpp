@@ -8,6 +8,7 @@
 #include "VideoElement.h"
 #include "WebGLProjections.h"
 #include "XmlHttpRequest.h"
+#include "WebSocket.h"
 
 using namespace HologramJS;
 using namespace Platform;
@@ -50,6 +51,8 @@ bool HologramScriptHost::Initialize()
     RETURN_IF_FALSE(m_scriptEventsManager.Initialize());
 
     RETURN_IF_FALSE(API::XmlHttpRequest::Initialize());
+
+	RETURN_IF_FALSE(API::WebSocket::Initialize());
 
     RETURN_IF_FALSE(API::ImageElement::Initialize());
     RETURN_IF_FALSE(API::VideoElement::Initialize());
