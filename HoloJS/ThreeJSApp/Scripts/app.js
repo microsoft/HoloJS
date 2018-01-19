@@ -28,7 +28,7 @@ function update(delta, elapsed) {
 
     if (camera.update) camera.update();
 
-    if (sample.update) sample.update(delta, elapsed);
+    //if (sample.update) sample.update(delta, elapsed);
 
     renderer.render(scene, camera);
 }
@@ -47,9 +47,10 @@ function onVoiceCommand(voiceEvent) {
 
 // The samples are usually mutually exclusive; enable them one at a time
 
+var sample = new ChatWebsocketExample(scene, renderer);
 //var sample = new ShadowsExample(scene, renderer);
 //var sample = new BasicCubeExample(scene, renderer);
-var sample = new CanvasRenderingExample(scene, renderer);
+//var sample = new CanvasRenderingExample(scene, renderer);
 //var sample = new LightsExample(scene, renderer);
 //var surfaceReconstructionExample = new SurfaceReconstructionExample(scene, renderer);
 
