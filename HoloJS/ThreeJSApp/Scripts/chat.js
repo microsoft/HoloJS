@@ -1,7 +1,7 @@
 function ChatWebsocketExample(scene, renderer) {
 
     var url = "https://socket-io-chat.now.sh";
-    var socket = io(url, {});
+    var socket = io(url, {transports: ['websocket']});
 
     // Whenever the server emits 'new message', update the chat body
     socket.on('new message', function (data) {
