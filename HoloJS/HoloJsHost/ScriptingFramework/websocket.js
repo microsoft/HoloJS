@@ -14,18 +14,30 @@ function WebSocket(url, protocols) {
             if (typeof this.listeners.onopen !== "undefined") {
                 this.listeners.onopen();
             }
+            this.listeners.open.forEach(function (listener) {
+                listener();
+            });
         } else if (type === "close") {
             if (typeof this.listeners.onclose !== "undefined") {
                 this.listeners.onclose();
             }
+            this.listeners.close.forEach(function (listener) {
+                listener();
+            });
         } else if (type === "message") {
             if (typeof this.listeners.onmessage !== "undefined") {
                 this.listeners.onmessage({ data: arguments[1] });
             }
+            this.listeners.message.forEach(function (listener) {
+                listener();
+            });
         } else if (type === "error") {
             if (typeof this.listeners.onerror !== "undefined") {
                 this.listeners.onerror();
             }
+            this.listeners.error.forEach(function (listener) {
+                listener();
+            });
         }
     };
 
