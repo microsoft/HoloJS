@@ -47,13 +47,13 @@ class WebSocket : public HologramJS::Utilities::ElementWithEvents, public Hologr
 
     std::wstring m_url;
     std::wstring m_protocols;
-	std::wstring m_binaryType;
+    std::wstring m_binaryType;
 
-	bool IsArrayBuffer() { return _wcsicmp(m_binaryType.c_str(), L"arraybuffer") == 0; }
+    bool IsArrayBuffer() { return _wcsicmp(m_binaryType.c_str(), L"arraybuffer") == 0; }
 
     concurrency::task<void> ConnectAsync();
 
-	concurrency::task<void> SendAsync(JsValueRef dataRef);
+    concurrency::task<void> SendAsync(JsValueRef dataRef);
 
     Windows::Networking::Sockets::MessageWebSocket ^ m_webSocket;
 
