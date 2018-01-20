@@ -92,6 +92,9 @@
     <None Include="Scripts\chat.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\helvetiker_regular.typeface.json">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
