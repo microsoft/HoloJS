@@ -32,11 +32,17 @@ function WebSocket(url, protocols) {
     holographic.nativeInterface.eventing.setCallback(this.native, this.nativeCallback.bind(this));
 
     this.close = function (code, reason) {
-        console.log("close called");
+        if (arguments.length === 0) {
+            this.native = holographic.nativeInterface.websocket.close(this.native);
+        } else if (arguments.length === 1) {
+            this.native = holographic.nativeInterface.websocket.close(this.native, code);
+        } else {
+            this.native = holographic.nativeInterface.websocket.close(this.native, code, reason);
+        }
     };
 
     this.send = function (data) {
-        console.log("send called");
+        holographic.nativeInterface.websocket.send(this.native, data);
     };
 
     this.addEventListener = function (type, listener, options) {
@@ -104,6 +110,16 @@ function WebSocket(url, protocols) {
         },
         set: function (value) {
             this.listeners.onerror = value;
+        }
+    });
+
+    Object.defineProperty(this, 'binaryType', {
+        get: function () {
+            return this._binaryType;
+        },
+        set: function (value) {
+            this._binaryType = value;
+            holographic.nativeInterface.websocket.setBinaryType(this.native, value);
         }
     });
 }
