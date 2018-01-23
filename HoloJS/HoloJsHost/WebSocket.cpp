@@ -59,7 +59,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK WebSocket::create(
 
     wstring protocols;
     if (argumentCount > 2) {
-        RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], protocols));
+        RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], protocols));
     }
 
     auto newWS = new WebSocket();
@@ -97,7 +97,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK WebSocket::close(
     if (hasCode) {
         ws->m_webSocket->Close(code, Platform::StringReference(reason.c_str()).GetString());
     } else {
-        // Socket will be closed on WS going out of scope
+        // Socket will be closed on going out of scope
     }
 
     return JS_INVALID_REFERENCE;
@@ -130,6 +130,7 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK WebSocket::send(
     auto ws = ScriptResourceTracker::ExternalToObject<WebSocket>(arguments[1]);
     RETURN_INVALID_REF_IF_NULL(ws);
 
+    // Add ref; SendAsync is responsible for releasing the ref
     RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(arguments[2], nullptr));
 
     ws->SendAsync(arguments[2]);
@@ -139,9 +140,13 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK WebSocket::send(
 
 task<void> WebSocket::SendAsync(JsValueRef dataRef)
 {
+    auto autoReleaseDataRef = JsRefReleaseAtScopeExit(dataRef);
+
     vector<byte> utf8Data;
     byte* rawSendBuffer;
     unsigned int rawSendBufferLength;
+
+    EXIT_IF_FALSE(m_isConnected);
 
     JsValueType dataType;
     EXIT_IF_JS_ERROR(JsGetValueType(dataRef, &dataType));
@@ -172,10 +177,13 @@ task<void> WebSocket::SendAsync(JsValueRef dataRef)
     auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(bufferOnMemory.Get());
     auto sendBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
 
-    auto result = await m_webSocket->OutputStream->WriteAsync(sendBuffer);
-    m_webSocket->OutputStream->FlushAsync();
-
-    EXIT_IF_JS_ERROR(JsRelease(dataRef, nullptr));
+    try {
+        auto result = await m_webSocket->OutputStream->WriteAsync(sendBuffer);
+        m_webSocket->OutputStream->FlushAsync();
+    } catch (...) {
+        FireOnError();
+        return;
+    }
 }
 
 task<void> WebSocket::ConnectAsync()
@@ -192,6 +200,7 @@ task<void> WebSocket::ConnectAsync()
         await m_webSocket->ConnectAsync(uri);
     } catch (...) {
         FireOnError();
+        return;
     }
 
     FireOnOpen();
@@ -255,6 +264,8 @@ void WebSocket::FireOnMessage(MessageWebSocketMessageReceivedEventArgs ^ msgArgs
 
 void WebSocket::FireOnOpen()
 {
+    m_isConnected = true;
+
     if (HasCallback()) {
         vector<JsValueRef> parameters(2);
 
@@ -271,6 +282,7 @@ void WebSocket::FireOnOpen()
 
 void WebSocket::FireOnClose(WebSocketClosedEventArgs ^ closedArgs)
 {
+    m_isConnected = false;
     if (HasCallback()) {
         JsValueRef parameters[4];
         parameters[0] = m_scriptCallbackContext;

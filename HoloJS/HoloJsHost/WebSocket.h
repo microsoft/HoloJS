@@ -48,6 +48,7 @@ class WebSocket : public HologramJS::Utilities::ElementWithEvents, public Hologr
     std::wstring m_url;
     std::wstring m_protocols;
     std::wstring m_binaryType;
+    bool m_isConnected = false;
 
     bool IsArrayBuffer() { return _wcsicmp(m_binaryType.c_str(), L"arraybuffer") == 0; }
 
