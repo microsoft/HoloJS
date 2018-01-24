@@ -194,7 +194,8 @@ task<void> WebSocket::ConnectAsync()
         m_webSocket->Control->SupportedProtocols->Append(Platform::StringReference(m_protocols.c_str()).GetString());
     }
 
-    m_webSocket->Control->ReceiveMode = MessageWebSocketReceiveMode::FullMessage;
+    // TODO: This flag is only supported on 16299. Re-enable after minTargetPlatform is greater thatn 16299
+    // m_webSocket->Control->ReceiveMode = MessageWebSocketReceiveMode::FullMessage;
 
     try {
         await m_webSocket->ConnectAsync(uri);
