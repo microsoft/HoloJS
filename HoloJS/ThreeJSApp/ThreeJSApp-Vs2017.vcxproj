@@ -231,6 +231,9 @@
     <None Include="Scripts\surface-reconstruction.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\video.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>
