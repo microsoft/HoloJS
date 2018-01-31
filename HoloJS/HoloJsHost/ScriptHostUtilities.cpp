@@ -153,3 +153,18 @@ GLfloat ScriptHostUtilities::GLfloatFromJsRef(JsValueRef value)
 
     return static_cast<GLfloat>(doubleValue);
 }
+
+bool ScriptHostUtilities::CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer,
+                                                      byte* nativeBuffer,
+                                                      size_t nativeBufferLength)
+{
+    RETURN_IF_JS_ERROR(JsCreateArrayBuffer(nativeBufferLength, arrayBuffer));
+
+    unsigned int arrayBufferLength;
+    byte* arrayBufferPointer;
+    RETURN_IF_JS_ERROR(JsGetArrayBufferStorage(*arrayBuffer, &arrayBufferPointer, &arrayBufferLength));
+
+    RETURN_IF_TRUE(arrayBufferLength != nativeBufferLength);
+
+    memcpy(arrayBufferPointer, nativeBuffer, nativeBufferLength);
+}

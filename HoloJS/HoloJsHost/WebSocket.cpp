@@ -248,11 +248,8 @@ void WebSocket::FireOnMessage(MessageWebSocketMessageReceivedEventArgs ^ msgArgs
             byte* messageRawData;
             EXIT_IF_FAILED(messageByteAccess->Buffer(&messageRawData));
 
-            void* messageArrayBufferStorage;
-            EXIT_IF_JS_ERROR(ScriptResourceTracker::CreateAndTrackExternalBuffer(
-                messageBuffer->Length, &messageArrayBufferStorage, &parameters[2]));
-
-            CopyMemory(messageArrayBufferStorage, messageRawData, messageBuffer->Length);
+            EXIT_IF_FALSE(ScriptHostUtilities::CreateArrayBufferFromBuffer(
+                &parameters[2], messageRawData, messageBuffer->Length));
         }
 
         parameters[0] = m_scriptCallbackContext;
