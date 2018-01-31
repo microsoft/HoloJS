@@ -167,4 +167,6 @@ bool ScriptHostUtilities::CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer,
     RETURN_IF_TRUE(arrayBufferLength != nativeBufferLength);
 
     memcpy(arrayBufferPointer, nativeBuffer, nativeBufferLength);
+
+    return true;
 }
