@@ -122,6 +122,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
     void bufferData(GLenum target, GLsizeiptr size, void* data, GLenum usage);
 
+    void bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize);
+
     void colorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 
     void drawArrays(GLenum mode, GLint first, GLsizei count);

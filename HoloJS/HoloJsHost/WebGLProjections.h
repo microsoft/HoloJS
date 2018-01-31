@@ -280,6 +280,12 @@ class WebGLProjections {
                                                   unsigned short argumentCount,
                                                   PVOID callbackData);
 
+    static JsValueRef CHAKRA_CALLBACK bufferSubData(JsValueRef callee,
+                                                     bool isConstructCall,
+                                                     JsValueRef* arguments,
+                                                     unsigned short argumentCount,
+                                                     PVOID callbackData);
+
     static JsValueRef CHAKRA_CALLBACK colorMask(JsValueRef callee,
                                                 bool isConstructCall,
                                                 JsValueRef* arguments,

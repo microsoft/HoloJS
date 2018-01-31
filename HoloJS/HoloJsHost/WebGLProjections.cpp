@@ -64,6 +64,7 @@ bool WebGLProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bindBuffer", L"webgl", bindBuffer));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferData1", L"webgl", bufferData1));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferData2", L"webgl", bufferData2));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferSubData", L"webgl", bufferSubData));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"colorMask", L"webgl", colorMask));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawArrays", L"webgl", drawArrays));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawElements", L"webgl", drawElements));
@@ -797,6 +798,25 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::bindBuffer(
     WebGLBuffer* buffer = ScriptResourceTracker::ExternalToObject<WebGLBuffer>(arguments[3]);
 
     context->bindBuffer(target, buffer);
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK WebGLProjections::bufferSubData(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLenum target = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLsizeiptr offset = ScriptHostUtilities::GLsizeiptrFromJsRef(arguments[3]);
+
+    ChakraBytePtr data;
+    unsigned int dataLength;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(arguments[4], &data, &dataLength));
+
+    context->bufferSubData(target, offset, data, dataLength);
     return JS_INVALID_REFERENCE;
 }
 
