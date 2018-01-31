@@ -15,11 +15,10 @@ function ChatWebsocketExample(scene, renderer) {
 
     // Whenever the server emits 'new message', render the text
     socket.on('new message', function (data) {
-        console.log(data.username + " : " + data.message);
-
         // Remove previous message
         if (this.textMesh) {
             scene.remove(this.textMesh);
+            this.textMesh.geometry.dispose();
         }
 
         // If we have a font loaded, show the message
