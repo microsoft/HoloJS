@@ -195,7 +195,14 @@ bool VideoElement::StreamAndDecode()
                                                    &timestamp100Ns,
                                                    m_backSample.ReleaseAndGetAddressOf()));
 
-        SwapBuffers();
+        if (m_backSample) {
+            SwapBuffers();
+        } else {
+            PROPVARIANT begin;
+            begin.vt = VT_I8;
+            begin.hVal.QuadPart = 0;
+            m_videoReader->SetCurrentPosition(GUID_NULL, begin);
+        }
     }
 
     return true;

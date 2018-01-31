@@ -450,10 +450,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D4(
     void* pixels;
     unsigned int pixelsSize;
     if (videoElement->IsNewFrameAvailable()) {
-        DWORD64 start = GetTickCount64();
         RETURN_INVALID_REF_IF_FALSE(videoElement->LockNextFrame(&pixels, &pixelsSize));
-        std::wstring endString = std::to_wstring(GetTickCount64() - start) + L"\n";
-        OutputDebugStringW(endString.c_str());
         context->texImage2DNoFlip(target, level, internalformat, width, height, 0, format, type, pixels);
         videoElement->UnlockFrame();
     }

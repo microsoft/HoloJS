@@ -105,18 +105,6 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[3],
                                               arguments[4],
                                               image.getData());
-        } else if (arguments.length === 6 && (arguments[5] instanceof Image)) {
-            var image = arguments[5];
-            // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
-            holographic.nativeInterface.webgl.texImage2D2(this.glContext,
-                                              arguments[0],
-                                              arguments[1],
-                                              arguments[2],
-                                              image.width,
-                                              image.height,
-                                              arguments[3],
-                                              arguments[4],
-                                              image.native);
         } else if ((arguments.length === 6) && (arguments[5] instanceof HTMLCanvasElement)) {
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
             var canvas = arguments[5];
@@ -139,7 +127,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               video.height,
                                               arguments[3],
                                               arguments[4],
-                                              video.native);
+                                              video.getData());
         } else {
             throw DOMException();
         }

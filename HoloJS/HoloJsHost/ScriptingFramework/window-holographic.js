@@ -37,8 +37,10 @@ holographic.getHolographicCameraParameters = function () {
 window.innerWidth = window.width = holographic.nativeInterface.window.getWidth();
 window.innerHeight = window.height = holographic.nativeInterface.window.getHeight();
 
+holographic.drawCallbacks = [];
+
 window.requestAnimationFrame = function (callback) {
-    holographic.drawCallback = callback;
+    holographic.drawCallbacks.push(callback);
 };
 
 function makePerformance() {
