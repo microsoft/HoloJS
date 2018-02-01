@@ -187,6 +187,11 @@ void WebGLRenderingContext::bufferData(GLenum target, GLsizeiptr size, void* dat
     glBufferData(target, size, data, usage);
 }
 
+void WebGLRenderingContext::bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize)
+{
+    glBufferSubData(target, offset, dataSize, data);
+}
+
 void WebGLRenderingContext::disable(GLenum cap) { glDisable(cap); }
 
 void WebGLRenderingContext::clear(GLbitfield mask) { glClear(mask); }

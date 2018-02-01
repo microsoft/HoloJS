@@ -250,6 +250,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
         }
     };
 
+    this.bufferSubData = function (target, offset, data) {
+        return holographic.nativeInterface.webgl.bufferSubData(this.glContext, target, offset, data);
+    };
+
     this.deleteBuffer = function(buffer) {
         return holographic.nativeInterface.webgl.deleteBuffer(this.glContext, buffer.external);
     };
