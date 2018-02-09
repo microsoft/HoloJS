@@ -812,9 +812,20 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::bufferSubData(
     GLenum target = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
     GLsizeiptr offset = ScriptHostUtilities::GLsizeiptrFromJsRef(arguments[3]);
 
+    JsValueType dataType;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetValueType(arguments[4], &dataType));
+    RETURN_INVALID_REF_IF_FALSE(dataType == JsTypedArray || dataType == JsArrayBuffer);
+
     ChakraBytePtr data;
     unsigned int dataLength;
-    RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(arguments[4], &data, &dataLength));
+    if (dataType == JsTypedArray)
+    {
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetTypedArrayStorage(arguments[4], &data, &dataLength, nullptr, nullptr));
+    }
+    else
+    {
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(arguments[4], &data, &dataLength));
+    }
 
     context->bufferSubData(target, offset, data, dataLength);
     return JS_INVALID_REFERENCE;
