@@ -62,6 +62,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
         return holographic.nativeInterface.webgl.createTexture(this.glContext);
     };
 
+    this.deleteTexture = function (texture) {
+        return holographic.nativeInterface.webgl.deleteTexture(this.glContext, texture.external);
+    };
+
     this.bindTexture = function(target, texture) {
         if (texture) {
             return holographic.nativeInterface.webgl.bindTexture(this.glContext, target, texture.external);

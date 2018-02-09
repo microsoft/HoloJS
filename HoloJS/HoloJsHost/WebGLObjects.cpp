@@ -16,7 +16,13 @@ void WebGLShaderPrecisionFormat::Release() {}
 
 WebGLTexture::WebGLTexture() { glGenTextures(1, &id); }
 
-void WebGLTexture::Release() { glDeleteTextures(1, &id); }
+void WebGLTexture::Release()
+{
+    if (!isReleased) {
+        glDeleteTextures(1, &id);
+        isReleased = true;
+    }
+}
 
 void WebGLTexture::framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLint level)
 {
@@ -33,7 +39,13 @@ void WebGLBuffer::Bind(GLenum target) { glBindBuffer(target, id); }
 
 WebGLProgram::WebGLProgram() { id = glCreateProgram(); }
 
-void WebGLProgram::Release() { glDeleteProgram(id); }
+void WebGLProgram::Release()
+{
+    if (!isReleased) {
+        glDeleteProgram(id);
+        isReleased = true;
+    }
+}
 
 void WebGLProgram::AttachShader(WebGLShader* shader) { glAttachShader(id, shader->id); }
 
@@ -62,7 +74,7 @@ JsValueRef WebGLProgram::GetParameter(GLenum pname)
     }
 }
 
-void WebGLProgram::Delete() { glDeleteProgram(id); }
+void WebGLProgram::Delete() { Release(); }
 
 std::wstring WebGLProgram::GetInfoLog()
 {
@@ -150,7 +162,13 @@ WebGLShader::WebGLShader(GLenum type)
     id = glCreateShader(type);
 }
 
-void WebGLShader::Release() { glDeleteShader(id); }
+void WebGLShader::Release()
+{
+    if (!isReleased) {
+        glDeleteShader(id);
+        isReleased = true;
+    }
+}
 
 void WebGLShader::SetSource(PCSTR source)
 {
@@ -197,7 +215,7 @@ std::wstring WebGLShader::GetInfoLog()
     }
 }
 
-void WebGLShader::Delete() { glDeleteShader(id); }
+void WebGLShader::Delete() { Release(); }
 
 WebGLActiveInfo::WebGLActiveInfo() {}
 
