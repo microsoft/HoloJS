@@ -36,6 +36,7 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
 #pragma region Textures
     WebGLTexture* createTexture();
+    void deleteTexture(WebGLTexture* texture);
 
     void bindTexture(GLenum target, WebGLTexture* texture);
 

@@ -41,10 +41,14 @@ class WebGLTexture : public HologramJS::Utilities::IRelease {
     WebGLTexture();
     virtual void Release();
     virtual ~WebGLTexture() {}
+    void Delete() { Release(); }
     void framebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLint level);
 
     void Bind(GLenum target);
     GLuint id;
+
+private:
+    bool isReleased = false;
 };
 
 class WebGLBuffer : public HologramJS::Utilities::IRelease {
@@ -71,6 +75,9 @@ class WebGLShader : public HologramJS::Utilities::IRelease {
 
     GLuint id;
     GLenum type;
+
+private:
+    bool isReleased = false;
 };
 
 class WebGLActiveInfo : public HologramJS::Utilities::IRelease {
@@ -114,6 +121,9 @@ class WebGLProgram : public HologramJS::Utilities::IRelease {
     GLint GetAttribLocation(PCSTR name);
 
     GLuint id;
+
+private:
+    bool isReleased = false;
 };
 
 class ANGLE_instanced_arrays {
