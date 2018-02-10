@@ -9,6 +9,8 @@ using namespace Windows::Graphics::Imaging;
 
 WebGLTexture* WebGLRenderingContext::createTexture() { return new WebGLTexture(); }
 
+void WebGLRenderingContext::deleteTexture(WebGLTexture* texture) { texture->Delete(); }
+
 void WebGLRenderingContext::bindTexture(GLenum target, WebGLTexture* texture)
 {
     if (texture == nullptr) {
@@ -185,6 +187,11 @@ void WebGLRenderingContext::bindBuffer(GLenum target, WebGLBuffer* buffer)
 void WebGLRenderingContext::bufferData(GLenum target, GLsizeiptr size, void* data, GLenum usage)
 {
     glBufferData(target, size, data, usage);
+}
+
+void WebGLRenderingContext::bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize)
+{
+    glBufferSubData(target, offset, dataSize, data);
 }
 
 void WebGLRenderingContext::disable(GLenum cap) { glDisable(cap); }
@@ -391,9 +398,8 @@ void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* r
 void WebGLRenderingContext::renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
     if (internalformat = GL_DEPTH_STENCIL_OES) {
-        glRenderbufferStorage(target,  GL_DEPTH24_STENCIL8_OES, width, height);
-    }
-    else {
+        glRenderbufferStorage(target, GL_DEPTH24_STENCIL8_OES, width, height);
+    } else {
         glRenderbufferStorage(target, internalformat, width, height);
     }
 }

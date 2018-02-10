@@ -36,6 +36,7 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
 #pragma region Textures
     WebGLTexture* createTexture();
+    void deleteTexture(WebGLTexture* texture);
 
     void bindTexture(GLenum target, WebGLTexture* texture);
 
@@ -121,6 +122,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
     void bindBuffer(GLenum target, WebGLBuffer* buffer);
 
     void bufferData(GLenum target, GLsizeiptr size, void* data, GLenum usage);
+
+    void bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize);
 
     void colorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 

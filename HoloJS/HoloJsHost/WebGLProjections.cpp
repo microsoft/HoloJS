@@ -32,6 +32,7 @@ bool WebGLProjections::Initialize()
         ScriptHostUtilities::ProjectFunction(L"framebufferRenderbuffer", L"webgl", framebufferRenderbuffer));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"framebufferTexture2D", L"webgl", framebufferTexture2D));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"createTexture", L"webgl", createTexture));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"deleteTexture", L"webgl", deleteTexture));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bindTexture", L"webgl", bindTexture));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"texParameteri", L"webgl", texParameteri));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"texImage2D1", L"webgl", texImage2D1));
@@ -64,6 +65,7 @@ bool WebGLProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bindBuffer", L"webgl", bindBuffer));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferData1", L"webgl", bufferData1));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferData2", L"webgl", bufferData2));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"bufferSubData", L"webgl", bufferSubData));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"colorMask", L"webgl", colorMask));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawArrays", L"webgl", drawArrays));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"drawElements", L"webgl", drawElements));
@@ -301,6 +303,20 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::createTexture(
     return ScriptResourceTracker::ObjectToExternal(returnObject);
 }
 
+JsValueRef CHAKRA_CALLBACK WebGLProjections::deleteTexture(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    WebGLTexture* texture = ScriptResourceTracker::ExternalToObject<WebGLTexture>(arguments[2]);
+
+    context->deleteTexture(texture);
+    return JS_INVALID_REFERENCE;
+}
+
 JsValueRef CHAKRA_CALLBACK WebGLProjections::bindTexture(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
@@ -418,7 +434,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::texImage2D3(
     RETURN_INVALID_REF_IF_NULL(context2D);
 
     unsigned int canvasStride;
-    Windows::Foundation::Rect rect(0, 0, width, height);
+    Windows::Foundation::Rect rect(0, 0, static_cast<float>(width), static_cast<float>(height));
     auto canvasPixels = context2D->getImageData(rect, &canvasStride);
 
     context->texImage2D(
@@ -797,6 +813,36 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::bindBuffer(
     WebGLBuffer* buffer = ScriptResourceTracker::ExternalToObject<WebGLBuffer>(arguments[3]);
 
     context->bindBuffer(target, buffer);
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK WebGLProjections::bufferSubData(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 5);
+
+    WebGLRenderingContext* context = ScriptResourceTracker::ExternalToObject<WebGLRenderingContext>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    GLenum target = ScriptHostUtilities::GLenumFromJsRef(arguments[2]);
+    GLsizeiptr offset = ScriptHostUtilities::GLsizeiptrFromJsRef(arguments[3]);
+
+    JsValueType dataType;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetValueType(arguments[4], &dataType));
+    RETURN_INVALID_REF_IF_FALSE(dataType == JsTypedArray || dataType == JsArrayBuffer);
+
+    ChakraBytePtr data;
+    unsigned int dataLength;
+    if (dataType == JsTypedArray)
+    {
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetTypedArrayStorage(arguments[4], &data, &dataLength, nullptr, nullptr));
+    }
+    else
+    {
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(arguments[4], &data, &dataLength));
+    }
+
+    context->bufferSubData(target, offset, data, dataLength);
     return JS_INVALID_REFERENCE;
 }
 
@@ -1322,8 +1368,7 @@ JsValueRef CHAKRA_CALLBACK WebGLProjections::uniform1i(
     // Sometimes uniform1i is called with a boolean value; convert it to 1|0 here
     if (JsNumberToInt(value, &intValue) == JsNoError) {
         context->uniform1i(location, intValue);
-    }
-    else if (JsBooleanToBool(value, &boolValue) == JsNoError) {
+    } else if (JsBooleanToBool(value, &boolValue) == JsNoError) {
         context->uniform1i(location, boolValue ? 1 : 0);
     }
 
