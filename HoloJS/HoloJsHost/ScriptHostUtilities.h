@@ -46,6 +46,8 @@ class ScriptHostUtilities {
     static GLsizei GLsizeiFromJsRef(JsValueRef value);
 
     static GLfloat GLfloatFromJsRef(JsValueRef value);
+
+    static bool CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer, byte* nativeBuffer, size_t nativeBufferLength);
 };
 
 }  // namespace Utilities

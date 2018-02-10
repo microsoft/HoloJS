@@ -6,6 +6,7 @@
     "XmlHttpRequest.js",
     "image.js",
     "webgl-context.js",
-    "2d-context.js"
+    "2d-context.js",
+    "websocket.js"
   ]
 }

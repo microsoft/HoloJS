@@ -75,6 +75,9 @@
     <ClCompile Include="VoiceInput.cpp">
       <Filter>Runtime\Input</Filter>
     </ClCompile>
+    <ClCompile Include="WebSocket.cpp">
+      <Filter>Interface\NativeSide</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -169,6 +172,9 @@
     <ClInclude Include="VoiceInput.h">
       <Filter>Runtime\Input</Filter>
     </ClInclude>
+    <ClInclude Include="WebSocket.h">
+      <Filter>Interface\NativeSide</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -197,6 +203,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\websocket.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
