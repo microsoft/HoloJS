@@ -13,3 +13,13 @@ typedef BYTE* ChakraBytePtr;
 
 #include <jsrt.h>
 #include <chakrart.h>
+
+class JsRefReleaseAtScopeExit {
+public:
+    JsRefReleaseAtScopeExit(JsValueRef ref) : m_ref(ref) {}
+
+    ~JsRefReleaseAtScopeExit() { JsRelease(m_ref, nullptr); }
+
+private:
+    JsValueRef m_ref;
+};

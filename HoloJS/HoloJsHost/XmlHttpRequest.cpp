@@ -155,11 +155,8 @@ _Use_decl_annotations_ JsValueRef CHAKRA_CALLBACK XmlHttpRequest::getResponse(
         RETURN_INVALID_REF_IF_FAILED(bufferByteAccess->Buffer(&responseNativeBuffer));
 
         JsValueRef returnArray;
-        void* responesExternalBuffer;
-        RETURN_INVALID_REF_IF_JS_ERROR(ScriptResourceTracker::CreateAndTrackExternalBuffer(
-            xhr->m_responseLength, &responesExternalBuffer, &returnArray));
-
-        CopyMemory(responesExternalBuffer, responseNativeBuffer, xhr->m_responseLength);
+        RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::CreateArrayBufferFromBuffer(
+            &returnArray, responseNativeBuffer, xhr->m_response->Length));
 
         return returnArray;
     }

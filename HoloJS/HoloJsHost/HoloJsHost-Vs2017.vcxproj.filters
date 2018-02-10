@@ -80,6 +80,8 @@
     </ClCompile>
     <ClCompile Include="SpatialAnchor.cpp">
       <Filter>Runtime\SpatialAnchors</Filter>
+    <ClCompile Include="WebSocket.cpp">
+      <Filter>Interface\NativeSide</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +182,8 @@
     </ClInclude>
     <ClInclude Include="SpatialAnchor.h">
       <Filter>Runtime\SpatialAnchors</Filter>
+    <ClInclude Include="WebSocket.h">
+      <Filter>Interface\NativeSide</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +213,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\websocket.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>

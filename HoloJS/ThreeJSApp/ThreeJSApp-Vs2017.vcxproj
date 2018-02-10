@@ -216,6 +216,12 @@
     <None Include="Scripts\canvas-rendering.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\chat.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scripts\helvetiker_regular.typeface.json">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\HolographicCamera.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -226,6 +232,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\shadows.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Scripts\socket.io.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Scripts\surface-reconstruction.js">
