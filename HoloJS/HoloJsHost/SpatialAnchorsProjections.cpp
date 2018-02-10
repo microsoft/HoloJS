@@ -22,6 +22,8 @@ bool SpatialAnchorsProjections::Initialize(SpatialStationaryFrameOfReference ^ f
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"enumerateAnchors", L"anchors", enumerateAnchors));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"openAnchor", L"anchors", openAnchor));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"saveAnchor", L"anchors", saveAnchor));
+
+    return true;
 }
 
 JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::createAnchor(
@@ -56,7 +58,11 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::openAnchor(
 
     wstring anchorName;
     RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], anchorName));
-    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(arguments[2], nullptr));
+
+    auto callback = arguments[2];
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
+
+    openAnchorAsync(anchorName, callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -66,50 +72,110 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::enumerateAnchors(
 {
     RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
 
-    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(arguments[1], nullptr));
+    auto callback = arguments[1];
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
+
+    enumerateAnchorsAsync(callback);
+
+    return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::saveAnchor(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
+
+    auto anchorRef = arguments[1];
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(anchorRef, nullptr));
+    auto anchor = ScriptResourceTracker::ExternalToObject<HologramJS::Spatial::SpatialAnchor>(anchorRef);
+    RETURN_INVALID_REF_IF_NULL(anchor);
+
+    wstring anchorName;
+    RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], anchorName));
+
+    auto callback = arguments[3];
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
+    
+    saveAnchorAsync(anchorName, anchor, callback);
 
     return JS_INVALID_REFERENCE;
 }
 
 task<void> SpatialAnchorsProjections::enumerateAnchorsAsync(JsValueRef callback)
 {
+    auto autoReleaseCallback = JsRefReleaseAtScopeExit(callback);
     auto anchorStore = await SpatialAnchorManager::RequestStoreAsync();
 
     auto savedAnchors = anchorStore->GetAllSavedAnchors();
 
+    JsValueRef resultArray;
+    EXIT_IF_JS_ERROR(JsCreateArray(savedAnchors->Size, &resultArray));
+
     auto iterator = savedAnchors->First();
+    int index = 0;
     while (iterator->HasCurrent) {
-        JsValueRef arguments[2];
-        arguments[0] = callback;
-        ExternalObject* externalAnchor;
+        JsValueRef anchorEntry;
+        EXIT_IF_JS_ERROR(JsCreateObject(&anchorEntry));
+
+        JsValueRef idRef;
+        EXIT_IF_JS_ERROR(JsPointerToString(iterator->Current->Key->Data(), iterator->Current->Key->Length(), &idRef));
+        EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(anchorEntry, L"id", idRef));
+
+        auto externalAnchor = new ExternalObject();
         EXIT_IF_JS_ERROR(externalAnchor->Initialize(
             HologramJS::Spatial::SpatialAnchor::FromSpatialAnchor(iterator->Current->Value)));
-        arguments[1] = ScriptResourceTracker::ObjectToDirectExternal(externalAnchor);
+        auto anchorRef = ScriptResourceTracker::ObjectToDirectExternal(externalAnchor);
+        EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(anchorEntry, L"anchor", anchorRef));
 
-        JsValueRef result;
-        EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
+        JsValueRef indexRef;
+        EXIT_IF_JS_ERROR(JsIntToNumber(index, &indexRef));
+
+        JsSetIndexedProperty(resultArray, indexRef, anchorEntry);
     }
 
-    JsRelease(callback, nullptr);
+    JsValueRef arguments[2];
+    arguments[0] = callback;
+    arguments[1] = resultArray;
+
+    JsValueRef result;
+    EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
 }
 
 task<void> SpatialAnchorsProjections::openAnchorAsync(const wstring anchorName, JsValueRef callback)
 {
+    auto autoReleaseCallback = JsRefReleaseAtScopeExit(callback);
     auto anchorStore = await SpatialAnchorManager::RequestStoreAsync();
 
     auto savedAnchors = anchorStore->GetAllSavedAnchors();
     auto anchor = savedAnchors->Lookup(Platform::StringReference(anchorName.c_str()));
 
-    auto iterator = savedAnchors->First();
-    while (iterator->HasCurrent) {
-        JsValueRef arguments[2];
-        arguments[0] = callback;
-        ExternalObject* externalAnchor;
-        EXIT_IF_JS_ERROR(externalAnchor->Initialize(
-            HologramJS::Spatial::SpatialAnchor::FromSpatialAnchor(iterator->Current->Value)));
+    JsValueRef arguments[2];
+    arguments[0] = callback;
+    if (anchor) {
+        auto externalAnchor = new ExternalObject();
+        EXIT_IF_JS_ERROR(externalAnchor->Initialize(HologramJS::Spatial::SpatialAnchor::FromSpatialAnchor(anchor)));
         arguments[1] = ScriptResourceTracker::ObjectToDirectExternal(externalAnchor);
-
-        JsValueRef result;
-        EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
+    } else {
+        EXIT_IF_JS_ERROR(JsGetUndefinedValue(&arguments[1]));
     }
+
+    JsValueRef result;
+    EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
+}
+
+task<void> SpatialAnchorsProjections::saveAnchorAsync(const wstring anchorName,
+                                                      HologramJS::Spatial::SpatialAnchor* anchor,
+                                                      JsValueRef callback)
+{
+    auto autoReleaseCallback = JsRefReleaseAtScopeExit(callback);
+    auto anchorStore = await SpatialAnchorManager::RequestStoreAsync();
+
+    auto saveResult = anchorStore->TrySave(Platform::StringReference(anchorName.c_str()), anchor->m_anchor);
+
+    JsValueRef arguments[2];
+    arguments[0] = callback;
+    EXIT_IF_JS_ERROR(JsBoolToBoolean(saveResult, &arguments[1]));
+
+    JsValueRef result;
+    EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
 }

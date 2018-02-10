@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ChakraForHoloJS.h"
+#include "SpatialAnchor.h"
 
 namespace HologramJS {
 namespace Spatial {
@@ -30,10 +31,19 @@ class SpatialAnchorsProjections {
                                                  unsigned short argumentCount,
                                                  PVOID callbackData);
 
+    static JsValueRef CHAKRA_CALLBACK saveAnchor(JsValueRef callee,
+                                                 bool isConstructCall,
+                                                 JsValueRef* arguments,
+                                                 unsigned short argumentCount,
+                                                 PVOID callbackData);
+
     static Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^ m_frameOfReference;
 
-    concurrency::task<void> enumerateAnchorsAsync(JsValueRef callback);
-    concurrency::task<void> openAnchorAsync(const std::wstring anchorName, JsValueRef callback);
+    static concurrency::task<void> enumerateAnchorsAsync(JsValueRef callback);
+    static concurrency::task<void> openAnchorAsync(const std::wstring anchorName, JsValueRef callback);
+    static concurrency::task<void> saveAnchorAsync(const std::wstring anchorName,
+                                                   HologramJS::Spatial::SpatialAnchor* anchor,
+                                                   JsValueRef callback);
 };
 
 }  // namespace Spatial
