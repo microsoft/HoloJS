@@ -8,6 +8,7 @@
   "canvas-rendering.js",
   "basic-cube.js",
   "shadows.js",
-  "socket.io.js", 
+  "socket.io.js",
   "chat.js",
+  "spatial-anchors.js",
   "app.js" ] }
