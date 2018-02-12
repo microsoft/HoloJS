@@ -10,7 +10,13 @@ class SpatialAnchorsProjections {
     SpatialAnchorsProjections() {}
     ~SpatialAnchorsProjections() {}
 
-    static bool Initialize(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^ frameOfReference);
+    static bool Initialize();
+
+    static void SetStationaryFrameOfReference(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
+                                              frameOfReference)
+    {
+        m_frameOfReference = frameOfReference;
+    }
 
    private:
     static JsValueRef CHAKRA_CALLBACK createAnchor(JsValueRef callee,
@@ -37,12 +43,38 @@ class SpatialAnchorsProjections {
                                                  unsigned short argumentCount,
                                                  PVOID callbackData);
 
+    static JsValueRef CHAKRA_CALLBACK deleteAnchor(JsValueRef callee,
+                                                   bool isConstructCall,
+                                                   JsValueRef* arguments,
+                                                   unsigned short argumentCount,
+                                                   PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK importAnchor(JsValueRef callee,
+                                                   bool isConstructCall,
+                                                   JsValueRef* arguments,
+                                                   unsigned short argumentCount,
+                                                   PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK exportAnchor(JsValueRef callee,
+                                                   bool isConstructCall,
+                                                   JsValueRef* arguments,
+                                                   unsigned short argumentCount,
+                                                   PVOID callbackData);
+
+    static JsValueRef CHAKRA_CALLBACK getTransformToOrigin(JsValueRef callee,
+                                                           bool isConstructCall,
+                                                           JsValueRef* arguments,
+                                                           unsigned short argumentCount,
+                                                           PVOID callbackData);
+
     static Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^ m_frameOfReference;
 
     static concurrency::task<void> enumerateAnchorsAsync(JsValueRef callback);
     static concurrency::task<void> openAnchorAsync(const std::wstring anchorName, JsValueRef callback);
+    static concurrency::task<void> deleteAnchorAsync(const std::wstring anchorName, JsValueRef callback);
     static concurrency::task<void> saveAnchorAsync(const std::wstring anchorName,
                                                    HologramJS::Spatial::SpatialAnchor* anchor,
+                                                   JsValueRef anchorRef,
                                                    JsValueRef callback);
 };
 

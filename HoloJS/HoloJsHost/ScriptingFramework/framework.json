@@ -7,6 +7,7 @@
     "image.js",
     "webgl-context.js",
     "2d-context.js",
-    "websocket.js"
+    "websocket.js",
+    "spatial-anchors.js"
   ]
 }

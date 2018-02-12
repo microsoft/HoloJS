@@ -80,6 +80,7 @@
     </ClCompile>
     <ClCompile Include="SpatialAnchor.cpp">
       <Filter>Runtime\SpatialAnchors</Filter>
+    </ClCompile>
     <ClCompile Include="WebSocket.cpp">
       <Filter>Interface\NativeSide</Filter>
     </ClCompile>
@@ -182,6 +183,7 @@
     </ClInclude>
     <ClInclude Include="SpatialAnchor.h">
       <Filter>Runtime\SpatialAnchors</Filter>
+    </ClInclude>
     <ClInclude Include="WebSocket.h">
       <Filter>Interface\NativeSide</Filter>
     </ClInclude>
@@ -216,6 +218,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\websocket.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\spatial-anchors.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
