@@ -24,7 +24,7 @@ bool SpatialAnchorsProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"openAnchor", L"anchors", openAnchor));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"saveAnchor", L"anchors", saveAnchor));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"deleteAnchor", L"anchors", deleteAnchor));
-    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"importAnchor", L"anchors", importAnchor));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"importAnchors", L"anchors", importAnchors));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"exportAnchor", L"anchors", exportAnchor));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getTransformToOrigin", L"anchors", getTransformToOrigin));
 
@@ -178,7 +178,7 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::exportAnchor(
     return JS_INVALID_REFERENCE;
 }
 
-JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::importAnchor(
+JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::importAnchors(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
     RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
@@ -189,7 +189,7 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::importAnchor(
     // Get pointer to the script's array
     BYTE* scriptArrayPointer;
     unsigned int scriptArrayLength;
-    RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(&dataRef, &scriptArrayPointer, &scriptArrayLength));
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(dataRef, &scriptArrayPointer, &scriptArrayLength));
 
     // Create an IBuffer over the script's array
     Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> bufferOnMemory;
@@ -201,7 +201,7 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::importAnchor(
     auto callback = arguments[2];
     RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
 
-    importAnchorAsync(dataRef, anchorBuffer, callback);
+    importAnchorsAsync(dataRef, anchorBuffer, callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -295,7 +295,7 @@ task<void> SpatialAnchorsProjections::deleteAnchorAsync(const wstring anchorName
     }
 }
 
-task<void> SpatialAnchorsProjections::importAnchorAsync(JsValueRef dataRef, IBuffer ^ anchorBuffer, JsValueRef callback)
+task<void> SpatialAnchorsProjections::importAnchorsAsync(JsValueRef dataRef, IBuffer ^ anchorBuffer, JsValueRef callback)
 {
     auto autoReleaseDataRef = JsRefReleaseAtScopeExit(dataRef);
     auto autoReleaseCallback = JsRefReleaseAtScopeExit(callback);
@@ -308,8 +308,7 @@ task<void> SpatialAnchorsProjections::importAnchorAsync(JsValueRef dataRef, IBuf
     InMemoryRandomAccessStream ^ stream = ref new InMemoryRandomAccessStream();
     await stream->WriteAsync(anchorBuffer);
 
-    auto asyncResult = SpatialAnchorTransferManager::TryImportAnchorsAsync(stream->GetInputStreamAt(0));
-    auto importResult = asyncResult->GetResults();
+    auto importResult = await SpatialAnchorTransferManager::TryImportAnchorsAsync(stream->GetInputStreamAt(0));
     EXIT_IF_TRUE(importResult == nullptr);
 
     // Create a JSON with the result: [{ id : "name", anchor : <anchorObject>}]

@@ -62,3 +62,29 @@ holographic.anchors.saveAnchor = function (anchor, name, done) {
         }
     });
 };
+
+holographic.anchors.exportAnchor = function (anchor, name, done) {
+    holographic.nativeInterface.anchors.exportAnchor(anchor.external, name, function (result) {
+        if (arguments.length > 0 && (typeof result !== 'undefined')) {
+            done({ success: true, anchorBuffer : result });
+        } else {
+            done({ success: false });
+        }
+    });
+};
+
+holographic.anchors.importAnchors = function (buffer, done) {
+    holographic.nativeInterface.anchors.importAnchors(buffer, function (importedNativeAnchors) {
+        if (arguments.length > 0) {
+            importedAnchorsResult = [];
+            for (var i = 0; i < importedNativeAnchors.length; i++) {
+                let scriptAnchor = new SpatialAnchor();
+                scriptAnchor.external = importedNativeAnchors[i].anchor;
+                importedAnchorsResult.push({ anchor: scriptAnchor, id: importedNativeAnchors[i].id });
+            }
+            done(importedAnchorsResult);
+        } else {
+            done([]);
+        }
+    });
+};

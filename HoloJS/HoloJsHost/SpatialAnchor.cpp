@@ -86,7 +86,7 @@ task<void> SpatialAnchor::ExportAsync(const wstring anchorName, JsValueRef ancho
 	// Get pointer to the script's array
 	BYTE* anchorNativeBuffer;
 	unsigned int anchorBufferLength;
-	EXIT_IF_JS_ERROR(JsGetArrayBufferStorage(&anchorStreamRef, &anchorNativeBuffer, &anchorBufferLength));
+	EXIT_IF_JS_ERROR(JsGetArrayBufferStorage(anchorStreamRef, &anchorNativeBuffer, &anchorBufferLength));
 
 	// Create an IBuffer over the script's array
 	Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> anchorBufferOnMemory;

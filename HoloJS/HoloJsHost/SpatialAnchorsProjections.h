@@ -49,7 +49,7 @@ class SpatialAnchorsProjections {
                                                    unsigned short argumentCount,
                                                    PVOID callbackData);
 
-    static JsValueRef CHAKRA_CALLBACK importAnchor(JsValueRef callee,
+    static JsValueRef CHAKRA_CALLBACK importAnchors(JsValueRef callee,
                                                    bool isConstructCall,
                                                    JsValueRef* arguments,
                                                    unsigned short argumentCount,
@@ -72,7 +72,7 @@ class SpatialAnchorsProjections {
     static concurrency::task<void> enumerateAnchorsAsync(JsValueRef callback);
     static concurrency::task<void> openAnchorAsync(const std::wstring anchorName, JsValueRef callback);
     static concurrency::task<void> deleteAnchorAsync(const std::wstring anchorName, JsValueRef callback);
-    static concurrency::task<void> importAnchorAsync(JsValueRef dataRef, Windows::Storage::Streams::IBuffer ^ anchorBuffer,
+    static concurrency::task<void> importAnchorsAsync(JsValueRef dataRef, Windows::Storage::Streams::IBuffer ^ anchorBuffer,
                                                      JsValueRef callback);
 };
 

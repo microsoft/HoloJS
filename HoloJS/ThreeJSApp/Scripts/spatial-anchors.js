@@ -46,10 +46,10 @@ function SpatialAnchorsExample(scene, renderer) {
         // Load the location where we saved the cube
         holographic.anchors.openAnchor("cubeLocation", function (anchor) {
             if (anchor !== null) {
-                self.cubeAnchor = anchor;
 
                 let anchorToOrigin = anchor.transformToOrigin();
                 if (anchorToOrigin) {
+                    self.cubeAnchor = anchor;
                     // Decompose the transform to origin to retrieve position and rotation
                     let anchorToOriginMatrix = new THREE.Matrix4();
                     anchorToOriginMatrix.fromArray(anchorToOrigin);
@@ -69,6 +69,7 @@ function SpatialAnchorsExample(scene, renderer) {
                 }
             } else {
                 // There is no saved anchor; place the cube at the default location
+                self.cubeAnchor = new SpatialAnchor({ x: 0, y: 0, z: 0 });
                 self.cube.position.set(0, 0, 0);
                 scene.add(self.cube);
             }
@@ -90,7 +91,7 @@ function SpatialAnchorsExample(scene, renderer) {
     // Listen to voice commands;
     // "save" creates an anchor at the current location and saves it to the store
     // "reset" deletes a previously stored anchor and reset the cube to the default location
-    window.voiceCommands = ["save", "reset"];
+    window.voiceCommands = ["save", "reset", "export", "import"];
     window.addEventListener("voicecommand", onVoiceCommand);
     function onVoiceCommand(voiceEvent) {
         if (voiceEvent.confidence < 0.5) {
@@ -98,18 +99,36 @@ function SpatialAnchorsExample(scene, renderer) {
         }
 
         if (voiceEvent.command === "save") {
-            let cubeAnchor = new SpatialAnchor({ x: self.cube.position.x, y: self.cube.position.y, z: self.cube.position.z });
-            holographic.anchors.saveAnchor(cubeAnchor, "cubeLocation", function (result) {
+            setText("Saving...");
+            self.cubeAnchor = new SpatialAnchor({ x: self.cube.position.x, y: self.cube.position.y, z: self.cube.position.z });
+            holographic.anchors.saveAnchor(self.cubeAnchor, "cubeLocation", function (result) {
                 if (result.success === true) {
-                    setText("Anchor saved");
+                    setText("Save successful");
                 } else {
-                    setText("Failed to save!");
+                    setText("Save failed!");
                 }
             });
         } else if (voiceEvent.command === "reset") {
+            setText("Reseting...");
             holographic.anchors.deleteAnchor("cubeLocation", function () {
                 self.cube.position.set(0, 0, 0);
                 setText("Anchor reset!");
+            });
+        } else if (voiceEvent.command === "export" && self.cubeAnchor) {
+            setText("Exporting...");
+            // Export the anchor to a stream
+            holographic.anchors.exportAnchor(self.cubeAnchor, "exportedCubeLocation", function (result) {
+                if (result.success === true) {
+                    self.exportedAnchorBuffer = result.anchorBuffer;
+                    setText("Exported\n" + result.anchorBuffer.byteLength + "\nbytes");
+                } else {
+                    setText("Export failed!");
+                }
+            });
+        } else if (voiceEvent.command === "import" && self.exportedAnchorBuffer) {
+            setText("Importing ...");
+            holographic.anchors.importAnchors(self.exportedAnchorBuffer, function (result) {
+                setText("Imported\n" + result.length + "\nanchors");
             });
         }
     }
