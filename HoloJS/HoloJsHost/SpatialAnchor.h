@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ChakraForHoloJS.h"
 #include "IRelease.h"
 
 namespace HologramJS {
@@ -21,6 +22,10 @@ class SpatialAnchor : public HologramJS::Utilities::IRelease {
    private:
     SpatialAnchor() {}
     Windows::Perception::Spatial::SpatialAnchor ^ m_anchor;
+
+    concurrency::task<void> ExportAsync(const std::wstring anchorName, JsValueRef anchorRef, JsValueRef callback);
+
+    concurrency::task<void> SaveAsync(const std::wstring anchorName, JsValueRef anchorRef, JsValueRef callback);
 };
 
 }  // namespace Spatial

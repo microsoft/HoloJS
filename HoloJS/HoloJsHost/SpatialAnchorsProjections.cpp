@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SpatialAnchorsProjections.h"
 #include "ExternalObject.h"
+#include "IBufferOnMemory.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "SpatialAnchor.h"
@@ -10,6 +11,7 @@ using namespace HologramJS::Spatial;
 using namespace HologramJS::API;
 using namespace Windows::Foundation::Numerics;
 using namespace Windows::Perception::Spatial;
+using namespace Windows::Storage::Streams;
 using namespace concurrency;
 using namespace std;
 
@@ -150,7 +152,7 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::saveAnchor(
     auto callback = arguments[3];
     RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
 
-    saveAnchorAsync(anchorName, anchor, anchorRef, callback);
+    anchor->SaveAsync(anchorName, anchorRef, callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -171,7 +173,7 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::exportAnchor(
     auto callback = arguments[3];
     RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
 
-    saveAnchorAsync(anchorName, anchor, anchorRef, callback);
+    anchor->ExportAsync(anchorName, anchorRef, callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -179,20 +181,27 @@ JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::exportAnchor(
 JsValueRef CHAKRA_CALLBACK SpatialAnchorsProjections::importAnchor(
     JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
 {
-    RETURN_INVALID_REF_IF_FALSE(argumentCount == 4);
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3);
 
-    auto anchorRef = arguments[1];
-    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(anchorRef, nullptr));
-    auto anchor = ScriptResourceTracker::ExternalToObject<HologramJS::Spatial::SpatialAnchor>(anchorRef);
-    RETURN_INVALID_REF_IF_NULL(anchor);
+    auto dataRef = arguments[1];
+    RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(dataRef, nullptr));
 
-    wstring anchorName;
-    RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], anchorName));
+    // Get pointer to the script's array
+    BYTE* scriptArrayPointer;
+    unsigned int scriptArrayLength;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsGetArrayBufferStorage(&dataRef, &scriptArrayPointer, &scriptArrayLength));
 
-    auto callback = arguments[3];
+    // Create an IBuffer over the script's array
+    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> bufferOnMemory;
+    Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
+        &bufferOnMemory, scriptArrayPointer, scriptArrayLength);
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(bufferOnMemory.Get());
+    IBuffer ^ anchorBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+    auto callback = arguments[2];
     RETURN_INVALID_REF_IF_JS_ERROR(JsAddRef(callback, nullptr));
 
-    saveAnchorAsync(anchorName, anchor, anchorRef, callback);
+    importAnchorAsync(dataRef, anchorBuffer, callback);
 
     return JS_INVALID_REFERENCE;
 }
@@ -286,31 +295,58 @@ task<void> SpatialAnchorsProjections::deleteAnchorAsync(const wstring anchorName
     }
 }
 
-task<void> SpatialAnchorsProjections::saveAnchorAsync(const wstring anchorName,
-                                                      HologramJS::Spatial::SpatialAnchor* anchor,
-                                                      JsValueRef anchorRef,
-                                                      JsValueRef callback)
+task<void> SpatialAnchorsProjections::importAnchorAsync(JsValueRef dataRef, IBuffer ^ anchorBuffer, JsValueRef callback)
 {
+    auto autoReleaseDataRef = JsRefReleaseAtScopeExit(dataRef);
     auto autoReleaseCallback = JsRefReleaseAtScopeExit(callback);
-    auto autoReleaseAnchorRef = JsRefReleaseAtScopeExit(anchorRef);
-    auto autoInvokeCallbackOnFailure = JsCallAtScopeExit(callback);
+    auto autoInvokeCallback = JsCallAtScopeExit(callback);
 
-    auto anchorStore = await SpatialAnchorManager::RequestStoreAsync();
-    EXIT_IF_TRUE(anchorStore == nullptr);
+    // Request access to the transfer manager
+    auto accessResult = await SpatialAnchorTransferManager::RequestAccessAsync();
+    EXIT_IF_TRUE(accessResult != SpatialPerceptionAccessStatus::Allowed);
 
-    auto savedAnchors = anchorStore->GetAllSavedAnchors();
-    if (savedAnchors->HasKey(Platform::StringReference(anchorName.c_str()).GetString())) {
-        anchorStore->Remove(Platform::StringReference(anchorName.c_str()).GetString());
+    InMemoryRandomAccessStream ^ stream = ref new InMemoryRandomAccessStream();
+    await stream->WriteAsync(anchorBuffer);
+
+    auto asyncResult = SpatialAnchorTransferManager::TryImportAnchorsAsync(stream->GetInputStreamAt(0));
+    auto importResult = asyncResult->GetResults();
+    EXIT_IF_TRUE(importResult == nullptr);
+
+    // Create a JSON with the result: [{ id : "name", anchor : <anchorObject>}]
+
+    JsValueRef resultArray;
+    EXIT_IF_JS_ERROR(JsCreateArray(importResult->Size, &resultArray));
+
+    auto iterator = importResult->First();
+    int index = 0;
+    while (iterator->HasCurrent) {
+        JsValueRef anchorEntry;
+        EXIT_IF_JS_ERROR(JsCreateObject(&anchorEntry));
+
+        JsValueRef idRef;
+        EXIT_IF_JS_ERROR(JsPointerToString(iterator->Current->Key->Data(), iterator->Current->Key->Length(), &idRef));
+        EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(anchorEntry, L"id", idRef));
+
+        auto externalAnchor = new ExternalObject();
+        EXIT_IF_FALSE(externalAnchor->Initialize(
+            HologramJS::Spatial::SpatialAnchor::FromSpatialAnchor(iterator->Current->Value)));
+        auto anchorRef = ScriptResourceTracker::ObjectToDirectExternal(externalAnchor);
+        EXIT_IF_FALSE(ScriptHostUtilities::SetJsProperty(anchorEntry, L"anchor", anchorRef));
+
+        JsValueRef indexRef;
+        EXIT_IF_JS_ERROR(JsIntToNumber(index, &indexRef));
+
+        EXIT_IF_JS_ERROR(JsSetIndexedProperty(resultArray, indexRef, anchorEntry));
+
+        iterator->MoveNext();
     }
-
-    auto saveResult = anchorStore->TrySave(Platform::StringReference(anchorName.c_str()), anchor->m_anchor);
 
     JsValueRef arguments[2];
     arguments[0] = callback;
-    EXIT_IF_JS_ERROR(JsBoolToBoolean(saveResult, &arguments[1]));
+    arguments[1] = resultArray;
 
     JsValueRef result;
     EXIT_IF_JS_ERROR(JsCallFunction(callback, arguments, ARRAYSIZE(arguments), &result));
 
-    autoInvokeCallbackOnFailure.Revoke();
+    autoInvokeCallback.Revoke();
 }

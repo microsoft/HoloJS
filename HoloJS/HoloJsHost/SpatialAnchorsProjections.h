@@ -72,10 +72,8 @@ class SpatialAnchorsProjections {
     static concurrency::task<void> enumerateAnchorsAsync(JsValueRef callback);
     static concurrency::task<void> openAnchorAsync(const std::wstring anchorName, JsValueRef callback);
     static concurrency::task<void> deleteAnchorAsync(const std::wstring anchorName, JsValueRef callback);
-    static concurrency::task<void> saveAnchorAsync(const std::wstring anchorName,
-                                                   HologramJS::Spatial::SpatialAnchor* anchor,
-                                                   JsValueRef anchorRef,
-                                                   JsValueRef callback);
+    static concurrency::task<void> importAnchorAsync(JsValueRef dataRef, Windows::Storage::Streams::IBuffer ^ anchorBuffer,
+                                                     JsValueRef callback);
 };
 
 }  // namespace Spatial
