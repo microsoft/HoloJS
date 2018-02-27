@@ -31,7 +31,7 @@
     };
 
     this.requestAnimationFrame = function (callback) {
-        holographic.drawCallback = callback;
+        window.requestAnimationFrame(callback);
     };
 }
 
