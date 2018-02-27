@@ -29,6 +29,10 @@
     this.submitFrame = function () {
         
     };
+
+    this.requestAnimationFrame = function (callback) {
+        holographic.drawCallback = callback;
+    };
 }
 
 function VRPose(viewLeft, viewRight) {
