@@ -254,6 +254,30 @@ task<void> XmlHttpRequest::ReadFromPackageAsync()
     FireStateChanged();
 }
 
+bool XmlHttpRequest::IsContentHeader(std::wstring headerName)
+{
+    if (_wcsicmp(headerName.c_str(), L"content-type") == 0) {
+        return true;
+    }
+
+    return false;
+}
+
+void XmlHttpRequest::SetHeaders(HttpRequestMessage ^ requestMessage)
+{
+    for (const auto& headerPair : m_requestHeaders) {
+        if (IsContentHeader(headerPair.first)) {
+            if (m_httpContent != nullptr) {
+                m_httpContent->Headers->Insert(Platform::StringReference(headerPair.first.c_str()),
+                                               Platform::StringReference(headerPair.second.c_str()));
+            }
+        } else {
+            requestMessage->Headers->Insert(Platform::StringReference(headerPair.first.c_str()),
+                                            Platform::StringReference(headerPair.second.c_str()));
+        }
+    }
+}
+
 task<void> XmlHttpRequest::SendAsync()
 {
     Windows::Foundation::Uri ^ uri;
@@ -269,16 +293,7 @@ task<void> XmlHttpRequest::SendAsync()
     Windows::Web::Http::HttpClient ^ httpClient = ref new Windows::Web::Http::HttpClient();
 
     HttpRequestMessage ^ requestMessage = ref new HttpRequestMessage();
-    for (const auto& headerPair : m_requestHeaders) {
-        if (_wcsicmp(headerPair.first.c_str(), L"content-type") == 0) {
-            if (m_contentType == HttpContentType::Buffer) {
-                m_httpContent->Headers->ContentType->MediaType = Platform::StringReference(headerPair.second.c_str());
-            }
-        } else {
-            requestMessage->Headers->Append(Platform::StringReference(headerPair.first.c_str()),
-                                            Platform::StringReference(headerPair.second.c_str()));
-        }
-    }
+    SetHeaders(requestMessage);
 
     HttpResponseMessage ^ responseMessage;
 

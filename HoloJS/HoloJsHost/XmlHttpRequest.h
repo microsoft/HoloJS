@@ -54,6 +54,9 @@ class XmlHttpRequest : public HologramJS::Utilities::ElementWithEvents, public H
     concurrency::task<void> ReadFromPackageAsync();
     concurrency::task<void> SendAsync();
 
+    bool IsContentHeader(std::wstring headerName);
+    void SetHeaders(Windows::Web::Http::HttpRequestMessage ^ requestMessage);
+
     void FireStateChanged();
 
     static JsValueRef m_createXHRFunction;
