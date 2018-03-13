@@ -230,6 +230,8 @@
     <ClInclude Include="ScriptHostUtilities.h" />
     <ClInclude Include="ScriptResourceTracker.h" />
     <ClInclude Include="ScriptsLoader.h" />
+    <ClInclude Include="SpatialAnchor.h" />
+    <ClInclude Include="SpatialAnchorsProjections.h" />
     <ClInclude Include="SpatialInput.h" />
     <ClInclude Include="SpatialMapping.h" />
     <ClInclude Include="System.h" />
@@ -266,6 +268,8 @@
     <ClCompile Include="ScriptHostUtilities.cpp" />
     <ClCompile Include="ScriptResourceTracker.cpp" />
     <ClCompile Include="ScriptsLoader.cpp" />
+    <ClCompile Include="SpatialAnchor.cpp" />
+    <ClCompile Include="SpatialAnchorsProjections.cpp" />
     <ClCompile Include="SpatialInput.cpp" />
     <ClCompile Include="SpatialMapping.cpp" />
     <ClCompile Include="System.cpp" />
@@ -295,6 +299,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\Image.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\spatial-anchors.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\Video.js">

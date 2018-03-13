@@ -147,6 +147,20 @@ class WindowElement {
     }
     JsValueRef setVoiceCommands(JsValueRef* arguments, unsigned short argumentCount);
 
+    JsValueRef m_btoa = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK btoa(JsValueRef callee,
+                                           bool isConstructCall,
+                                           JsValueRef* arguments,
+                                           unsigned short argumentCount,
+                                           PVOID callbackData);
+
+    JsValueRef m_atob = JS_INVALID_REFERENCE;
+    static JsValueRef CHAKRA_CALLBACK atob(JsValueRef callee,
+                                           bool isConstructCall,
+                                           JsValueRef* arguments,
+                                           unsigned short argumentCount,
+                                           PVOID callbackData);
+
     float* m_viewMatrixMidStoragePointer = nullptr;
     JsValueRef m_viewMatrixMidScriptProjection = JS_INVALID_REFERENCE;
     float* m_viewMatrixLeftStoragePointer = nullptr;

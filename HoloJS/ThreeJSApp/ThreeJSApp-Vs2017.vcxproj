@@ -237,6 +237,9 @@
     <None Include="Scripts\socket.io.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\spatial-anchors.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\surface-reconstruction.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

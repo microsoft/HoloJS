@@ -23,3 +23,15 @@ public:
 private:
     JsValueRef m_ref;
 };
+
+class JsCallAtScopeExit {
+public:
+    JsCallAtScopeExit(JsValueRef func) : m_function(func) {}
+
+    void Revoke() { m_function = JS_INVALID_REFERENCE; }
+
+    ~JsCallAtScopeExit() { if (m_function != JS_INVALID_REFERENCE) JsCallFunction(m_function, &m_function, 1, nullptr); }
+
+private:
+    JsValueRef m_function;
+};

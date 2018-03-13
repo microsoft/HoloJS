@@ -75,6 +75,12 @@
     <ClCompile Include="VoiceInput.cpp">
       <Filter>Runtime\Input</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialAnchorsProjections.cpp">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialAnchor.cpp">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClCompile>
     <ClCompile Include="WebSocket.cpp">
       <Filter>Interface\NativeSide</Filter>
     </ClCompile>
@@ -172,6 +178,12 @@
     <ClInclude Include="VoiceInput.h">
       <Filter>Runtime\Input</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialAnchorsProjections.h">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialAnchor.h">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClInclude>
     <ClInclude Include="WebSocket.h">
       <Filter>Interface\NativeSide</Filter>
     </ClInclude>
@@ -206,6 +218,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\websocket.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\spatial-anchors.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
@@ -245,6 +260,9 @@
     </Filter>
     <Filter Include="Runtime\Utilities">
       <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\SpatialAnchors">
+      <UniqueIdentifier>{e0d6ac51-5d93-4b11-82da-14470e379388}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
