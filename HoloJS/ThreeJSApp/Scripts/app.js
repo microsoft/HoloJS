@@ -28,7 +28,7 @@ function update(delta, elapsed) {
 
     if (camera.update) camera.update();
 
-    if (sample.update) sample.update(delta, elapsed);
+    //if (sample.update) sample.update(delta, elapsed);
 
     renderer.render(scene, camera);
 }
@@ -37,16 +37,10 @@ function start() {
     update(clock.getDelta(), clock.getElapsedTime());
 }
 
-window.voiceCommands = ["start", "stop"];
-window.addEventListener("voicecommand", onVoiceCommand);
-
-
-function onVoiceCommand(voiceEvent) {
-    console.log("Voice command: " + voiceEvent.command + "; confidence: " + voiceEvent.confidence);
-}
-
 // The samples are usually mutually exclusive; enable them one at a time
 
+//var sample = new ChatWebsocketExample(scene, renderer);
+var sample = new SpatialAnchorsExample(scene, renderer);
 //var sample = new ShadowsExample(scene, renderer);
 //var sample = new BasicCubeExample(scene, renderer);
 //var sample = new CanvasRenderingExample(scene, renderer);

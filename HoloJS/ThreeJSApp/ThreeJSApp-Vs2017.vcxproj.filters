@@ -89,6 +89,18 @@
     <None Include="Scripts\sound.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\socket.io.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\chat.js">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\helvetiker_regular.typeface.json">
+      <Filter>Scripts</Filter>
+    </None>
+    <None Include="Scripts\spatial-anchors.js">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">

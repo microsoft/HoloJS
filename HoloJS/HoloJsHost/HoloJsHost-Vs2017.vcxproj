@@ -240,6 +240,8 @@
     <ClInclude Include="ScriptResourceTracker.h" />
     <ClInclude Include="ScriptsLoader.h" />
     <ClInclude Include="SoundBuffer.h" />
+    <ClInclude Include="SpatialAnchor.h" />
+    <ClInclude Include="SpatialAnchorsProjections.h" />
     <ClInclude Include="SpatialInput.h" />
     <ClInclude Include="SpatialMapping.h" />
     <ClInclude Include="System.h" />
@@ -250,6 +252,7 @@
     <ClInclude Include="WebGLProjections.h" />
     <ClInclude Include="WebGLRenderingContext.h" />
     <ClInclude Include="WebLoader.h" />
+    <ClInclude Include="WebSocket.h" />
     <ClInclude Include="WindowElement.h" />
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
@@ -282,6 +285,8 @@
     <ClCompile Include="ScriptHostUtilities.cpp" />
     <ClCompile Include="ScriptResourceTracker.cpp" />
     <ClCompile Include="ScriptsLoader.cpp" />
+    <ClCompile Include="SpatialAnchor.cpp" />
+    <ClCompile Include="SpatialAnchorsProjections.cpp" />
     <ClCompile Include="SpatialInput.cpp" />
     <ClCompile Include="SpatialMapping.cpp" />
     <ClCompile Include="System.cpp" />
@@ -292,6 +297,7 @@
     <ClCompile Include="WebGLProjections.cpp" />
     <ClCompile Include="WebGLRenderingContext.cpp" />
     <ClCompile Include="WebLoader.cpp" />
+    <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WindowElement.cpp" />
     <ClCompile Include="XmlHttpRequest.cpp" />
   </ItemGroup>
@@ -315,10 +321,16 @@
     <None Include="ScriptingFramework\Image.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ScriptingFramework\spatial-anchors.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ScriptingFramework\Video.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\webgl-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\websocket.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">

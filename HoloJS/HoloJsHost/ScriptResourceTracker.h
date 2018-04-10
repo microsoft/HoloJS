@@ -16,7 +16,7 @@ class ScriptResourceTracker {
                                                     JsValueRef* scriptBuffer)
     {
         *allocatedBuffer = new unsigned char[bufferLength];
-        return JsCreateExternalArrayBuffer(*allocatedBuffer, bufferLength, JsFinalizeArray, nullptr, scriptBuffer);
+        return JsCreateExternalArrayBuffer(*allocatedBuffer, bufferLength, JsFinalizeArray, *allocatedBuffer, scriptBuffer);
     }
 
     static void TrackObject(HologramJS::API::ExternalObject* object)

@@ -62,6 +62,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
         return holographic.nativeInterface.webgl.createTexture(this.glContext);
     };
 
+    this.deleteTexture = function (texture) {
+        return holographic.nativeInterface.webgl.deleteTexture(this.glContext, texture.external);
+    };
+
     this.bindTexture = function(target, texture) {
         if (texture) {
             return holographic.nativeInterface.webgl.bindTexture(this.glContext, target, texture.external);
@@ -248,6 +252,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
             // size is data
             return holographic.nativeInterface.webgl.bufferData2(this.glContext, target, size, usage);
         }
+    };
+
+    this.bufferSubData = function (target, offset, data) {
+        return holographic.nativeInterface.webgl.bufferSubData(this.glContext, target, offset, data);
     };
 
     this.deleteBuffer = function(buffer) {
@@ -447,6 +455,10 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
 
     this.lineWidth = function(width) {
         return holographic.nativeInterface.webgl.lineWidth(this.glContext, width);
+    };
+
+    this.polygonOffset = function (factor, units) {
+        return holographic.nativeInterface.webgl.polygonOffset(this.glContext, factor, units);
     };
 
     this.DEPTH_BUFFER_BIT = 0x00000100;

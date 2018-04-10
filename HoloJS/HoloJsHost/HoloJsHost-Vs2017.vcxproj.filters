@@ -96,6 +96,15 @@
     <ClCompile Include="PannerNode.cpp">
       <Filter>Audio</Filter>
     </ClCompile>
+    <ClCompile Include="SpatialAnchorsProjections.cpp">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialAnchor.cpp">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSocket.cpp">
+      <Filter>Interface\NativeSide</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HologramJS.h" />
@@ -220,6 +229,15 @@
     <ClInclude Include="AudioScheduledSourceNode.h">
       <Filter>Audio</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialAnchorsProjections.h">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialAnchor.h">
+      <Filter>Runtime\SpatialAnchors</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSocket.h">
+      <Filter>Interface\NativeSide</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -251,6 +269,12 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\audio-context.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\websocket.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\spatial-anchors.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
   </ItemGroup>
@@ -293,6 +317,9 @@
     </Filter>
     <Filter Include="Audio">
       <UniqueIdentifier>{dfdf3ffd-8473-471d-861b-d6b752a77ead}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\SpatialAnchors">
+      <UniqueIdentifier>{e0d6ac51-5d93-4b11-82da-14470e379388}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
