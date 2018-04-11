@@ -101,6 +101,7 @@
     <None Include="Scripts\spatial-anchors.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="ThreeJSApp-Vs2017_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">
