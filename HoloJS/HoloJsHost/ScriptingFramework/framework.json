@@ -8,6 +8,7 @@
     "webgl-context.js",
     "2d-context.js",
     "websocket.js",
-    "spatial-anchors.js"
+    "spatial-anchors.js",
+    "TextDecoder.js"
   ]
 }

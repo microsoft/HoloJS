@@ -304,6 +304,9 @@
     <None Include="ScriptingFramework\spatial-anchors.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ScriptingFramework\TextDecoder.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="ScriptingFramework\Video.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
