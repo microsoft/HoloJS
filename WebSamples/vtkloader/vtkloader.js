@@ -38,14 +38,14 @@ function start() {
 var loader = new THREE.VTKLoader();
 var material = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
-loader.load("liver.vtk", function (geometry) {
+loader.load("https://threejs.org/examples/models/vtk/bunny.vtk", function (geometry) {
 
     geometry.center();
     geometry.computeVertexNormals();
 
     var mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(0, 0, -1.5);
-    mesh.scale.multiplyScalar(0.01);
+    mesh.scale.multiplyScalar(0.5);
     scene.add(mesh);
 });
 
