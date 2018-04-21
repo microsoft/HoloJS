@@ -38,7 +38,7 @@ function start() {
 var loader = new THREE.VTKLoader();
 var material = new THREE.MeshLambertMaterial({ color: 0xffffff, side: THREE.DoubleSide });
 
-loader.load("https://threejs.org/examples/models/vtk/bunny.vtk", function (geometry) {
+loader.load("liver.vtk", function (geometry) {
 
     geometry.center();
     geometry.computeVertexNormals();
