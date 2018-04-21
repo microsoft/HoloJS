@@ -41,6 +41,9 @@ window.requestAnimationFrame = function (callback) {
     holographic.drawCallback = callback;
 };
 
+window.btoa = holographic.nativeInterface.window.btoa;
+window.atob = holographic.nativeInterface.window.atob;
+
 function makePerformance() {
     var start = Date.now();
     this.now = function () {

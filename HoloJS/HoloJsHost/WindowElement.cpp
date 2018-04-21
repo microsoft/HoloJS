@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "WindowElement.h"
+#include "IBufferOnMemory.h"
 #include "InputInterface.h"
 #include "ScriptErrorHandling.h"
 #include "ScriptHostUtilities.h"
@@ -9,6 +10,9 @@ using namespace HologramJS::API;
 using namespace HologramJS::Utilities;
 using namespace HologramJS::Input;
 using namespace std;
+using namespace Microsoft::WRL;
+using namespace Windows::Storage::Streams;
+using namespace Windows::Security::Cryptography;
 
 WindowElement::WindowElement() {}
 
@@ -36,6 +40,10 @@ bool WindowElement::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
         L"requestSpatialMappingData", L"window", requestSpatialMappingStatic, this, &m_setCallbackFunction));
 
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"atob", L"window", atob, this, &m_atob));
+
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"btoa", L"window", btoa, this, &m_btoa));
+
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(
         L"addEventListener", L"input", addEventListenerStatic, this, &m_addEventListener));
 
@@ -51,6 +59,54 @@ bool WindowElement::Initialize()
     RETURN_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::VSync), &m_vsyncEventType));
 
     return true;
+}
+
+JsValueRef CHAKRA_CALLBACK WindowElement::atob(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+    wstring encodedData;
+    RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[1], encodedData));
+
+    auto decodedBuffer = CryptographicBuffer::DecodeFromBase64String(Platform::StringReference(encodedData.c_str()));
+
+    Platform::Array<unsigned char>^ decodedArray;
+    CryptographicBuffer::CopyToByteArray(decodedBuffer, &decodedArray);
+
+    JsValueRef returnValue;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(reinterpret_cast<wchar_t*>(decodedArray->begin()), decodedArray->Length, &returnValue));
+
+    return returnValue;
+}
+
+JsValueRef CHAKRA_CALLBACK WindowElement::btoa(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 2);
+
+    // Copy the input string into a vector
+    vector<byte> dataToEncode;
+    wchar_t const * inputString;
+    size_t inputStringLength;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsStringToPointer(arguments[1], &inputString, &inputStringLength));
+    dataToEncode.resize(inputStringLength * sizeof(wchar_t));
+    memcpy(dataToEncode.data(), inputString, inputStringLength * 2);
+
+    // Wrap an IBuffer around the input vector
+    ComPtr<BufferOnMemory> dataToEncodeBuffer;
+    Details::MakeAndInitialize<BufferOnMemory>(&dataToEncodeBuffer, dataToEncode.data(), dataToEncode.size());
+    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(dataToEncodeBuffer.Get());
+    auto dataToEncodeIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+
+    // Encode the string to base64
+    auto encodedString = CryptographicBuffer::EncodeToBase64String(dataToEncodeIBuffer);
+
+    // Create the string result
+    JsValueRef returnValue;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(encodedString->Data(), encodedString->Length(), &returnValue));
+
+    return returnValue;
 }
 
 JsValueRef WindowElement::getBaseUrl(JsValueRef* arguments, unsigned short argumentCount)

@@ -15,6 +15,7 @@ using namespace Microsoft::Graphics::Canvas::Text;
 using namespace Windows::UI;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Numerics;
+using namespace std;
 
 bool CanvasProjections::Initialize()
 {
@@ -32,6 +33,7 @@ bool CanvasProjections::Initialize()
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"setHeight", L"canvas2d", setHeight));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getWidth", L"canvas2d", getWidth));
     RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"getHeight", L"canvas2d", getHeight));
+    RETURN_IF_FALSE(ScriptHostUtilities::ProjectFunction(L"toDataURL", L"canvas2d", toDataURL));
 
     return true;
 }
@@ -270,4 +272,34 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::setHeight(
     int height = ScriptHostUtilities::GLintFromJsRef(arguments[2]);
     context->setHeight(height);
     return JS_INVALID_REFERENCE;
+}
+
+JsValueRef CHAKRA_CALLBACK CanvasProjections::toDataURL(
+    JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, PVOID callbackData)
+{
+    RETURN_INVALID_REF_IF_FALSE(argumentCount == 3 || argumentCount == 4);
+
+    RenderingContext2D* context = ScriptResourceTracker::ExternalToObject<RenderingContext2D>(arguments[1]);
+    RETURN_INVALID_REF_IF_NULL(context);
+
+    wstring type;
+    RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], type));
+
+    double encoderOptions = 0.92f;
+    if (argumentCount == 4) {
+        JsValueType encoderOptionsType;
+        RETURN_INVALID_REF_IF_JS_ERROR(JsGetValueType(arguments[3], &encoderOptionsType));
+
+        if (encoderOptionsType != JsUndefined) {
+            encoderOptions = ScriptHostUtilities::GLfloatFromJsRef(arguments[3]);
+        }
+    }
+
+    wstring encodedImage;
+    RETURN_INVALID_REF_IF_FALSE(context->toDataURL(type, encoderOptions, &encodedImage));
+
+    JsValueRef result;
+    RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(encodedImage.c_str(), encodedImage.length(), &result));
+
+    return result;
 }

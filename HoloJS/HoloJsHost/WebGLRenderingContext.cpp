@@ -9,6 +9,8 @@ using namespace Windows::Graphics::Imaging;
 
 WebGLTexture* WebGLRenderingContext::createTexture() { return new WebGLTexture(); }
 
+void WebGLRenderingContext::deleteTexture(WebGLTexture* texture) { texture->Delete(); }
+
 void WebGLRenderingContext::bindTexture(GLenum target, WebGLTexture* texture)
 {
     if (texture == nullptr) {
@@ -185,6 +187,11 @@ void WebGLRenderingContext::bindBuffer(GLenum target, WebGLBuffer* buffer)
 void WebGLRenderingContext::bufferData(GLenum target, GLsizeiptr size, void* data, GLenum usage)
 {
     glBufferData(target, size, data, usage);
+}
+
+void WebGLRenderingContext::bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize)
+{
+    glBufferSubData(target, offset, dataSize, data);
 }
 
 void WebGLRenderingContext::disable(GLenum cap) { glDisable(cap); }
@@ -390,7 +397,11 @@ void WebGLRenderingContext::bindRenderbuffer(GLenum target, WebGLRenderbuffer* r
 
 void WebGLRenderingContext::renderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 {
-    glRenderbufferStorage(target, internalformat, width, height);
+    if (internalformat = GL_DEPTH_STENCIL_OES) {
+        glRenderbufferStorage(target, GL_DEPTH24_STENCIL8_OES, width, height);
+    } else {
+        glRenderbufferStorage(target, internalformat, width, height);
+    }
 }
 
 WebGLFramebuffer* WebGLRenderingContext::createFramebuffer() { return new WebGLFramebuffer(); }
@@ -498,3 +509,5 @@ void WebGLRenderingContext::stencilMask(GLuint mask) { glStencilMask(mask); }
 void WebGLRenderingContext::stencilOp(GLenum fail, GLenum zfail, GLenum zpass) { glStencilOp(fail, zfail, zpass); }
 
 void WebGLRenderingContext::lineWidth(GLfloat width) { glLineWidth(width); }
+
+void WebGLRenderingContext::polygonOffset(GLfloat factor, GLfloat units) { glPolygonOffset(factor, units); }

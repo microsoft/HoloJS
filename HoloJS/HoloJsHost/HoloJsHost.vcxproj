@@ -118,7 +118,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOLOJS_VS2015;_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -135,7 +135,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PreprocessorDefinitions>_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>HOLOJS_VS2015;_WINRT_DLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <AdditionalUsingDirectories>$(WindowsSDK_WindowsMetadata);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
@@ -240,6 +240,7 @@
     <ClInclude Include="WebGLProjections.h" />
     <ClInclude Include="WebGLRenderingContext.h" />
     <ClInclude Include="WebLoader.h" />
+    <ClInclude Include="WebSocket.h" />
     <ClInclude Include="WindowElement.h" />
     <ClInclude Include="XmlHttpRequest.h" />
   </ItemGroup>
@@ -275,6 +276,7 @@
     <ClCompile Include="WebGLProjections.cpp" />
     <ClCompile Include="WebGLRenderingContext.cpp" />
     <ClCompile Include="WebLoader.cpp" />
+    <ClCompile Include="WebSocket.cpp" />
     <ClCompile Include="WindowElement.cpp" />
     <ClCompile Include="XmlHttpRequest.cpp" />
   </ItemGroup>
@@ -299,6 +301,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\webgl-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="ScriptingFramework\websocket.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">

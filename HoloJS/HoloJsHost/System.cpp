@@ -11,13 +11,13 @@ using namespace std;
 void System::PromiseContinuationCallback(JsValueRef task)
 {
     EXIT_IF_JS_ERROR(JsAddRef(task, nullptr));
+    auto autoReleaseTask = JsRefReleaseAtScopeExit(task);
 
     JsValueRef result;
     JsValueRef global;
     EXIT_IF_JS_ERROR(JsGetGlobalObject(&global));
 
     HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(task, &global, 1, &result));
-    EXIT_IF_JS_ERROR(JsRelease(task, nullptr));
 }
 
 bool System::Initialize()

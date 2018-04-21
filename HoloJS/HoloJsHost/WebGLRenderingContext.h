@@ -36,6 +36,7 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
 #pragma region Textures
     WebGLTexture* createTexture();
+    void deleteTexture(WebGLTexture* texture);
 
     void bindTexture(GLenum target, WebGLTexture* texture);
 
@@ -122,6 +123,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 
     void bufferData(GLenum target, GLsizeiptr size, void* data, GLenum usage);
 
+    void bufferSubData(GLenum target, GLsizeiptr offset, void* data, GLsizeiptr dataSize);
+
     void colorMask(GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha);
 
     void drawArrays(GLenum mode, GLint first, GLsizei count);
@@ -207,6 +210,8 @@ class WebGLRenderingContext : public HologramJS::Utilities::IRelease {
 #pragma region Lines
     void lineWidth(GLfloat width);
 #pragma endregion
+
+    void polygonOffset(GLfloat factor, GLfloat units);
 
    private:
     const GLenum UNSIGNED_BYTE = 0x1401;

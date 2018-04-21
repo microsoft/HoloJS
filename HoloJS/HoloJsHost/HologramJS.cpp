@@ -8,6 +8,8 @@
 #include "VideoElement.h"
 #include "WebGLProjections.h"
 #include "XmlHttpRequest.h"
+#include "WebSocket.h"
+#include "SpatialAnchorsProjections.h"
 
 using namespace HologramJS;
 using namespace Platform;
@@ -51,11 +53,15 @@ bool HologramScriptHost::Initialize()
 
     RETURN_IF_FALSE(API::XmlHttpRequest::Initialize());
 
+	RETURN_IF_FALSE(API::WebSocket::Initialize());
+
     RETURN_IF_FALSE(API::ImageElement::Initialize());
     RETURN_IF_FALSE(API::VideoElement::Initialize());
 
     RETURN_IF_FALSE(WebGL::WebGLProjections::Initialize());
     RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
+
+    RETURN_IF_FALSE(Spatial::SpatialAnchorsProjections::Initialize());
 
     RETURN_IF_FALSE(m_window.Initialize());
 
@@ -160,6 +166,7 @@ bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfR
 
     if (frameOfReference != nullptr) {
         m_window.SetStationaryFrameOfReference(frameOfReference);
+        Spatial::SpatialAnchorsProjections::SetStationaryFrameOfReference(frameOfReference);
     }
 
     return true;
