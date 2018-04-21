@@ -44,8 +44,8 @@ loader.load("liver.vtk", function (geometry) {
     geometry.computeVertexNormals();
 
     var mesh = new THREE.Mesh(geometry, material);
-    mesh.position.set(- 0.075, 0.005, 0);
-    mesh.scale.multiplyScalar(0.2);
+    mesh.position.set(0, 0, -1.5);
+    mesh.scale.multiplyScalar(0.01);
     scene.add(mesh);
 });
 
