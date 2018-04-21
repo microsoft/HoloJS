@@ -58,23 +58,22 @@ void HoloJsAppView::ActivateWindowInCorrectContext(Windows::UI::Core::CoreWindow
     try {
         if ((isHolographicActivation && (LaunchMode == HoloJsLaunchMode::AsActivated)) ||
             (LaunchMode == HoloJsLaunchMode::Holographic)) {
-			// Get the default SpatialLocator.
-			SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
+            // Get the default SpatialLocator.
+            SpatialLocator ^ mLocator = SpatialLocator::GetDefault();
 
-			if (mLocator == nullptr) {
-				InitializeEGL(window);
-			}
-			else {
-				// Create a holographic space for the core window for the current view.
-				mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
+            if (mLocator == nullptr) {
+                InitializeEGL(window);
+            } else {
+                // Create a holographic space for the core window for the current view.
+                mHolographicSpace = HolographicSpace::CreateForCoreWindow(window);
 
-				// Create a stationary frame of reference.
-				mStationaryReferenceFrame =
-					mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
+                // Create a stationary frame of reference.
+                mStationaryReferenceFrame =
+                    mLocator->CreateStationaryFrameOfReferenceAtCurrentLocation(WorldOriginRelativePosition);
 
-				// The HolographicSpace has been created, so EGL can be initialized in holographic mode.
-				InitializeEGL(mHolographicSpace);
-			}
+                // The HolographicSpace has been created, so EGL can be initialized in holographic mode.
+                InitializeEGL(mHolographicSpace);
+            }
         } else {
             // Initialize a flat view for the app
             InitializeEGL(window);
@@ -102,7 +101,7 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
         ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
     }
 #else
-	ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
+    ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
 #endif
 }
 
@@ -205,15 +204,17 @@ void HoloJsAppView::Uninitialize() {}
 void HoloJsAppView::OnActivated(CoreApplicationView ^ applicationView, IActivatedEventArgs ^ args)
 {
 #ifndef HOLOJS_VS2015
-    if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
-            Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
-        auto isHolographicActivation =
-            Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
-                args);
+    if (m_EglSurface == EGL_NO_SURFACE) {
+        if (Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
+                Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
+            auto isHolographicActivation =
+                Windows::ApplicationModel::Preview::Holographic::HolographicApplicationPreview::IsHolographicActivation(
+                    args);
 
-        // Activate the window in the correct context, depending on where was the app activate from and launch settings
-        // set by the app itself
-        ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
+            // Activate the window in the correct context, depending on where was the app activate from and launch
+            // settings set by the app itself
+            ActivateWindowInCorrectContext(applicationView->CoreWindow, isHolographicActivation);
+        }
     }
 #endif
 
@@ -280,8 +281,10 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
         EGL_PLATFORM_ANGLE_TYPE_ANGLE,
         EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
 
-        // EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER is an optimization that can have large performance benefits on
-        // mobile devices. Its syntax is subject to change, though. Please update your Visual Studio templates if you
+        // EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER is an optimization that can have large performance benefits
+        // on
+        // mobile devices. Its syntax is subject to change, though. Please update your Visual Studio templates if
+        // you
         // experience compilation issues with it.
         EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER,
         EGL_TRUE,
@@ -313,7 +316,8 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
 
     const EGLint warpDisplayAttributes[] = {
         // These attributes can be used to request D3D11 WARP.
-        // They are used if eglInitialize fails with both the default display attributes and the 9_3 display attributes.
+        // They are used if eglInitialize fails with both the default display attributes and the 9_3 display
+        // attributes.
         EGL_PLATFORM_ANGLE_TYPE_ANGLE,
         EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
         EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE,
@@ -327,8 +331,8 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
 
     EGLConfig config = NULL;
 
-    // eglGetPlatformDisplayEXT is an alternative to eglGetDisplay. It allows us to pass in display attributes, used to
-    // configure D3D11.
+    // eglGetPlatformDisplayEXT is an alternative to eglGetDisplay. It allows us to pass in display attributes, used
+    // to configure D3D11.
     PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
         reinterpret_cast<PFNEGLGETPLATFORMDISPLAYEXTPROC>(eglGetProcAddress("eglGetPlatformDisplayEXT"));
     if (!eglGetPlatformDisplayEXT) {
@@ -337,11 +341,12 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
 
     //
     // To initialize the display, we make three sets of calls to eglGetPlatformDisplayEXT and eglInitialize, with
-    // varying parameters passed to eglGetPlatformDisplayEXT: 1) The first calls uses "defaultDisplayAttributes" as a
-    // parameter. This corresponds to D3D11 Feature Level 10_0+. 2) If eglInitialize fails for step 1 (e.g. because
-    // 10_0+ isn't supported by the default GPU), then we try again
+    // varying parameters passed to eglGetPlatformDisplayEXT: 1) The first calls uses "defaultDisplayAttributes" as
+    // a parameter. This corresponds to D3D11 Feature Level 10_0+. 2) If eglInitialize fails for step 1 (e.g.
+    // because 10_0+ isn't supported by the default GPU), then we try again
     //    using "fl9_3DisplayAttributes". This corresponds to D3D11 Feature Level 9_3.
-    // 3) If eglInitialize fails for step 2 (e.g. because 9_3+ isn't supported by the default GPU), then we try again
+    // 3) If eglInitialize fails for step 2 (e.g. because 9_3+ isn't supported by the default GPU), then we try
+    // again
     //    using "warpDisplayAttributes".  This corresponds to D3D11 Feature Level 11_0 on WARP, a D3D11 software
     //    rasterizer.
     //
