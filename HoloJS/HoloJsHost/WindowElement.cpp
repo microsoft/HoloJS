@@ -71,11 +71,12 @@ JsValueRef CHAKRA_CALLBACK WindowElement::atob(
 
     auto decodedBuffer = CryptographicBuffer::DecodeFromBase64String(Platform::StringReference(encodedData.c_str()));
 
-    Platform::Array<unsigned char>^ decodedArray;
+    Platform::Array<unsigned char> ^ decodedArray;
     CryptographicBuffer::CopyToByteArray(decodedBuffer, &decodedArray);
 
     JsValueRef returnValue;
-    RETURN_INVALID_REF_IF_JS_ERROR(JsPointerToString(reinterpret_cast<wchar_t*>(decodedArray->begin()), decodedArray->Length, &returnValue));
+    RETURN_INVALID_REF_IF_JS_ERROR(
+        JsPointerToString(reinterpret_cast<wchar_t*>(decodedArray->begin()), decodedArray->Length, &returnValue));
 
     return returnValue;
 }
@@ -87,7 +88,7 @@ JsValueRef CHAKRA_CALLBACK WindowElement::btoa(
 
     // Copy the input string into a vector
     vector<byte> dataToEncode;
-    wchar_t const * inputString;
+    wchar_t const* inputString;
     size_t inputStringLength;
     RETURN_INVALID_REF_IF_JS_ERROR(JsStringToPointer(arguments[1], &inputString, &inputStringLength));
     dataToEncode.resize(inputStringLength * sizeof(wchar_t));
@@ -443,4 +444,22 @@ JsValueRef WindowElement::setVoiceCommands(JsValueRef* arguments, unsigned short
     m_voiceInput.SetVoiceCommands(std::move(commands));
 
     return JS_INVALID_REFERENCE;
+}
+
+void WindowElement::DeviceContextEvent(HologramJS::Input::DeviceContextEventType contextEventType)
+{
+    EXIT_IF_TRUE(m_callbackFunction == JS_INVALID_REFERENCE);
+
+    JsValueRef eventType;
+    EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(NativeToScriptInputType::DeviceContext), &eventType));
+
+    JsValueRef contextEventTypeRef;
+    EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(contextEventType), &contextEventTypeRef));
+
+    JsValueRef parameters[3];
+    parameters[0] = m_callbackFunction;
+    parameters[1] = eventType;
+    parameters[2] = contextEventTypeRef;
+    JsValueRef result;
+    HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(m_callbackFunction, parameters, ARRAYSIZE(parameters), &result));
 }

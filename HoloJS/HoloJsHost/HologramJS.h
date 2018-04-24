@@ -20,6 +20,9 @@ using float4x4 = Windows::Foundation::Numerics::float4x4;
     bool Initialize();
     void Shutdown();
 
+    void DeviceLost();
+    void DeviceRestored();
+
     bool EnableHolographicExperimental(Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^
                                            frameOfReference,
                                        bool autoStereoEnabled);

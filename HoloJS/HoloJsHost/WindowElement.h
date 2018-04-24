@@ -28,6 +28,8 @@ class WindowElement {
                float4x4 rightViewMatrix,
                float4x4 rightProjectionMatrix);
 
+    void DeviceContextEvent(Input::DeviceContextEventType eventType);
+
     Input::KeyboardInput& KeyboardRouter() { return m_keyboardInput; }
     Input::MouseInput& MouseRouter() { return m_mouseInput; }
 
