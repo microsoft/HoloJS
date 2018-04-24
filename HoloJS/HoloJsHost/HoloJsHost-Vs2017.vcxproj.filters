@@ -277,6 +277,9 @@
     <None Include="ScriptingFramework\spatial-anchors.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
+    <None Include="ScriptingFramework\TextDecoder.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Loaders">

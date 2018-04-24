@@ -9,6 +9,7 @@
     "2d-context.js",
     "audio-context.js",
     "websocket.js",
-    "spatial-anchors.js"
+    "spatial-anchors.js",
+    "TextDecoder.js"
   ]
 }
