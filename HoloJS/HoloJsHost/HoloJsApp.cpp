@@ -177,6 +177,7 @@ void HoloJsAppView::Run()
             // The call to eglSwapBuffers might not be successful (e.g. due to Device Lost)
             // If the call fails, then we must reinitialize EGL and the GL resources.
             if (eglSwapBuffers(m_EglDisplay, m_EglSurface) != GL_TRUE) {
+                m_holoScriptHost->DeviceLost();
                 CleanupEGL();
 
                 if (mHolographicSpace != nullptr) {
@@ -186,6 +187,7 @@ void HoloJsAppView::Run()
                 }
 
                 RecreateRenderer();
+                m_holoScriptHost->DeviceRestored();
             }
         } else {
             CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(
@@ -352,33 +354,37 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
     //
 
     // This tries to initialize EGL to D3D11 Feature Level 10_0+. See above comment for details.
-    m_EglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, defaultDisplayAttributes);
-    if (m_EglDisplay == EGL_NO_DISPLAY) {
-        throw Exception::CreateException(E_FAIL, L"Failed to get EGL display");
-    }
-
-    if (eglInitialize(m_EglDisplay, NULL, NULL) == EGL_FALSE) {
-        // This tries to initialize EGL to D3D11 Feature Level 9_3, if 10_0+ is unavailable (e.g. on some mobile
-        // devices).
-        m_EglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, fl9_3DisplayAttributes);
+    if (m_EglDisplay == EGL_NO_DISPLAY)
+    {
+        m_EglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, defaultDisplayAttributes);
         if (m_EglDisplay == EGL_NO_DISPLAY) {
             throw Exception::CreateException(E_FAIL, L"Failed to get EGL display");
         }
 
         if (eglInitialize(m_EglDisplay, NULL, NULL) == EGL_FALSE) {
-            // This initializes EGL to D3D11 Feature Level 11_0 on WARP, if 9_3+ is unavailable on the default GPU.
-            m_EglDisplay =
-                eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, warpDisplayAttributes);
+            // This tries to initialize EGL to D3D11 Feature Level 9_3, if 10_0+ is unavailable (e.g. on some mobile
+            // devices).
+            m_EglDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, fl9_3DisplayAttributes);
             if (m_EglDisplay == EGL_NO_DISPLAY) {
                 throw Exception::CreateException(E_FAIL, L"Failed to get EGL display");
             }
 
             if (eglInitialize(m_EglDisplay, NULL, NULL) == EGL_FALSE) {
-                // If all of the calls to eglInitialize returned EGL_FALSE then an error has occurred.
-                throw Exception::CreateException(E_FAIL, L"Failed to initialize EGL");
+                // This initializes EGL to D3D11 Feature Level 11_0 on WARP, if 9_3+ is unavailable on the default GPU.
+                m_EglDisplay =
+                    eglGetPlatformDisplayEXT(EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, warpDisplayAttributes);
+                if (m_EglDisplay == EGL_NO_DISPLAY) {
+                    throw Exception::CreateException(E_FAIL, L"Failed to get EGL display");
+                }
+
+                if (eglInitialize(m_EglDisplay, NULL, NULL) == EGL_FALSE) {
+                    // If all of the calls to eglInitialize returned EGL_FALSE then an error has occurred.
+                    throw Exception::CreateException(E_FAIL, L"Failed to initialize EGL");
+                }
             }
         }
     }
+    
 
     EGLint numConfigs = 0;
     if ((eglChooseConfig(m_EglDisplay, configAttributes, &config, 1, &numConfigs) == EGL_FALSE) || (numConfigs == 0)) {
@@ -410,15 +416,21 @@ void HoloJsAppView::InitializeEGLInner(Platform::Object ^ windowBasis)
     // surfaceCreationProperties->Insert(ref new String(EGLRenderResolutionScaleProperty),
     // PropertyValue::CreateSingle(customResolutionScale));
 
-    m_EglSurface = eglCreateWindowSurface(
-        m_EglDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), surfaceAttributes);
-    if (m_EglSurface == EGL_NO_SURFACE) {
-        throw Exception::CreateException(E_FAIL, L"Failed to create EGL fullscreen surface");
+    if (m_EglContext == EGL_NO_CONTEXT)
+    {
+        m_EglContext = eglCreateContext(m_EglDisplay, config, EGL_NO_CONTEXT, contextAttributes);
+        if (m_EglContext == EGL_NO_CONTEXT) {
+            throw Exception::CreateException(E_FAIL, L"Failed to create EGL context");
+        }
     }
 
-    m_EglContext = eglCreateContext(m_EglDisplay, config, EGL_NO_CONTEXT, contextAttributes);
-    if (m_EglContext == EGL_NO_CONTEXT) {
-        throw Exception::CreateException(E_FAIL, L"Failed to create EGL context");
+    if (m_EglSurface == EGL_NO_SURFACE)
+    {
+        m_EglSurface = eglCreateWindowSurface(
+            m_EglDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), surfaceAttributes);
+        if (m_EglSurface == EGL_NO_SURFACE) {
+            throw Exception::CreateException(E_FAIL, L"Failed to create EGL fullscreen surface");
+        }
     }
 
     if (eglMakeCurrent(m_EglDisplay, m_EglSurface, m_EglSurface, m_EglContext) == EGL_FALSE) {
