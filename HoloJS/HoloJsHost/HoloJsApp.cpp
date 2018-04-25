@@ -126,7 +126,7 @@ void HoloJsAppView::LoadAndExecuteScript()
         OnBeforeRun();
     }
 
-    //m_holoScriptHost->RunApp(m_appUri);
+    m_holoScriptHost->RunApp(m_appUri);
 }
 
 // Initializes scene resources
@@ -159,8 +159,6 @@ void HoloJsAppView::Run()
                 m_PanelWidth = panelWidth;
             }
 
-            glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
-
             glClear(GL_COLOR_BUFFER_BIT);
             glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_MONO_VIEW_MATRIX, &holographicViewMatrixMid.m11);
             glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_MONO_PROJECTION_MATRIX, &holographicProjectionMatrixMid.m11);
@@ -169,17 +167,17 @@ void HoloJsAppView::Run()
             glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_VIEW_MATRIX, &holographicViewMatrixRight.m11);
             glGetFloatv(GLEXT_ANGLE_HOLOGRAPHIC_RIGHT_PROJECTION_MATRIX, &holographicProjectionMatrixRight.m11);
 
-            /*m_holoScriptHost->VSync(holographicViewMatrixMid,
+            m_holoScriptHost->VSync(holographicViewMatrixMid,
                                     holographicProjectionMatrixMid,
                                     holographicViewMatrixLeft,
                                     holographicProjectionMatrixLeft,
                                     holographicViewMatrixRight,
-                                    holographicProjectionMatrixRight);*/
+                                    holographicProjectionMatrixRight);
 
             // The call to eglSwapBuffers might not be successful (e.g. due to Device Lost)
             // If the call fails, then we must reinitialize EGL and the GL resources.
             if (eglSwapBuffers(m_EglDisplay, m_EglSurface) != GL_TRUE) {
-                //m_holoScriptHost->DeviceLost();
+                m_holoScriptHost->DeviceLost();
                 CleanupEGL();
 
                 if (mHolographicSpace != nullptr) {
@@ -189,7 +187,7 @@ void HoloJsAppView::Run()
                 }
 
                 RecreateRenderer();
-                //m_holoScriptHost->DeviceRestored();
+                m_holoScriptHost->DeviceRestored();
             }
         } else {
             CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(
