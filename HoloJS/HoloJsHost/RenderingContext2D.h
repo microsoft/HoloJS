@@ -39,7 +39,37 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                   Windows::Foundation::Numerics::float2& point,
                   Windows::UI::Color& color,
                   int fontSize,
-                  std::wstring& fontFamily);
+                  std::wstring& fontFamily,
+                  std::wstring& fontWeight,
+                  std::wstring& fontStyle,
+                  int alignment
+
+    );
+
+    double measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
+
+    void beginPath();
+    void closePath();
+    void moveTo(double x, double y);
+    void lineTo(double x, double y);
+    void bezierCurveTo(double c1x, double c1y, double c2x, double c2y, double x, double y);
+    void quadraticCurveTo(double cx, double cy, double x, double y);
+    void arc(double cx, double cy, double r, double startAngle, double endAngle, bool counterClockwise);
+
+    void fill(Windows::UI::Color& color);
+    void fillGradient(Windows::Foundation::Numerics::float2& start,
+                      Windows::Foundation::Numerics::float2& end,
+                      Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+    void stroke(Windows::UI::Color& color);
+    void strokeGradient(Windows::Foundation::Numerics::float2& start,
+                        Windows::Foundation::Numerics::float2& end,
+                        Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+
+    void setTransform(double a, double b, double c, double d, double e, double f);
+    void setGlobalOpacity(float opacity);
+    void setLineStyle(float lineWidth,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capMode,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinMode);
 
     Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
 
@@ -73,6 +103,18 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
     unsigned int m_bpp = 4;
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
+    Microsoft::Graphics::Canvas::CanvasDrawingSession ^ m_session = nullptr;
+
+    float m_globalOpacity = 1.0;
+
+    Microsoft::Graphics::Canvas::Geometry::CanvasPathBuilder ^ m_pathBuilder = nullptr;
+    bool m_figurePresent = false;
+
+    float lineWidth = 1;
+    Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle::Round;
+    Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin::Round;
 
     enum class EncodingType { PNG, JPEG, Unknown };
 
