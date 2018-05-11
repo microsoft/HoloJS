@@ -4,129 +4,131 @@
 #include "ImageElement.h"
 
 namespace HologramJS {
-	namespace Canvas {
-		class RenderingContext2D : public HologramJS::Utilities::IRelease {
-		public:
-			RenderingContext2D();
+namespace Canvas {
+class RenderingContext2D : public HologramJS::Utilities::IRelease {
+   public:
+    RenderingContext2D();
 
-			virtual ~RenderingContext2D() {}
+    virtual ~RenderingContext2D() {}
 
-			void Release() {}
+    void Release() {}
 
-			bool OptimizedBufferAvailable() { return m_isOptimizedBitmap; }
-			size_t GetOptimizedBufferSize() { return m_optimizedBitmap.size(); }
-			void CopyOptimizedBitmapToBuffer(byte* buffer)
-			{
-				CopyMemory(buffer, m_optimizedBitmap.data(), m_optimizedBitmap.size());
-			}
+    bool OptimizedBufferAvailable() { return m_isOptimizedBitmap; }
+    size_t GetOptimizedBufferSize() { return m_optimizedBitmap.size(); }
+    void CopyOptimizedBitmapToBuffer(byte* buffer)
+    {
+        CopyMemory(buffer, m_optimizedBitmap.data(), m_optimizedBitmap.size());
+    }
 
-			void drawImage(HologramJS::API::ImageElement* imageElement,
-				Windows::Foundation::Rect& srcRect,
-				Windows::Foundation::Rect& destRect);
+    void drawImage(HologramJS::API::ImageElement* imageElement,
+                   Windows::Foundation::Rect& srcRect,
+                   Windows::Foundation::Rect& destRect);
 
-			bool toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage);
+    bool toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage);
 
-			void clearRect(Windows::Foundation::Rect& rect);
+    void clearRect(Windows::Foundation::Rect& rect);
 
+    void fillRect(Windows::Foundation::Rect& rect, Windows::UI::Color& color);
 
+    void fillRectGradient(Windows::Foundation::Rect& rect,
+                          Windows::Foundation::Numerics::float2& start,
+                          Windows::Foundation::Numerics::float2& end,
+                          Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
 
-			void fillRect(Windows::Foundation::Rect& rect, Windows::UI::Color& color);
+    void fillText(std::wstring& text,
+                  Windows::Foundation::Numerics::float2& point,
+                  Windows::UI::Color& color,
+                  int fontSize,
+                  std::wstring& fontFamily,
+                  std::wstring& fontWeight,
+                  std::wstring& fontStyle,
+                  int alignment
 
-			void fillRectGradient(Windows::Foundation::Rect& rect,
-				Windows::Foundation::Numerics::float2& start,
-				Windows::Foundation::Numerics::float2& end,
-				Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+    );
 
-			void fillText(std::wstring& text,
-				Windows::Foundation::Numerics::float2& point,
-				Windows::UI::Color& color,
-				int fontSize,
-				std::wstring& fontFamily,
-				std::wstring& fontWeight,
-				std::wstring& fontStyle,
-				int alignment
+    double measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
 
-			);
+    void beginPath();
+    void closePath();
+    void moveTo(double x, double y);
+    void lineTo(double x, double y);
+    void bezierCurveTo(double c1x, double c1y, double c2x, double c2y, double x, double y);
+    void quadraticCurveTo(double cx, double cy, double x, double y);
+    void arc(double cx, double cy, double r, double startAngle, double endAngle, bool counterClockwise);
 
-			double measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
+    void fill(Windows::UI::Color& color);
+    void fillGradient(Windows::Foundation::Numerics::float2& start,
+                      Windows::Foundation::Numerics::float2& end,
+                      Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+    void stroke(Windows::UI::Color& color);
+    void strokeGradient(Windows::Foundation::Numerics::float2& start,
+                        Windows::Foundation::Numerics::float2& end,
+                        Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
 
-			void beginPath();
-			void closePath();
-			void moveTo(double x, double y);
-			void lineTo(double x, double y);
-			void bezierCurveTo(double c1x, double c1y, double c2x, double c2y, double x, double y);
-			void quadraticCurveTo(double cx, double cy, double x, double y);
-			void arc(double cx, double cy, double r, double startAngle, double endAngle, bool counterClockwise);
+    void setTransform(double a, double b, double c, double d, double e, double f);
+    void setGlobalOpacity(float opacity);
+    void setLineStyle(float lineWidth,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capMode,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinMode);
 
-			void fill(Windows::UI::Color& color);
-			void fillGradient(Windows::Foundation::Numerics::float2& start,
-				Windows::Foundation::Numerics::float2& end,
-				Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
-			void stroke(Windows::UI::Color& color);
-			void strokeGradient(Windows::Foundation::Numerics::float2& start,
-				Windows::Foundation::Numerics::float2& end,
-				Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+    Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
 
-			void setTransform(double a, double b, double c, double d, double e, double f);
-			void setGlobalOpacity(float opacity);
-			void setLineStyle(float lineWidth, Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capMode, Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinMode);
+    void setWidth(int value)
+    {
+        m_width = value;
+        this->createRenderTarget();
+    }
 
-			Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
+    int getWidth() { return m_width; }
 
-			void setWidth(int value)
-			{
-				m_width = value;
-				this->createRenderTarget();
-			}
+    void setHeight(int value)
+    {
+        m_height = value;
+        this->createRenderTarget();
+    }
 
-			int getWidth() { return m_width; }
+    int getHeight() { return m_height; }
 
-			void setHeight(int value)
-			{
-				m_height = value;
-				this->createRenderTarget();
-			}
+    void createRenderTarget();
 
-			int getHeight() { return m_height; }
+   private:
+    unsigned int m_height = 150;
+    unsigned int m_width = 300;
 
-			void createRenderTarget();
+    std::vector<byte> m_optimizedBitmap;
+    bool m_isOptimizedBitmap = false;
 
-		private:
-			unsigned int m_height = 150;
-			unsigned int m_width = 300;
+    Windows::Graphics::DirectX::DirectXPixelFormat m_nativePixelFormat =
+        Windows::Graphics::DirectX::DirectXPixelFormat::R8G8B8A8UIntNormalized;
+    unsigned int m_bpp = 4;
 
-			std::vector<byte> m_optimizedBitmap;
-			bool m_isOptimizedBitmap = false;
+    Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
+    Microsoft::Graphics::Canvas::CanvasDrawingSession ^ m_session = nullptr;
 
-			Windows::Graphics::DirectX::DirectXPixelFormat m_nativePixelFormat =
-				Windows::Graphics::DirectX::DirectXPixelFormat::R8G8B8A8UIntNormalized;
-			unsigned int m_bpp = 4;
+    float m_globalOpacity = 1.0;
 
-			Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
-			Microsoft::Graphics::Canvas::CanvasDrawingSession ^ m_session = nullptr;
+    Microsoft::Graphics::Canvas::Geometry::CanvasPathBuilder ^ m_pathBuilder = nullptr;
+    bool m_figurePresent = false;
 
-			float m_globalOpacity = 1.0;
+    float lineWidth = 1;
+    Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle::Round;
+    Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin::Round;
 
-			Microsoft::Graphics::Canvas::Geometry::CanvasPathBuilder ^ m_pathBuilder = nullptr;
-			bool m_figurePresent = false;
+    enum class EncodingType { PNG, JPEG, Unknown };
 
-			float lineWidth = 1;
-			Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capStyle = Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle::Round;
-			Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinStyle = Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin::Round;
+    EncodingType getEncodingFromMimeType(const std::wstring& type);
 
-			enum class EncodingType { PNG, JPEG, Unknown };
+    void getImageDataBGRFlipY(std::vector<byte>& bgrPixels);
 
-			EncodingType getEncodingFromMimeType(const std::wstring& type);
+    HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
 
-			void getImageDataBGRFlipY(std::vector<byte>& bgrPixels);
+    HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, double encoderOptions);
 
-			HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
-
-			HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, double encoderOptions);
-
-			HRESULT getDataUrlFromEncodedImage(std::vector<byte>& imageData,
-				const std::wstring& mimeType,
-				std::wstring* encodedImage);
-		};
-	}  // namespace Canvas
+    HRESULT getDataUrlFromEncodedImage(std::vector<byte>& imageData,
+                                       const std::wstring& mimeType,
+                                       std::wstring* encodedImage);
+};
+}  // namespace Canvas
 }  // namespace HologramJS

@@ -3,6 +3,7 @@
     const HEX_REGEX = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
     const RGBA_REGEX = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/;
 
+    // Log not implemented warning. With an option to throw an exception if it's critical.
     function warnNotImplemented(methodName, action) {
         if (action == "throw") {
             console.log("Canvas method " + methodName + " is not implemented.");
@@ -18,6 +19,7 @@
         this.width = width;
     }
 
+    // CSS color names to color values
     const COLOR_NAMES = {
         aliceblue: '#f0f8ff',
         antiquewhite: '#faebd7',
@@ -383,7 +385,6 @@
 
 
         this.setTransform = (a, b, c, d, e, f) => {
-            console.log("set transform", a, b, c, d, e, f);
             holographic.nativeInterface.canvas2d.setTransform(this.ctxNative, a, b, c, d, e, f);
             this._transform = [a, b, c, d, e, f];
         };
@@ -434,7 +435,6 @@
         };
 
         this.arc = (cx, cy, r, startAngle, endAngle, counterCW) => {
-            console.log("arc");
             holographic.nativeInterface.canvas2d.arc(this.ctxNative, { x: cx, y: cy }, r, startAngle, endAngle, counterCW ? 1 : 0);
         };
 
