@@ -528,10 +528,6 @@
         this.putImageData = () => {
             warnNotImplemented("putImageData");
         };
-
-        this.drawImage = () => {
-            warnNotImplemented("drawImage");
-        };
     }
 
     // Global variable exports
