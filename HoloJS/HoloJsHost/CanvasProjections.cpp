@@ -93,8 +93,7 @@ float2 CanvasProjections::parsePoint(JsValueRef objRef)
     JsValueRef xRef = ScriptHostUtilities::GetJsProperty(objRef, L"x");
     JsValueRef yRef = ScriptHostUtilities::GetJsProperty(objRef, L"y");
 
-    return float2(static_cast<float>(ScriptHostUtilities::GLfloatFromJsRef(xRef)),
-                  static_cast<float>(ScriptHostUtilities::GLfloatFromJsRef(yRef)));
+    return float2(ScriptHostUtilities::GLfloatFromJsRef(xRef), ScriptHostUtilities::GLfloatFromJsRef(yRef));
 }
 
 JsValueRef CHAKRA_CALLBACK CanvasProjections::createContext2D(
@@ -566,7 +565,7 @@ JsValueRef CHAKRA_CALLBACK CanvasProjections::toDataURL(
     wstring type;
     RETURN_INVALID_REF_IF_FALSE(ScriptHostUtilities::GetString(arguments[2], type));
 
-    double encoderOptions = 0.92f;
+    float encoderOptions = 0.92f;
     if (argumentCount == 4) {
         JsValueType encoderOptionsType;
         RETURN_INVALID_REF_IF_JS_ERROR(JsGetValueType(arguments[3], &encoderOptionsType));

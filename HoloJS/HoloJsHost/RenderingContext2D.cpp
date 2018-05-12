@@ -54,7 +54,7 @@ void RenderingContext2D::drawImage(HologramJS::API::ImageElement* imageElement, 
                                                       imageElement->Height(),
                                                       m_nativePixelFormat);
 
-    m_session->DrawImage(canvasBitmap, destRect, srcRect);
+    m_session->DrawImage(canvasBitmap, destRect, srcRect, m_globalOpacity);
 }
 
 void RenderingContext2D::clearRect(Rect& rect)
@@ -78,7 +78,7 @@ void RenderingContext2D::clearRect(Rect& rect)
 void RenderingContext2D::fillRect(Rect& rect, Color& color)
 {
     Color cm = color;
-    cm.A *= m_globalOpacity;
+    cm.A = (unsigned char)(m_globalOpacity * cm.A);
     m_session->FillRectangle(rect, cm);
 }
 
@@ -90,6 +90,7 @@ void RenderingContext2D::fillRectGradient(Rect& rect,
     auto brush = ref new CanvasLinearGradientBrush(m_canvasRenderTarget, stops);
     brush->StartPoint = start;
     brush->EndPoint = end;
+    brush->Opacity = m_globalOpacity;
     m_session->FillRectangle(rect, brush);
 }
 
@@ -110,7 +111,7 @@ void RenderingContext2D::fillText(std::wstring& text,
     if (fontStyle == L"italic") {
         format->FontStyle = Windows::UI::Text::FontStyle::Italic;
     }
-    format->FontSize = fontSize;
+    format->FontSize = static_cast<float>(fontSize);
     if (alignment == 0) {
         format->HorizontalAlignment = CanvasHorizontalAlignment::Left;
     }
@@ -121,18 +122,19 @@ void RenderingContext2D::fillText(std::wstring& text,
         format->HorizontalAlignment = CanvasHorizontalAlignment::Right;
     }
     format->VerticalAlignment = CanvasVerticalAlignment::Bottom;
+    format->LineSpacingMode = CanvasLineSpacingMode::Proportional;
     format->LineSpacing = 1;
 
     Color cm = color;
-    cm.A *= m_globalOpacity;
+    cm.A = (unsigned char)(m_globalOpacity * cm.A);
     m_session->DrawText(ref new Platform::String(text.c_str()), point, cm, format);
 }
 
-double RenderingContext2D::measureText(std::wstring& text, int fontSize, std::wstring& fontFamily)
+float RenderingContext2D::measureText(std::wstring& text, int fontSize, std::wstring& fontFamily)
 {
     CanvasTextFormat ^ format = ref new CanvasTextFormat();
     format->FontFamily = ref new Platform::String(fontFamily.c_str());
-    format->FontSize = fontSize;
+    format->FontSize = static_cast<float>(fontSize);
     format->WordWrapping = Microsoft::Graphics::Canvas::Text::CanvasWordWrapping::NoWrap;
     CanvasTextLayout ^ layout =
         ref new CanvasTextLayout(m_session, ref new Platform::String(text.c_str()), format, 0, 0);
@@ -158,7 +160,7 @@ float2 transformPoint(float3x2& mat, float2 pt)
     return float2(mat.m11 * pt.x + mat.m21 * pt.y + mat.m31, mat.m12 * pt.x + mat.m22 * pt.y + mat.m32);
 }
 
-void RenderingContext2D::moveTo(double x, double y)
+void RenderingContext2D::moveTo(float x, float y)
 {
     if (m_pathBuilder == nullptr) beginPath();
     if (m_figurePresent) {
@@ -168,7 +170,7 @@ void RenderingContext2D::moveTo(double x, double y)
     m_figurePresent = true;
 }
 
-void RenderingContext2D::lineTo(double x, double y)
+void RenderingContext2D::lineTo(float x, float y)
 {
     if (m_pathBuilder == nullptr) beginPath();
     if (!m_figurePresent) {
@@ -178,7 +180,7 @@ void RenderingContext2D::lineTo(double x, double y)
     }
 }
 
-void RenderingContext2D::quadraticCurveTo(double cx, double cy, double x, double y)
+void RenderingContext2D::quadraticCurveTo(float cx, float cy, float x, float y)
 {
     if (m_pathBuilder == nullptr) beginPath();
     if (!m_figurePresent) {
@@ -189,7 +191,7 @@ void RenderingContext2D::quadraticCurveTo(double cx, double cy, double x, double
     }
 }
 
-void RenderingContext2D::bezierCurveTo(double c1x, double c1y, double c2x, double c2y, double x, double y)
+void RenderingContext2D::bezierCurveTo(float c1x, float c1y, float c2x, float c2y, float x, float y)
 {
     if (m_pathBuilder == nullptr) beginPath();
     if (!m_figurePresent) {
@@ -201,7 +203,7 @@ void RenderingContext2D::bezierCurveTo(double c1x, double c1y, double c2x, doubl
     }
 }
 
-void RenderingContext2D::arc(double cx, double cy, double r, double startAngle, double endAngle, bool counterClockwise)
+void RenderingContext2D::arc(float cx, float cy, float r, float startAngle, float endAngle, bool counterClockwise)
 {
     if (m_pathBuilder == nullptr) beginPath();
     if (!m_figurePresent) {
@@ -224,7 +226,7 @@ void RenderingContext2D::fill(Color& color)
     m_session->Transform = float3x2::identity();
 
     Color cm = color;
-    cm.A *= m_globalOpacity;
+    cm.A = (unsigned char)(m_globalOpacity * cm.A);
 
     Geometry::CanvasGeometry ^ geometry = Geometry::CanvasGeometry::CreatePath(m_pathBuilder);
     m_session->FillGeometry(geometry, cm);
@@ -278,7 +280,7 @@ void RenderingContext2D::stroke(Color& color)
     style->LineJoin = joinStyle;
 
     Color cm = color;
-    cm.A *= m_globalOpacity;
+    cm.A = (unsigned char)(m_globalOpacity * cm.A);
 
     m_session->DrawGeometry(geometry, cm, lineWidth * tmp.m11, style);
 
@@ -321,7 +323,7 @@ void RenderingContext2D::setLineStyle(float _lineWidth,
     joinStyle = joinMode;
 }
 
-void RenderingContext2D::setTransform(double a, double b, double c, double d, double e, double f)
+void RenderingContext2D::setTransform(float a, float b, float c, float d, float e, float f)
 {
     m_session->Transform = float3x2(a, b, c, d, e, f);
 }
@@ -332,8 +334,29 @@ Platform::Array<unsigned char> ^ RenderingContext2D::getImageData(Rect& rect, un
 {
     m_session->Flush();
     if (!m_isOptimizedBitmap) {
-        *stride = rect.Width * m_bpp;
-        return m_canvasRenderTarget->GetPixelBytes(rect.X, rect.Y, rect.Width, rect.Height);
+        *stride = static_cast<unsigned int>(rect.Width) * m_bpp;
+        auto pixels = m_canvasRenderTarget->GetPixelBytes(static_cast<unsigned int>(rect.X),
+                                                          static_cast<unsigned int>(rect.Y),
+                                                          static_cast<unsigned int>(rect.Width),
+                                                          static_cast<unsigned int>(rect.Height));
+        auto pixelsPointer = pixels->Data;
+        // Un-premultiply alpha
+        for (unsigned int row_index = 0; row_index < m_height; row_index++) {
+            const auto rowOffset = row_index * (*stride);
+            for (unsigned int column_offset = 0; column_offset < *stride; column_offset += m_bpp) {
+                const auto ROffset = rowOffset + column_offset;
+                const auto GOffset = rowOffset + column_offset + 1;
+                const auto BOffset = rowOffset + column_offset + 2;
+                const auto AOffset = rowOffset + column_offset + 3;
+
+                auto alpha = pixelsPointer[AOffset] > 0 ? 255.0 / pixelsPointer[AOffset] : 0.0;
+                pixelsPointer[ROffset] = (unsigned char)(alpha * pixelsPointer[ROffset]);
+                pixelsPointer[GOffset] = (unsigned char)(alpha * pixelsPointer[GOffset]);
+                pixelsPointer[BOffset] = (unsigned char)(alpha * pixelsPointer[BOffset]);
+            }
+        }
+
+        return pixels;
     } else {
         return nullptr;
     }
@@ -357,25 +380,21 @@ void RenderingContext2D::getImageDataBGRFlipY(vector<byte>& bgrPixels)
     auto canvasPixelsLength = canvasPixels->Length;
     auto canvasPixelData = canvasPixels->begin();
 
-    const int dest_bpp = 4;
+    const int dest_bpp = 3;
     bgrPixels.resize((canvasPixelsLength * dest_bpp) / m_bpp);
 
     // Convert from 32bpp RGBA to 24bpp BGR and flip vertical
-    for (int row_index = 0; row_index < m_height; row_index++) {
-        for (int column_index = 0; column_index < m_width; column_index++) {
+    for (unsigned int row_index = 0; row_index < m_height; row_index++) {
+        for (unsigned int column_index = 0; column_index < m_width; column_index++) {
             const auto destination_row_offset = row_index * m_width * dest_bpp;
-            const auto source_row_offset = (row_index)*m_width * m_bpp;
+            const auto source_row_offset = (m_height - row_index - 1) * m_width * m_bpp;
 
-            unsigned char alpha = canvasPixelData[source_row_offset + column_index * m_bpp + 3];
-            // un-premultiply the alpha values, because the image encoders wants un-premultiplied alpha.
-            float s = alpha > 0 ? 255.0 / alpha : 0;
             bgrPixels[destination_row_offset + column_index * dest_bpp + 0] =
-                canvasPixelData[source_row_offset + column_index * m_bpp + 2] * s;
+                canvasPixelData[source_row_offset + column_index * m_bpp + 2];
             bgrPixels[destination_row_offset + column_index * dest_bpp + 1] =
-                canvasPixelData[source_row_offset + column_index * m_bpp + 1] * s;
+                canvasPixelData[source_row_offset + column_index * m_bpp + 1];
             bgrPixels[destination_row_offset + column_index * dest_bpp + 2] =
-                canvasPixelData[source_row_offset + column_index * m_bpp + 0] * s;
-            bgrPixels[destination_row_offset + column_index * dest_bpp + 3] = alpha;
+                canvasPixelData[source_row_offset + column_index * m_bpp + 0];
         }
     }
 }
@@ -385,16 +404,19 @@ HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory
     // Figure out long is the encoded stream
     LARGE_INTEGER seekSize;
     seekSize.QuadPart = 0;
-    ULARGE_INTEGER streamLength;
-    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_CUR, &streamLength));
+    ULARGE_INTEGER streamLengthLongLong;
+    RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_CUR, &streamLengthLongLong));
+
+    RETURN_IF_TRUE(streamLengthLongLong.QuadPart > MAXUINT32);
+    const unsigned int streamLengthUInt = static_cast<unsigned int>(streamLengthLongLong.QuadPart);
 
     // Allocate a memory block to copy the encoded image stream to
-    data.resize(streamLength.QuadPart);
+    data.resize(streamLengthUInt);
 
     // Create a WIC stream over the memory block
     ComPtr<IWICStream> byteAccessWicStream = NULL;
     RETURN_IF_FAILED(imagingFactory->CreateStream(byteAccessWicStream.ReleaseAndGetAddressOf()));
-    RETURN_IF_FAILED(byteAccessWicStream->InitializeFromMemory(data.data(), streamLength.QuadPart));
+    RETURN_IF_FAILED(byteAccessWicStream->InitializeFromMemory(data.data(), streamLengthUInt));
 
     // Get the vanilla stream from the WIC stream
     ComPtr<IStream> byteAccessStream;
@@ -402,7 +424,7 @@ HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory
 
     // Copy the encoded image stream to the byte accessible stream
     RETURN_IF_FAILED(stream->Seek(seekSize, STREAM_SEEK_SET, nullptr));
-    RETURN_IF_FAILED(stream->CopyTo(byteAccessStream.Get(), streamLength, nullptr, nullptr));
+    RETURN_IF_FAILED(stream->CopyTo(byteAccessStream.Get(), streamLengthLongLong, nullptr, nullptr));
 
     return S_OK;
 }
@@ -433,7 +455,7 @@ HRESULT RenderingContext2D::getDataUrlFromEncodedImage(vector<byte>& imageData,
 
 HRESULT RenderingContext2D::initializeEncodingPropertyBag(IPropertyBag2* propertyBag,
                                                           EncodingType encodingType,
-                                                          double encoderOptions)
+                                                          float encoderOptions)
 {
     // If encoding to JPEG, set the image quality to what the caller requested;
     // PNG does not support image quality settings
@@ -450,7 +472,7 @@ HRESULT RenderingContext2D::initializeEncodingPropertyBag(IPropertyBag2* propert
     return S_OK;
 }
 
-bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage)
+bool RenderingContext2D::toDataURL(const std::wstring& type, float encoderOptions, std::wstring* encodedImage)
 {
     m_session->Flush();
 
@@ -501,9 +523,9 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, double encoderOptio
     RETURN_IF_FAILED(bitmapFrame->SetSize(m_canvasRenderTarget->Size.Width, m_canvasRenderTarget->Size.Height));
 
     // Set the input format to the encoder and make sure the format is acceptable
-    WICPixelFormatGUID formatGUID = GUID_WICPixelFormat32bppBGRA;
+    WICPixelFormatGUID formatGUID = GUID_WICPixelFormat24bppBGR;
     RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
-    RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat32bppBGRA));
+    RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
 
     // Write the canvas pixels to the encoder
     auto height = m_canvasRenderTarget->Size.Height;

@@ -24,7 +24,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                    Windows::Foundation::Rect& srcRect,
                    Windows::Foundation::Rect& destRect);
 
-    bool toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage);
+    bool toDataURL(const std::wstring& type, float encoderOptions, std::wstring* encodedImage);
 
     void clearRect(Windows::Foundation::Rect& rect);
 
@@ -46,15 +46,15 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
 
     );
 
-    double measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
+    float measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
 
     void beginPath();
     void closePath();
-    void moveTo(double x, double y);
-    void lineTo(double x, double y);
-    void bezierCurveTo(double c1x, double c1y, double c2x, double c2y, double x, double y);
-    void quadraticCurveTo(double cx, double cy, double x, double y);
-    void arc(double cx, double cy, double r, double startAngle, double endAngle, bool counterClockwise);
+    void moveTo(float x, float y);
+    void lineTo(float x, float y);
+    void bezierCurveTo(float c1x, float c1y, float c2x, float c2y, float x, float y);
+    void quadraticCurveTo(float cx, float cy, float x, float y);
+    void arc(float cx, float cy, float r, float startAngle, float endAngle, bool counterClockwise);
 
     void fill(Windows::UI::Color& color);
     void fillGradient(Windows::Foundation::Numerics::float2& start,
@@ -65,7 +65,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                         Windows::Foundation::Numerics::float2& end,
                         Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
 
-    void setTransform(double a, double b, double c, double d, double e, double f);
+    void setTransform(float a, float b, float c, float d, float e, float f);
     void setGlobalOpacity(float opacity);
     void setLineStyle(float lineWidth,
                       Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capMode,
@@ -124,7 +124,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
 
     HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
 
-    HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, double encoderOptions);
+    HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, float encoderOptions);
 
     HRESULT getDataUrlFromEncodedImage(std::vector<byte>& imageData,
                                        const std::wstring& mimeType,
