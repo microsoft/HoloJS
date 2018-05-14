@@ -121,6 +121,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
     EncodingType getEncodingFromMimeType(const std::wstring& type);
 
     void getImageDataBGRFlipY(std::vector<byte>& bgrPixels);
+	void getImageDataBGRAUnPremultiplyFlipY(std::vector<byte>& bgrPixels);
 
     HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
 

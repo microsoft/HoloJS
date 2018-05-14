@@ -399,6 +399,36 @@ void RenderingContext2D::getImageDataBGRFlipY(vector<byte>& bgrPixels)
     }
 }
 
+void RenderingContext2D::getImageDataBGRAUnPremultiplyFlipY(vector<byte>& bgrPixels)
+{
+	// Get the raw pixels from the underlying canvas
+	auto canvasPixels = m_canvasRenderTarget->GetPixelBytes();
+	auto canvasPixelsLength = canvasPixels->Length;
+	auto canvasPixelData = canvasPixels->begin();
+
+	const int dest_bpp = 4;
+	bgrPixels.resize((canvasPixelsLength * dest_bpp) / m_bpp);
+
+	// Convert from 32bpp RGBA to 24bpp BGR and flip vertical
+	for (unsigned int row_index = 0; row_index < m_height; row_index++) {
+		for (unsigned int column_index = 0; column_index < m_width; column_index++) {
+			const auto destination_row_offset = row_index * m_width * dest_bpp;
+			const auto source_row_offset = (m_height - row_index - 1) * m_width * m_bpp;
+
+			unsigned char alpha = canvasPixelData[source_row_offset + column_index * m_bpp + 3];
+			float s = alpha > 0 ? 255.0 / alpha : 0;
+
+			bgrPixels[destination_row_offset + column_index * dest_bpp + 0] =
+				canvasPixelData[source_row_offset + column_index * m_bpp + 2] * s;
+			bgrPixels[destination_row_offset + column_index * dest_bpp + 1] =
+				canvasPixelData[source_row_offset + column_index * m_bpp + 1] * s;
+			bgrPixels[destination_row_offset + column_index * dest_bpp + 2] =
+				canvasPixelData[source_row_offset + column_index * m_bpp + 0] * s;
+			bgrPixels[destination_row_offset + column_index * dest_bpp + 3] = alpha;
+		}
+	}
+}
+
 HRESULT RenderingContext2D::getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, vector<byte>& data)
 {
     // Figure out long is the encoded stream
@@ -485,7 +515,12 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, float encoderOption
 
     // Convert from 32bpp RGBA to 24bpp BGR
     std::vector<byte> bgrPixels;
-    getImageDataBGRFlipY(bgrPixels);
+	if (encodingType == EncodingType::JPEG) {
+		getImageDataBGRFlipY(bgrPixels);
+	}
+	else {
+		getImageDataBGRAUnPremultiplyFlipY(bgrPixels);
+	}
 
     ComPtr<IWICImagingFactory> imagingFactory = NULL;
     RETURN_IF_FAILED(CoCreateInstance(CLSID_WICImagingFactory,
@@ -523,9 +558,16 @@ bool RenderingContext2D::toDataURL(const std::wstring& type, float encoderOption
     RETURN_IF_FAILED(bitmapFrame->SetSize(m_canvasRenderTarget->Size.Width, m_canvasRenderTarget->Size.Height));
 
     // Set the input format to the encoder and make sure the format is acceptable
-    WICPixelFormatGUID formatGUID = GUID_WICPixelFormat24bppBGR;
-    RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
-    RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
+	if (encodingType == EncodingType::JPEG) {
+		WICPixelFormatGUID formatGUID = GUID_WICPixelFormat24bppBGR;
+		RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
+		RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat24bppBGR));
+	}
+	else { // PNG
+		WICPixelFormatGUID formatGUID = GUID_WICPixelFormat32bppBGRA;
+		RETURN_IF_FAILED(bitmapFrame->SetPixelFormat(&formatGUID));
+		RETURN_IF_FALSE(IsEqualGUID(formatGUID, GUID_WICPixelFormat32bppBGRA));
+	}
 
     // Write the canvas pixels to the encoder
     auto height = m_canvasRenderTarget->Size.Height;
