@@ -4,6 +4,7 @@ function CanvasRenderingExample(scene, renderer) {
     canvas.width = 300;
     canvas.height = 300;
     let ctx = canvas.getContext('2d');
+    ctx.globalAlpha = 0.7;
 
     // Draw rectangle
     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
@@ -12,7 +13,7 @@ function CanvasRenderingExample(scene, renderer) {
     // Draw text
     ctx.font = '40px Arial';
     ctx.fillStyle = '#00ff00';
-    ctx.fillText('Hello\nCanvas', 10, 10);
+    ctx.fillText('Hello Canvas', 10, 50);
 
     // Draw gradient
     let gradient = ctx.createLinearGradient(0, 0, 100, 0);
