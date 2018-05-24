@@ -75,6 +75,27 @@
     <ClCompile Include="VoiceInput.cpp">
       <Filter>Runtime\Input</Filter>
     </ClCompile>
+    <ClCompile Include="AudioContext.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioProjections.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioBufferSourceNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioParam.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioScheduledSourceNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="PannerNode.cpp">
+      <Filter>Audio</Filter>
+    </ClCompile>
     <ClCompile Include="SpatialAnchorsProjections.cpp">
       <Filter>Runtime\SpatialAnchors</Filter>
     </ClCompile>
@@ -178,6 +199,36 @@
     <ClInclude Include="VoiceInput.h">
       <Filter>Runtime\Input</Filter>
     </ClInclude>
+    <ClInclude Include="AudioContext.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioProjections.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="GainNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioDestinationNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundBuffer.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioBufferSourceNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="PannerNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioParam.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioScheduledSourceNode.h">
+      <Filter>Audio</Filter>
+    </ClInclude>
     <ClInclude Include="SpatialAnchorsProjections.h">
       <Filter>Runtime\SpatialAnchors</Filter>
     </ClInclude>
@@ -215,6 +266,9 @@
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\window-holographic.js">
+      <Filter>Interface\ScriptSide</Filter>
+    </None>
+    <None Include="ScriptingFramework\audio-context.js">
       <Filter>Interface\ScriptSide</Filter>
     </None>
     <None Include="ScriptingFramework\websocket.js">
@@ -263,6 +317,9 @@
     </Filter>
     <Filter Include="Runtime\Utilities">
       <UniqueIdentifier>{96031bc1-c829-4b84-b8ce-446cd05f9f38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Audio">
+      <UniqueIdentifier>{dfdf3ffd-8473-471d-861b-d6b752a77ead}</UniqueIdentifier>
     </Filter>
     <Filter Include="Runtime\SpatialAnchors">
       <UniqueIdentifier>{e0d6ac51-5d93-4b11-82da-14470e379388}</UniqueIdentifier>

@@ -86,6 +86,9 @@
     <None Include="Scripts\surface-reconstruction.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="Scripts\sound.js">
+      <Filter>Scripts</Filter>
+    </None>
     <None Include="Scripts\socket.io.js">
       <Filter>Scripts</Filter>
     </None>
@@ -98,6 +101,7 @@
     <None Include="Scripts\spatial-anchors.js">
       <Filter>Scripts</Filter>
     </None>
+    <None Include="ThreeJSApp-Vs2017_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Scripts\texture.png">

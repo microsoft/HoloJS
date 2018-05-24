@@ -99,6 +99,9 @@ void HoloJsAppView::SetWindow(CoreWindow ^ window)
     if (!Windows::Foundation::Metadata::ApiInformation::IsApiContractPresent(
             Platform::StringReference(L"Windows.Foundation.UniversalApiContract"), 4, 0)) {
         ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);
+    } else {
+        // Delay activating the window until OnActivated; there we'll figure out what view to create
+        m_windowActivationRequired = true;
     }
 #else
     ActivateWindowInCorrectContext(window, true /* before RS3 all activations are considered holographic*/);

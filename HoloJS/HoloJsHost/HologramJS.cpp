@@ -8,6 +8,7 @@
 #include "System.h"
 #include "VideoElement.h"
 #include "WebGLProjections.h"
+#include "AudioProjections.h"
 #include "WebSocket.h"
 #include "XmlHttpRequest.h"
 
@@ -59,6 +60,7 @@ bool HologramScriptHost::Initialize()
     RETURN_IF_FALSE(API::VideoElement::Initialize());
 
     RETURN_IF_FALSE(WebGL::WebGLProjections::Initialize());
+	RETURN_IF_FALSE(Audio::AudioProjections::Initialize());
     RETURN_IF_FALSE(Canvas::CanvasProjections::Initialize());
 
     RETURN_IF_FALSE(Spatial::SpatialAnchorsProjections::Initialize());

@@ -97,8 +97,8 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[6],
                                               arguments[7],
                                               arguments[8]);
-        } else if (arguments.length === 6 && ((arguments[5] instanceof HTMLImageElement) || (arguments[5] instanceof Image))) {
-            var image = arguments[5];
+        } else if (arguments.length === 6 && (arguments[5] instanceof HTMLImageElement || arguments[5] instanceof Image)) {
+            let image = arguments[5];
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
             holographic.nativeInterface.webgl.texImage2D2(this.glContext,
                                               arguments[0],
@@ -110,7 +110,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[4],
                                               image.getData());
         } else if (arguments.length === 6 && (arguments[5] instanceof Image)) {
-            var image = arguments[5];
+            let image = arguments[5];
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, HTMLImageElement image
             holographic.nativeInterface.webgl.texImage2D2(this.glContext,
                                               arguments[0],
@@ -123,7 +123,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               image.native);
         } else if ((arguments.length === 6) && (arguments[5] instanceof HTMLCanvasElement)) {
             // GLenum target, GLint level, GLenum internalformat, GLenum format, GLenum type, canvas
-            var canvas = arguments[5];
+            let canvas = arguments[5];
             holographic.nativeInterface.webgl.texImage2D3(this.glContext,
                                               arguments[0],
                                               arguments[1],
@@ -134,7 +134,7 @@ holographic.nativeInterface.makeWebGLRenderingContext = function() {
                                               arguments[4],
                                               canvas.getContext('2d').ctxNative);
         } else if (arguments.length === 6 && (arguments[5] instanceof HTMLVideoElement)) {
-            var video = arguments[5];
+            let video = arguments[5];
             holographic.nativeInterface.webgl.texImage2D4(this.glContext,
                                               arguments[0],
                                               arguments[1],

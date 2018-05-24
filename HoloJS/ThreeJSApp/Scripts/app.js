@@ -1,4 +1,4 @@
-let isHoloJs = (typeof holographic !== 'undefined');
+let isHoloJs = typeof holographic !== 'undefined';
 
 let canvas = document.createElement(isHoloJs ? 'exp-holo-canvas' : 'canvas');
 if (!isHoloJs) {
@@ -9,7 +9,7 @@ if (!isHoloJs) {
 
 let renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
 let scene = new THREE.Scene();
-let camera = (isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000));
+let camera = isHoloJs && holographic.renderMode > 0 ? new THREE.HolographicCamera() : new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 1000);
 let clock = new THREE.Clock();
 
 
@@ -43,8 +43,9 @@ function start() {
 //var sample = new SpatialAnchorsExample(scene, renderer);
 //var sample = new ShadowsExample(scene, renderer);
 //var sample = new BasicCubeExample(scene, renderer);
-var sample = new CanvasRenderingExample(scene, renderer);
+//var sample = new CanvasRenderingExample(scene, renderer);
 //var sample = new LightsExample(scene, renderer);
 //var surfaceReconstructionExample = new SurfaceReconstructionExample(scene, renderer);
+var sample = new SoundExample(scene, renderer);
 
 start();

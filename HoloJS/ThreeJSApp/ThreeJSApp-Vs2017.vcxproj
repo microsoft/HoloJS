@@ -35,7 +35,7 @@
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.14393.0</WindowsTargetPlatformMinVersion>
+    <WindowsTargetPlatformMinVersion>10.0.16299.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -101,7 +101,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>ThreeJSApp_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>ThreeJSApp-Vs2017_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x86</AppxBundlePlatforms>
+    <PackageCertificateThumbprint>15C92DF6CB454FAD9A94146E5B070CFEC80BA131</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -234,6 +238,9 @@
     <None Include="Scripts\shadows.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Scripts\sound.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Scripts\socket.io.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -243,6 +250,7 @@
     <None Include="Scripts\surface-reconstruction.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="ThreeJSApp-Vs2017_TemporaryKey.pfx" />
     <None Include="ThreeJSApp_TemporaryKey.pfx" />
     <None Include="Scripts\app.js">
       <DeploymentContent>true</DeploymentContent>

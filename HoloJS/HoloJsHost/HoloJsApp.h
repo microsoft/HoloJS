@@ -61,6 +61,7 @@ enum class HoloJsLaunchMode { AsActivated, Flat, Holographic };
 
     bool m_WindowClosed;
     bool m_WindowVisible;
+    bool m_windowActivationRequired = false;
 
     EGLDisplay m_EglDisplay;
     EGLContext m_EglContext;

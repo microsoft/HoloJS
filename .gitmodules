@@ -2,3 +2,6 @@
 	path = angle
 	url = https://github.com/Almost-Done/angle.git
 	branch = holojs/master
+[submodule "LabSound"]
+	path = LabSound
+	url = https://github.com/Almost-Done/LabSound.git
