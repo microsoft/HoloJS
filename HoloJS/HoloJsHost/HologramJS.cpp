@@ -4,13 +4,13 @@
 #include "ImageElement.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptsLoader.h"
+#include "SpatialAnchorsProjections.h"
 #include "System.h"
 #include "VideoElement.h"
 #include "WebGLProjections.h"
 #include "AudioProjections.h"
-#include "XmlHttpRequest.h"
 #include "WebSocket.h"
-#include "SpatialAnchorsProjections.h"
+#include "XmlHttpRequest.h"
 
 using namespace HologramJS;
 using namespace Platform;
@@ -54,7 +54,7 @@ bool HologramScriptHost::Initialize()
 
     RETURN_IF_FALSE(API::XmlHttpRequest::Initialize());
 
-	RETURN_IF_FALSE(API::WebSocket::Initialize());
+    RETURN_IF_FALSE(API::WebSocket::Initialize());
 
     RETURN_IF_FALSE(API::ImageElement::Initialize());
     RETURN_IF_FALSE(API::VideoElement::Initialize());
@@ -173,3 +173,7 @@ bool HologramScriptHost::EnableHolographicExperimental(SpatialStationaryFrameOfR
 
     return true;
 }
+
+void HologramScriptHost::DeviceLost() { m_window.DeviceContextEvent(Input::DeviceContextEventType::Lost); }
+
+void HologramScriptHost::DeviceRestored() { m_window.DeviceContextEvent(Input::DeviceContextEventType::Restored); }

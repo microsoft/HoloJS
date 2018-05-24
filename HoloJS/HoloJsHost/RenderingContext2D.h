@@ -24,7 +24,7 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                    Windows::Foundation::Rect& srcRect,
                    Windows::Foundation::Rect& destRect);
 
-    bool toDataURL(const std::wstring& type, double encoderOptions, std::wstring* encodedImage);
+    bool toDataURL(const std::wstring& type, float encoderOptions, std::wstring* encodedImage);
 
     void clearRect(Windows::Foundation::Rect& rect);
 
@@ -39,7 +39,37 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
                   Windows::Foundation::Numerics::float2& point,
                   Windows::UI::Color& color,
                   int fontSize,
-                  std::wstring& fontFamily);
+                  std::wstring& fontFamily,
+                  std::wstring& fontWeight,
+                  std::wstring& fontStyle,
+                  int alignment
+
+    );
+
+    float measureText(std::wstring& text, int fontSize, std::wstring& fontFamily);
+
+    void beginPath();
+    void closePath();
+    void moveTo(float x, float y);
+    void lineTo(float x, float y);
+    void bezierCurveTo(float c1x, float c1y, float c2x, float c2y, float x, float y);
+    void quadraticCurveTo(float cx, float cy, float x, float y);
+    void arc(float cx, float cy, float r, float startAngle, float endAngle, bool counterClockwise);
+
+    void fill(Windows::UI::Color& color);
+    void fillGradient(Windows::Foundation::Numerics::float2& start,
+                      Windows::Foundation::Numerics::float2& end,
+                      Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+    void stroke(Windows::UI::Color& color);
+    void strokeGradient(Windows::Foundation::Numerics::float2& start,
+                        Windows::Foundation::Numerics::float2& end,
+                        Platform::Array<Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop> ^ stops);
+
+    void setTransform(float a, float b, float c, float d, float e, float f);
+    void setGlobalOpacity(float opacity);
+    void setLineStyle(float lineWidth,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capMode,
+                      Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinMode);
 
     Platform::Array<unsigned char> ^ getImageData(Windows::Foundation::Rect& rect, unsigned int* stride);
 
@@ -73,16 +103,29 @@ class RenderingContext2D : public HologramJS::Utilities::IRelease {
     unsigned int m_bpp = 4;
 
     Microsoft::Graphics::Canvas::CanvasRenderTarget ^ m_canvasRenderTarget = nullptr;
+    Microsoft::Graphics::Canvas::CanvasDrawingSession ^ m_session = nullptr;
+
+    float m_globalOpacity = 1.0;
+
+    Microsoft::Graphics::Canvas::Geometry::CanvasPathBuilder ^ m_pathBuilder = nullptr;
+    bool m_figurePresent = false;
+
+    float lineWidth = 1;
+    Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle capStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasCapStyle::Round;
+    Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin joinStyle =
+        Microsoft::Graphics::Canvas::Geometry::CanvasLineJoin::Round;
 
     enum class EncodingType { PNG, JPEG, Unknown };
 
     EncodingType getEncodingFromMimeType(const std::wstring& type);
 
     void getImageDataBGRFlipY(std::vector<byte>& bgrPixels);
+	void getImageDataBGRAUnPremultiplyFlipY(std::vector<byte>& bgrPixels);
 
     HRESULT getDataFromStream(IWICImagingFactory* imagingFactory, IStream* stream, std::vector<byte>& data);
 
-    HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, double encoderOptions);
+    HRESULT initializeEncodingPropertyBag(IPropertyBag2* propertyBag, EncodingType encodingType, float encoderOptions);
 
     HRESULT getDataUrlFromEncodedImage(std::vector<byte>& imageData,
                                        const std::wstring& mimeType,

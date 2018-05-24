@@ -2756,6 +2756,36 @@ defineLazyProperty(idl, "SpatialInputEvent", function() {
     });
 });
 
+//
+// Interface WebGLContextEvent
+//
+
+defineLazyProperty(global, "WebGLContextEvent", function() {
+    return idl.WebGLContextEvent.publicInterface;
+}, true);
+
+defineLazyProperty(idl, "WebGLContextEvent", function() {
+    return new IDLInterface({
+        name: "WebGLContextEvent",
+        superclass: idl.UIEvent,
+        members: {
+            get e() {
+                return unwrap(this).e;
+            },
+
+            initWebGLContextEvent: function initWebGLContextEvent(
+                                    type,
+                                    e)
+            {
+                unwrap(this).initWebGLContextEvent(
+                    String(type),
+                    String(e));
+            },
+
+        },
+    });
+});
+
 
 
 /************************************************************************
@@ -5912,6 +5942,10 @@ defineLazyProperty(idl, "HTMLVideoElement", function() {
             },
             set poster(newval) {
                 unwrap(this).poster = String(newval);
+            },
+
+            getData: function getData() {
+                return unwrap(this).getData();
             },
 
         },
@@ -11452,6 +11486,7 @@ defineLazyProperty(impl, "Document", function() {
         wheelevent: "WheelEvent",
         voiceevent: "VoiceEvent",
         spatialinputevent: "SpatialInputEvent",
+        webglcontextevent: "WebGLContextEvent"
     };
 
     // Certain arguments to document.createEvent() must be treated specially
@@ -12742,6 +12777,31 @@ defineLazyProperty(impl, "SpatialInputEvent", function() {
 
 
 /************************************************************************
+ *  src/impl/WebGLContextEvent.js
+ ************************************************************************/
+
+//@line 1 "src/impl/WebGLContextEvent.js"
+defineLazyProperty(impl, "WebGLContextEvent", function() {
+    function WebGLContextEvent() {
+        // Just use the superclass constructor to initialize
+        impl.UIEvent.call(this);
+    }
+    WebGLContextEvent.prototype = O.create(impl.UIEvent.prototype, {
+        _idlName: constant("WebGLContextEvent"),
+        initWebGLContextEvent: constant(function(type, e, bubbles, cancelable,
+                                          view, detail) {
+            this.initEvent(type, bubbles, cancelable, view, detail);
+            this.e = e;
+        }),
+
+    });
+
+    return WebGLContextEvent;
+});
+
+
+
+/************************************************************************
  *  src/impl/HTMLElement.js
  ************************************************************************/
 
@@ -13280,6 +13340,7 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
         this.keyboardEvents = ['keydown', 'keyup'];
         this.mouseEvents = ['mouseup', 'mousedown', 'mousemove', 'wheel'];
         this.voiceEvents = ['voicecommand'];
+        this.contextEvents = ['webglcontextlost', 'webglcontextrestored'];
     }
 
     HTMLHoloCanvasElementExp.prototype = O.create(impl.HTMLElement.prototype, {
@@ -13375,6 +13436,12 @@ defineLazyProperty(impl, "HTMLHoloCanvasElementExp", function() {
             let spatialInputEvent = this.ownerDocument.createEvent("SpatialInputEvent");
             spatialInputEvent.initSpatialInputEvent(this.spatialInputEvents[typeId], isPressedArg, xArg, yArg, zArg, sourceKindArg, true, true, )
             this.dispatchEvent(spatialInputEvent);
+        }),
+
+        dispatchContextEventFromWindow: constant(function dispatchContextEventFromWindow(typeId, e) {
+            let contextEvent = this.ownerDocument.createEvent("WebGLContextEvent");
+            contextEvent.initWebGLContextEvent(this.contextEvents[typeId], e, true, true)
+            this.dispatchEvent(contextEvent);
         }),
     });
 
@@ -14392,10 +14459,47 @@ defineLazyProperty(impl, "HTMLAudioElement", function() {
 defineLazyProperty(impl, "HTMLVideoElement", function() {
     function HTMLVideoElement(doc, localName, prefix) {
         impl.HTMLMediaElement.call(this, doc, localName, prefix);
+
+        this.native = new holographic.nativeInterface.video.createVideo();
+
+        this.nativeCallback = function(type) {
+            if (type === 'load' && arguments.length > 2) {
+                this.width = this.videoWidth = arguments[1];
+                this.height = this.videoHeight = arguments[2];
+
+                holographic.nativeInterface.eventing.removeCallback(this.native);
+
+                this._readyState = HAVE_ENOUGH_DATA;
+
+                var loadEvent = this.ownerDocument.createEvent("Event");
+                loadEvent.initEvent("canplaythrough", true, true);
+                this.dispatchEvent(loadEvent);
+            }
+        };
+
+        Object.defineProperty(this, "src", {
+            set: function setSrc(value) {
+                holographic.nativeInterface.eventing.setCallback(this.native, this.nativeCallback.bind(this));
+                holographic.nativeInterface.video.setVideoSource(this.native, value);
+            },
+            get: function getSrc() {
+                return this.source;
+            }
+        });
+
+        Object.defineProperty(this, "readyState", {
+            get: function getReadyState() {
+                return this._readyState;
+            }
+        });
     }
 
     HTMLVideoElement.prototype = O.create(impl.HTMLMediaElement.prototype, {
         _idlName: constant("HTMLVideoElement"),
+
+        getData: constant(function getData() {
+            return this.native;      
+        }),
     });
 
     // impl.Element.reflectURLAttribute(HTMLVideoElement,"poster");
@@ -22315,7 +22419,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 8-January-2018 05:48:08 */
+/* Build time: 6-December-2017 05:42:43 */
 var parserlib = {};
 (function(){
 
@@ -23219,7 +23323,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 */
-/* Build time: 8-January-2018 05:48:08 */
+/* Build time: 6-December-2017 05:42:43 */
 (function(){
 var EventTarget = parserlib.util.EventTarget,
 TokenStreamBase = parserlib.util.TokenStreamBase,
@@ -28400,7 +28504,7 @@ function Window() {
     this.input = { 
         "resize": 0,  "mouse" : 1, "keyboard" : 2, 
         "spatialinput" : 3, "spatialmapping" : 4, "vsync": 5,
-        "voice" : 6
+        "voice" : 6, "devicecontext" : 7
     };
 
     this.callbackFromNative = function (type) {
@@ -28429,6 +28533,8 @@ function Window() {
         } else if (type === this.input.voice) {
             let voiceEvent = holographic.canvas.dispatchVoiceFromWindow(arguments[1], arguments[2], arguments[3]);
             this.dispatchEvent(voiceEvent);
+        } else if (type === this.input.devicecontext) {
+            holographic.canvas.dispatchContextEventFromWindow(arguments[1]);
         }
     };
 

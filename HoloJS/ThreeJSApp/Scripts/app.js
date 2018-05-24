@@ -43,7 +43,7 @@ function start() {
 //var sample = new SpatialAnchorsExample(scene, renderer);
 //var sample = new ShadowsExample(scene, renderer);
 //var sample = new BasicCubeExample(scene, renderer);
-//var sample = new CanvasRenderingExample(scene, renderer);
+var sample = new CanvasRenderingExample(scene, renderer);
 //var sample = new LightsExample(scene, renderer);
 //var surfaceReconstructionExample = new SurfaceReconstructionExample(scene, renderer);
 var sample = new SoundExample(scene, renderer);
