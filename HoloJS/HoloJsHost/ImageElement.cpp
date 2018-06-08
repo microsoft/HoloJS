@@ -124,18 +124,12 @@ task<void> ImageElement::GetFromCameraAsync()
     await mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream);
     captureStream->Seek(0);
 
-    std::vector<byte> rawBuffer(static_cast<unsigned int>(captureStream->Size));
-
-    Microsoft::WRL::ComPtr<HologramJS::Utilities::BufferOnMemory> imageBuffer;
-    Microsoft::WRL::Details::MakeAndInitialize<HologramJS::Utilities::BufferOnMemory>(
-        &imageBuffer, rawBuffer.data(), rawBuffer.size());
-    auto iinspectable = (IInspectable*)reinterpret_cast<IInspectable*>(imageBuffer.Get());
-    IBuffer ^ imageIBuffer = reinterpret_cast<IBuffer ^>(iinspectable);
+	IBuffer ^ imageBuffer = ref new Buffer(captureStream->Size);
 
     await captureStream->ReadAsync(
-        imageIBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
+            imageBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None);
 
-    LoadImageFromBuffer(imageIBuffer);
+    LoadImageFromBuffer(imageBuffer);
 }
 
 task<void> ImageElement::ReadFromPackageAsync()
