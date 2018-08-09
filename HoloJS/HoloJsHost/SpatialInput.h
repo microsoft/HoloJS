@@ -29,6 +29,8 @@ class SpatialInput {
    private:
     JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
 
+    Windows::UI::Input::Spatial::SpatialInteractionManager ^ m_spatialInteractionManager;
+
     Windows::Foundation::EventRegistrationToken m_sourcePressedToken;
     Windows::Foundation::EventRegistrationToken m_sourceReleasedToken;
     Windows::Foundation::EventRegistrationToken m_sourceLostToken;
