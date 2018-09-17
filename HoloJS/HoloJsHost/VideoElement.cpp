@@ -5,6 +5,7 @@
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "ScriptsLoader.h"
+#include <array>
 
 using namespace HologramJS::API;
 using namespace std;
@@ -235,7 +236,7 @@ void VideoElement::SwapBuffers()
 void VideoElement::FireOnLoadEvent()
 {
     if (HasCallback()) {
-        vector<JsValueRef> parameters(4);
+        std::array<JsValueRef, 4> parameters; // must be on stack to prevent garbage collection
 
         parameters[0] = m_scriptCallbackContext;
 

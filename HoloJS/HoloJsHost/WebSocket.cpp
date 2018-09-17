@@ -2,6 +2,7 @@
 #include "WebSocket.h"
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
+#include <array>
 
 using namespace HologramJS::Utilities;
 using namespace HologramJS::API;
@@ -210,7 +211,7 @@ task<void> WebSocket::ConnectAsync()
 void WebSocket::FireOnError()
 {
     if (HasCallback()) {
-        vector<JsValueRef> parameters(2);
+        std::array<JsValueRef, 2> parameters; // must be on stack to prevent garbage collection
 
         parameters[0] = m_scriptCallbackContext;
 
@@ -265,7 +266,7 @@ void WebSocket::FireOnOpen()
     m_isConnected = true;
 
     if (HasCallback()) {
-        vector<JsValueRef> parameters(2);
+        std::array<JsValueRef, 2> parameters; // must be on stack to prevent garbage collection
 
         parameters[0] = m_scriptCallbackContext;
 
