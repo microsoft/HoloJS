@@ -4,6 +4,7 @@
 #include "ScriptHostUtilities.h"
 #include "ScriptResourceTracker.h"
 #include "ScriptsLoader.h"
+#include <array>
 
 using namespace HologramJS::API;
 using namespace Windows::Foundation;
@@ -323,7 +324,12 @@ task<void> XmlHttpRequest::SendAsync()
     if (requestMessage) {
         try {
             responseMessage = await httpClient->SendRequestAsync(requestMessage);
-        } catch (...) {
+		}
+		catch (Platform::Exception ^ex) {
+			m_status = 503; // Service unavailable
+			m_statusText.assign(ex->Message->Data());
+		}
+		catch (...) {
             m_status = -1;
         }
     }
@@ -357,7 +363,7 @@ task<void> XmlHttpRequest::SendAsync()
 void XmlHttpRequest::FireStateChanged()
 {
     if (HasCallback()) {
-        vector<JsValueRef> parameters(6);
+		std::array<JsValueRef, 6> parameters; // must be on stack to prevent garbage collection
 
         parameters[0] = m_scriptCallbackContext;
 

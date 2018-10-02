@@ -9,7 +9,7 @@
             self.statusText = arguments[3];
             self.responseType = arguments[4];
 
-            if (this.readyState === XMLHttpRequest.DONE) {
+            if (self.readyState === XMLHttpRequest.DONE) {
                 if (self.status >= 200 && self.status <= 205) {
                     self.fireHandlersByType('load', {target: self});
                 } else {
