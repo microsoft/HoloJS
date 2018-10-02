@@ -235,7 +235,7 @@ void SpatialMapping::ProcessSurface(SpatialSurfaceInfo ^ surface)
             m_indexBuffers.emplace_back(mesh->TriangleIndices->ElementCount);
             auto destIndexPointer = m_indexBuffers.back().data();
             auto sourceIndexPointer = reinterpret_cast<short int*>(GetPointerToData(mesh->TriangleIndices->Data));
-            for (unsigned int i = 0; i <= mesh->TriangleIndices->ElementCount - 3; i += 3) {
+            for (unsigned int i = 0; i < mesh->TriangleIndices->ElementCount; i += 3) {
                 destIndexPointer[i] = sourceIndexPointer[i + 2];
                 destIndexPointer[i + 1] = sourceIndexPointer[i + 1];
                 destIndexPointer[i + 2] = sourceIndexPointer[i];
