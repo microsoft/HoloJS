@@ -1,5 +1,7 @@
 # HoloJS
 
+### HoloJs is going through a [rewrite](https://github.com/Microsoft/HoloJS/tree/develop/next). Until merged, you can [read the new Readme here](https://github.com/Microsoft/HoloJS/blob/develop/next/README.md) and find more about the coming changes in [this wiki entry](https://github.com/Microsoft/HoloJS/wiki/develop-next).
+
 HoloJS is a framework for creating UWP applications using JavaScript and WebGL. 
 
 HoloJS is a C++ library that hosts [ChakraCore](https://github.com/microsoft/chakracore) to run JavaScript code, and also hosts ANGLE to
