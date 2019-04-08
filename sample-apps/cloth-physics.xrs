@@ -1,0 +1,1 @@
+{"scripts":["threejs/three.js","physics/ammo.js","threejs/control/orbitcontrols.js","appcode/cloth-physics.js"],"resources":["media/images/grid.png"],"name":"","HtmlAppName":"cloth-physics.html","XsrFileName":"cloth-physics.xrs"}

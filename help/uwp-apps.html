@@ -1,0 +1,97 @@
+<html>
+<header>
+    <title>Use HoloJs in UWP C++ projects</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1><span>Hosting HoloJs in a UWP C++ application</span></h1>
+        After following the steps outlined bellow, you will have a UWP application that is executing a 3D application
+        written in JavaScript and WebGL.
+        <h3>Requirements:</h3>
+        <ol>
+            <li>Visual Studio 2017 with C++ and UWP development components installed</li>
+        </ol>
+        <h3>Steps:</h3>
+        <ol>
+            <li>In Visual Studio, create a new UWP C++ DirectX:<br>
+                <img src="img/new-uwp-application.png" width="600"> </li><br>
+            <li>Add the HoloJs Nuget package. Since its a pre-release package, make sure to check the "Include
+                prerelease" checkbox when searching. <br>
+                <img src="img/add-holojs-package.png" width="600">
+            </li>
+            <li>
+                In app.cpp, replace the body of the main function with this code:
+                <div class="code">
+                    // Create a host object<br>
+                    auto scriptHost = ref new HoloJs::UWP::HoloJsScriptHost();<br><br>
+                    // Create a default configuration<br>
+                    auto viewConfiguration = ref new HoloJs::UWP::ViewConfiguration();<br><br>
+                    // Initialize and run<br>
+                    if (scriptHost->initialize(viewConfiguration)) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;auto uri = ref new
+                    Platform::String(L"http://holojs.azurewebsites.net/v7/vr-cubes.xrs");<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;scriptHost->startUri(uri);<br>
+                    }<br>
+                    return 0;
+                </div>
+            </li>
+            <li>You can remove all other code that was generated for the DirectX template app. With HoloJs, you only
+                need the main function in app.cpp.</li>
+            <li>
+                Press F5 to run.<br>
+                Without a VR headset, you should get a window that renders cubes floating in space:<br>
+                <img src="img/win32-cubes.png" width="600px"><br>
+                If you have a VR headset connected, you should see cubes floating around you in a virtual room:<br>
+                <video src="img/win32-cubes-vr.mp4" controls="controls" width="600px"></video>
+
+            </li>
+        </ol>
+        <h4>Debugging scripts running inside HoloJs</h4>
+        When HoloJs is hosted inside a UWP app, you use Visual Studio to debug the scripts.
+        <ol>
+            <li>Enable debugging in HoloJs by adding this line of code before you initialize the script host:<br>
+                <span class="code">scriptHost-&gt;enableDebugger();</span>
+            </li>
+            <li>
+                Switch the debugger to "Script" mode
+                <ol type="a">
+                    <li>
+                        Go to project properties<br>
+                        <img src="img/vs-project-properties.png" width="300px">
+                    </li><br>
+                    <li>
+                        Switch debugger to "Script Only"
+                        <img src="img/vs-debug-properties.png" width="600px">
+                        <div class="note">
+                            <span class="bold">Note: </span>Make sure you change the debugger type for the active
+                            Configuration and Platform
+                        </div>
+                    </li>
+                </ol>
+            </li>
+            <li>
+                Press F5 in Visual Studio. The app will start and you can use regular Visual Studio debugging commands to break in, add breakpoints, continue, etc.
+                <div class="note">
+                    <span class="bold">Note: </span>The list of running scripts is added to the Solution Explorer as "Script Documents". You can open JavaScript files from there and add breakpoints.<br>
+                    <img src="img/vs-loaded-scripts-list.png" width="400px">
+                </div>
+            </li>
+        </ol>
+    </div>
+
+</body>
+
+</html>

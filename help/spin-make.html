@@ -1,0 +1,187 @@
+<html>
+<header>
+    <title>Create a VR thing with Spin Make</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1><span>Get started with Spin Make</span></h1>
+        Spin Make is a development toolset for creating VR and AR JavaScript experiences for Windows PCs, Windows Mixed
+        Reality
+        headsets and the HoloLens. You can create VR experiences in minutes using the provided packaging tool, viewer
+        app and Visual Studio Code integration.
+        <br><br>
+        <video src="img/spin-make-demo.mp4" width="800px" controls="controls"
+            onclick="this.play()"></video>
+        <h2>Install Spin Make</h2>
+        <h4>Install Spin Make from <a
+                href="http://holojs.azurewebsites.net/spin-make">http://holojs.azurewebsites.net/spin-make</a></h4>
+        <div class="note">
+            <span class="bold">Note:</span>
+            Sideloading from the above link requires your PC to be in developer mode:<br>
+            For more information, refer to this link: <a
+                href="https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development#accessing-settings-for-developers">https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development#accessing-settings-for-developers</a>
+            <br>
+        </div>
+        <div class="note">
+            <span class="bold">Note:</span>
+            Sideloading from the above link might result in the following error:<br>
+            <img width="600em" src="img/install-error.png">
+            <br>
+            You will need to install the app publisher's certificate. From an elevated PowerShell window, run these
+            2 commands:
+            <br>
+            <div class="code">
+                Invoke-WebRequest -Uri http://holojs.azurewebsites.net/spin-view/spin-certificate.cer -OutFile
+                spin-package.cer<br>
+                Import-Certificate -CertStoreLocation cert:\LocalMachine\TrustedPeople -FilePath .\spin-package.cer
+            </div>
+            <br>
+            The displayed certificate thumbprint should match 6CD692F3350A160BE390AA9D5C31DC96CAEB98DF<br>
+            For more information refer to this link: <a
+                href="https://docs.microsoft.com/en-us/windows/msix/app-installer/troubleshoot-appinstaller-issues">https://docs.microsoft.com/en-us/windows/msix/app-installer/troubleshoot-appinstaller-issues</a>
+        </div>
+        <h2>
+            Create a Spin app from template
+        </h2>
+        <ol>
+            <li>Launch Spin Make, then click "New".</li>
+            <li>
+                Type a name for the thing, select the save location and your favorite WebGL framework:<br>
+                <img src="img/create-new-thing.png" width="600em"><br>
+                A new directory is created for the app. It contains the JavaScript files of the selected framework,
+                resources files and the app's main JavaScript file. The XRS file is just a JSON file that contains the
+                list
+                of scripts contained in the app and the list of resources referenced by your app (images, sounds, etc.)
+            </li>
+            <li>
+                You can add more JavaScript files to be executed or resources. When adding a file to the app, it will be
+                automatically copied to the app's directory.<br>
+                <div class="note">
+                    <span class="bold>">Note:</span> The scripts are listed in the order of execution and can be
+                    re-sorted
+                    as needed.
+                </div>
+            </li>
+            <li>
+                Click the Play button to preview it
+            </li>
+            <li>
+                Click the VR headset button to view the app in a connected VR headset. If no VR headset is connected,
+                the
+                app will launch in a new desktop window.
+                <div class="note">
+                    <span class="bold">Note:</span>
+                    In the absence of a VR headset, you can use the Windows Mixed Reality simulator to view the app.
+                    Refer
+                    to this link for more information: <a
+                        href="https://docs.microsoft.com/en-us/windows/mixed-reality/using-the-windows-mixed-reality-simulator">https://docs.microsoft.com/en-us/windows/mixed-reality/using-the-windows-mixed-reality-simulator</a>
+                </div>
+            </li>
+        </ol>
+        <h2>Running Spin apps</h2>
+        <h4>On your PC</h4>
+        To run a Spin app on your PC, simply double click the XRS file you created and it will launch in a VR headset or
+        on
+        the desktop.
+        Alternatively, you can launch the editor, open the XRS file and run in.
+        <h4>Sharing Spin apps with others</h4>
+        <ol>
+            <li>
+                <span class="bold">Install Spin View</span> from <a
+                    href="http://holojs.azurewebsites.net/spin-view/">http://holojs.azurewebsites.net/spin-view/</a>.
+                Follow
+                the same steps as for installing Spin Make above.
+                <br>To install Spin View on the HoloLens, download the appxbundle from the link above and install it
+                using
+                the HoloLens Device Portal. Please refere to the "Install (sideload) and app" section in this link: <a
+                    href="https://docs.microsoft.com/en-us/windows/uwp/debug-test-perf/device-portal">https://docs.microsoft.com/en-us/windows/uwp/debug-test-perf/device-portal</a>
+            </li>
+            <li>
+                <span class="bold">Distribute the Spin app</span>
+                <ol type="a" id="packaged">
+                    <li><span class="bold">Packaged.</span> You can share the whole app directory with others and they
+                        can view it with Spin Make.
+                        A simpler solution is to package the directory into a single XRSX file using Spin Make. This
+                        enables sharing the app with HoloLens users as well.<br><br>
+                        To achieve this, open the XRS file in Spin Make, then click on "Create Package". This step will
+                        create a
+                        XRSX file that you can give to others.
+                        <div class="Note"><span class="bold">Note: </span>The package is just a zip file.</div>
+                        The app will start in Spin View when the XRSX is opened (double click, command line, etc.)
+                    </li>
+                    <li><span class="bold">Hosted.</span> You can upload the app's directory to your website. Create a
+                        HTML file
+                        that contains a link to the XRS file using the xrs protocol handler:<br>
+                        Example: 
+                        <a
+                            href="xrs:http://holojs.azurewebsites.net/v7/vr-cubes.xrs">xrs:http://holojs.azurewebsites.net/v7/vr-cubes.xrs</a>
+                            <br>Clicking on this link opens Spin View and runs the app.
+
+                    </li>
+                </ol>
+            </li>
+        </ol>
+        <h2>Edit, test and debug with Visual Studio Code</h2>
+        <ol>
+            <li>
+                Install Visual Studio Code from <a
+                    href="https://code.visualstudio.com/">https://code.visualstudio.com/</a>
+            </li>
+            <li>
+                Open the app in Spin Make, then click on "Edit in Visual Studio Code". This will open Visual Studio Code
+                in the app's directory. You can explore and edit the JavaScript files using the Explorer pane on the
+                left (Ctrl + Shift + E)
+            </li>
+            <li>
+                Press F5. The app will start in the VR headset or on the desktop.
+                <div class="note">
+                    <span class="bold">Note: </span>Spin Make automatically creates a debug configuration for VS Code in
+                    the
+                    .vscode directory of the app.
+                </div>
+            </li>
+            <li>
+                Use the standard debugger controll buttons to pause, continue, step, etc:<br>
+                <img src="img/debug-buttons.png" height="64px">
+            </li>
+            <li>
+                Setting breakpoints in files. To set a breakpoint in a running file, you must first open it from the
+                list of loaded scripts. The loaded scripts list is located in the lower side of the debugger panel (Ctrl
+                + Shift + D)<br>
+                <img src="img/loaded-scripts-collapsed.png" height="92px"><br>
+                The list contains all scripts that make the app work, including internal scripts, WebGL framework
+                scripts, etc. Your app's script is app.js<br>
+                <img src="img/loaded-scripts.png" width="300px"><br>
+                The app's render function is a good place to put a breakpoint on if you are debugging the animation:<br>
+                <img src="img/breakpoint-sample.png" width="600px">
+                <div class="note">
+                    <span class="bold">Note: </span>Adding breakpoints in files from the Explorer panel is not supported
+                    yet.
+                </div>
+                <div class="note">
+                    <span class="bold">Note: </span>Sometimes breakpoints cannot be set and the app will appear hung.
+                    There will be error messages in the "Debug console" panel and the "faulty" breakpoints appear grayed
+                    out:
+                    <img src="img/faulty-breakpoints.png" height="128px"><br>
+                    The solution is to remove the faulty breakpoints and restart debugging.
+                </div>
+            </li>
+        </ol>
+    </div>
+
+</body>
+
+</html>

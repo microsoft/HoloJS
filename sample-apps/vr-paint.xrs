@@ -1,0 +1,1 @@
+{"scripts":["threejs/three.js","threejs/loaders/objloader.js","appcode/vr-paint.js"],"resources":["media/models/vive-controller/onepointfive_spec.png","media/models/vive-controller/onepointfive_texture.png","media/models/vive-controller/vr_controller_vive_1_5.obj"],"name":"","HtmlAppName":"vr-paint.html","XsrFileName":"vr-paint.xrs"}

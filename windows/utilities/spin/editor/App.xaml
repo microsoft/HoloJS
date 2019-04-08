@@ -1,0 +1,10 @@
+﻿<Application x:Class="assembler_studio.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:HoloJs.Spin"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <local:InverseBooleanConverter x:Key="InverseBoolConverter"/>
+        <local:BoolVisibilityConverter x:Key="VisibilityConverter"/>
+    </Application.Resources>
+</Application>

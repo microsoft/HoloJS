@@ -1,0 +1,38 @@
+1.  download and install python3
+2.  download depot-tools from https://commondatastorage.googleapis.com/chrome-infra-docs/flat/depot_tools/docs/html/depot_tools_tutorial.html#_setting_up
+3.  add depot_tools to PATH variable, after python3
+4.  add environment variable DEPOT_TOOLS_WIN_TOOLCHAIN=0
+5.  open a new command prompt
+6.  change directory to deps\angle-google
+7.  run "python scripts/bootstrap.py"
+8.  gclient sync
+
+9. gn args out/Debug-x64
+paste in the editor:
+target_cpu = "x64"
+is_clang = false
+is_debug = true
+
+10. gn args out/Release-x64
+paste in the editor:
+target_cpu = "x64"
+is_clang = false
+is_debug = false
+
+11. gn args out/Debug-Win32
+paste in the editor:
+target_cpu = "x86"
+is_clang = false
+is_debug = true
+
+12. gn args out/Release-Win32
+paste in the editor:
+target_cpu = "x86"
+is_clang = false
+is_debug = false
+
+13. python scripts/msvs_projects.py
+
+14. open angle-google\out\sln
+Build the "all" project for all configurations (Debug-Win32, Debug-x64, etc.)
+Do not change the platform, it is always x64 even when building Debug-Win32 etc.

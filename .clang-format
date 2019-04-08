@@ -1,0 +1,19 @@
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 120
+AlignAfterOpenBracket: Align
+BinPackParameters: false
+BinPackArguments: false
+BreakBeforeBraces: Custom
+BraceWrapping: 
+   AfterFunction:         true 
+
+IncludeCategories:
+  - Regex:           'pch.h'
+    Priority:        -1
+  - Regex:           'stdafx.h'
+    Priority:        0
+  - Regex:           'jsrt.h'
+    Priority:        5
+  - Regex:           'chakrart.h'
+    Priority:        6

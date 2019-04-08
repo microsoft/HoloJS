@@ -1,0 +1,98 @@
+<html>
+<header>
+    <title>HoloJs VR experiences</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Sample HoloJs experiences for VR and AR</h1>
+            To run the following samples on your desktop, Mixed Reality headset or HoloLens, you must side-load the Spin app from <a href="http://holojs.azurewebsites.net/spin-view">http://holojs.azurewebsites.net/spin-view</a>. Follow the same steps for installing the certificate as <a href="spin-make.html">outlined for installing Spin Make.</a> If you already installed Spin Make, you do not need to install the certificate again.
+            <div class="note"><span class="bold">Note: </span>On the HoloLens, use the Device Portal to install the certificate and side-load the Spin package, which can be downloaded from the "Additional Links" section of the app's webpage.</div>
+            <div class="note">Most of the samples in this section are based on ThreeJs examples, which you can find at <a
+                href="https://threejs.org/examples/">https://threejs.org/examples/</a></div>
+        <h3>Ballshooter VR</h3>
+        Shoot balls with you VR controller (or hands on HoloLens) and see them bouncing around a virtual room.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_ballshooter">https://threejs.org/examples/#webvr_ballshooter</a><br>
+        <img src="img/ballshooter.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/ballshooter.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/ballshooter.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/ballshooter.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/ballshooter.xrs">View XRS</a>
+        </div>
+        <h3>VR paint</h3>
+        Demo for Gamepad input. Draw in 3D using your VR controller (or hands on HoloLens). VR headset and controller
+        required.
+        Uses Three's OBJ loader for the controller model.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_vive_paint">https://threejs.org/examples/#webvr_vive_paint</a><br>
+        <video src="img/vr-paint.mp4" poster="img/vr-paint.jpg" controls="controls" width="300px"></video><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/vr-paint.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/vr-paint.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/vr-paint.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/vr-paint.xrs">View XRS</a>
+        </div>
+        <h3>Directional sound</h3>
+        Demo for spatial sound. Move around the boombox to experience directional sound, audio dampening by the wall,
+        audio falloff. Uses Three's GLTF loader and WebAudio.
+        Adapted to run in VR from <a
+            href="https://threejs.org/examples/#webaudio_orientation">https://threejs.org/examples/#webaudio_orientation</a><br>
+        <img src="img/directional-sound.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/directional-sound.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/directional-sound.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/directional-sound.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/directional-sound.xrs">View XRS</a><br>
+        </div>
+        <h3>Physics</h3>
+        Physics demo using ammo.js and ThreeJs. Use left/right controller triggers (or 'a' and 'q' keys) to move the flag and demolish the wall.
+        Adapted to run in VR from <a
+            href="https://threejs.org/examples/webgl_physics_cloth">https://threejs.org/examples/#webgl_physics_cloth</a><br>
+        <img src="img/cloth-physics.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/cloth-physics.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/cloth-physics.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/cloth-physics.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/cloth-physics.xrs">View XRS</a><br>
+        </div>
+        <h3>VR cubes</h3>
+        Cubes floating around in space.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_cubes">https://threejs.org/examples/#webvr_cubes</a><br>
+        <img src="img/vr-cubes.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/vr-cubes.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/vr-cubes.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/vr-cubes.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/vr-cubes.xrs">View XRS</a><br>
+        </div>
+        <h3>Molecule viewer</h3>
+        View the 3D model of the caffeine molecule. Uses Three's PDB loader.
+        Simplified sample based on <a
+            href="https://threejs.org/examples/#webgl_loader_pdb">https://threejs.org/examples/#webgl_loader_pdb</a><br>
+        <img src="img/molecule-viewer.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v7/molecule-viewer.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v7/molecule-viewer.xrs">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/appcode/molecule-viewer.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v7/molecule-viewer.xrs">View XRS</a><br>
+        </div>
+    </div>
+
+</body>
+
+</html>

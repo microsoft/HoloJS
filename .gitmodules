@@ -1,7 +1,26 @@
-[submodule "angle"]
-	path = angle
-	url = https://github.com/Almost-Done/angle.git
-	branch = holojs/master
 [submodule "LabSound"]
-	path = LabSound
+	path = deps/LabSound
 	url = https://github.com/Almost-Done/LabSound.git
+	branch = master
+[submodule "angle-google"]
+	path = deps/angle-google
+	url = https://github.com/google/angle.git
+[submodule "angle-microsoft"]
+	path = deps/angle-microsoft
+	url = https://github.com/Almost-Done/angle.git
+	branch = ms-master
+[submodule "Win2D"]
+	path = deps/Win2D
+	url = https://github.com/Almost-Done/Win2D.git
+[submodule "deps/ChakraCore"]
+	path = deps/ChakraCore
+	url = https://github.com/Microsoft/ChakraCore.git
+[submodule "deps/ChakraCore-Debugger"]
+	path = deps/ChakraCore-Debugger
+	url = https://github.com/Microsoft/ChakraCore-Debugger.git
+[submodule "deps/ziplib"]
+	path = deps/ziplib
+	url = https://bitbucket.org/wbenny/ziplib.git
+[submodule "deps/zxing-cpp"]
+	path = deps/zxing-cpp
+	url = https://github.com/nu-book/zxing-cpp.git

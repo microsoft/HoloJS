@@ -1,0 +1,27 @@
+﻿<Window x:Class="HoloJs.Spin.QrConnect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HoloJs.Spin"
+        mc:Ignorable="d"
+        Title="Spin Make - HoloLens Connector" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label
+            FontSize="16" HorizontalAlignment="Center"
+            Content="Launch Spin on the HoloLens, point the HoloLens at this QR code and say 'scan'" />
+
+        <TextBlock
+            FontSize="16" HorizontalAlignment="Center" x:Name="EmbeddedUrl" Grid.Row="2" />
+        <Image
+            Grid.Row="3"
+            x:Name="QrImage" Stretch="Uniform" StretchDirection="DownOnly"/>
+    </Grid>
+</Window>

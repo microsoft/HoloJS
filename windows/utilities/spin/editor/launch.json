@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch via holojs",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "spin.exe",
+      "runtimeArgs": [
+        "--uri",
+        "<<app_path_here>>",
+        "--debug"
+      ],
+      "port": 9229,
+      "protocol": "inspector"
+    }
+  ]
+}
