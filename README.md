@@ -7,7 +7,7 @@ HoloJs is an execution host for JavaScript Augmented and Virtual Reality applica
 HoloJs enables JavaScript rendering to Win32 windows and controls, UWP views, Windows Mixed Reality headsets and the HoloLens through web standard interfaces such as WebGL, WebVR, WebAudio, Gamepad APIs, Canvas, XmlHttpRequest, Image.
 
 ## Usage
-The fastest way to create VR and AR experiences with HoloJs is to use the Spin Make app and Visual Studio Code. Spin provides the package editor and viewer while editing and debugging scripts is done through the Visual Studio Code integration. Please refer to [VR and AR experiences with Spin](http://holojs.azurewebsites.net/help/spin-make.html) for more details. **Spin** is not yet published in the Windows store and requires side-loading at this time.
+The fastest way to create VR and AR experiences with HoloJs is to use the Spin Make app and Visual Studio Code. Spin provides the package editor and viewer while editing and debugging scripts is done through the Visual Studio Code integration. Please refer to [VR and AR experiences with Spin](http://holojs.azurewebsites.net/help/spin-make.html) for more details. **Note:** Spin is not yet published in the Windows store and requires side-loading at this time.
 
 Alternatively, use the [HoloJs Nuget package](https://www.nuget.org/packages/holojs) for embedding it into Win32 and UWP apps. Please refer to [HoloJs in Win32 apps](http://holojs.azurewebsites.net/help/win32-apps.html) and [HoloJs in UWP apps](http://holojs.azurewebsites.net/help/uwp-apps.html) for detailed instructions.
 
