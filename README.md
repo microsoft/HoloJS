@@ -28,3 +28,4 @@ All dependencies are build time dependencies in the form of git submodules.
 * [ChakraCore debugger](https://github.com/Microsoft/ChakraCore-Debugger) provides the debugger protocol implementation that enables editing and debugging HoloJs apps using Visual Studio Code.
 * [Win2D](https://github.com/Microsoft/Win2D) provides the implementation for canvas's 2D context on the Windows platform.
 * [ZipLib](https://bitbucket.org/wbenny/ziplib) provides cross platform archive decompression.
+* [zxing-cpp](https://github.com/nu-book/zxing-cpp) provides QR code decoding for the Spin viewer on the HoloLens
