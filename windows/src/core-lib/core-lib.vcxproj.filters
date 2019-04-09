@@ -161,6 +161,12 @@
     <ClInclude Include="..\..\..\core\include\holojs\private\holojs-script-host-internal.h">
       <Filter>include\holojs\private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\websocket.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\websocket-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=" ..\..\..\core\blob.cpp" />
@@ -206,6 +212,7 @@
       <Filter>resource-management</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\script-context.cpp" />
+    <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=" ..\..\..\core\scripts\2d-context.js">
@@ -248,6 +255,9 @@
       <Filter>scripts</Filter>
     </None>
     <None Include=" ..\..\..\core\scripts\xmlhttprequest.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\websocket.js">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

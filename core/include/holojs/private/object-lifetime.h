@@ -33,6 +33,7 @@ enum class ObjectType {
     IAudioListener,
     IAudioNode,
     IAudioParam,
+	IWebSocket,
     None
 };
 

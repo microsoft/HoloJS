@@ -3,9 +3,11 @@
 #include "holojs/holojs.h"
 #include "holojs/private/error-handling.h"
 #include "include/holojs/windows/windows-platform.h"
+#include "websocket.h"
 #include <experimental/filesystem>
 #include <map>
 #include <memory>
+#include <vector>
 #include <ppltasks.h>
 #include <robuffer.h>
 #include <string>
@@ -197,8 +199,8 @@ HRESULT WindowsPlatform::readfileBinaryFromHandle(HANDLE handle, std::vector<uns
     bool readResult = false;
     vector<char> readBuffer(1024);
     do {
-        readResult = ReadFile(
-            handle, readBuffer.data(), static_cast<unsigned int>(readBuffer.size()), &bytesRead, nullptr);
+        readResult =
+            ReadFile(handle, readBuffer.data(), static_cast<unsigned int>(readBuffer.size()), &bytesRead, nullptr);
 
         if (readResult && bytesRead > 0) {
             data.insert(data.end(), readBuffer.begin(), readBuffer.begin() + bytesRead);
@@ -226,4 +228,13 @@ long WindowsPlatform::getCurrentDirectory(std::wstring& currentDirectory)
 HoloJs::IAudioContext* WindowsPlatform::createAudioContext(HoloJs::IHoloJsScriptHostInternal* host)
 {
     return new HoloJs::Win32::WebAudio::AudioContext(host);
+}
+
+HoloJs::IWebSocket* WindowsPlatform::createWebSocket(HoloJs::IHoloJsScriptHostInternal* host,
+                                                     const std::wstring& url,
+                                                     const std::vector<std::wstring>& protocols)
+{
+	auto newWebSocket = new HoloJs::Platforms::Win32::WebSocket(host);
+	newWebSocket->connect(url, protocols);
+	return newWebSocket;
 }

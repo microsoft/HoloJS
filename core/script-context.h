@@ -9,6 +9,7 @@
 #include "webaudio/audio-context-projection.h"
 #include "webgl/webgl-projections.h"
 #include "xml-http-request-projections.h"
+#include "websocket-projection.h"
 #include <memory>
 
 namespace HoloJs {
@@ -54,6 +55,7 @@ class ScriptContext {
     std::unique_ptr<HoloJs::WebAudio::AudioContextProjection> m_audioContextProjection;
     std::unique_ptr<HoloJs::Interfaces::BlobProjection> m_blobProjection;
     std::unique_ptr<HoloJs::Interfaces::PromiseContinuation> m_promiseContinuation;
+	std::unique_ptr<HoloJs::WebSocketProjection> m_websocketProjection;
 
     // This pointer is tracked through script ref counting; It gets released automatically when the context is detroyed
     HoloJs::Interfaces::WindowElement* m_windowElement;

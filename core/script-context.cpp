@@ -88,6 +88,9 @@ long ScriptContext::initialize()
     m_blobProjection = make_unique<HoloJs::Interfaces::BlobProjection>(m_resourceManager);
     RETURN_IF_FAILED(m_blobProjection->initialize());
 
+	m_websocketProjection = make_unique<HoloJs::WebSocketProjection>(m_resourceManager, m_host);
+	RETURN_IF_FAILED(m_websocketProjection->initialize());
+
     return HoloJs::Success;
 }
 

@@ -11,20 +11,23 @@ using namespace HoloJs;
 using namespace HoloJs::AppModel;
 using namespace std;
 
-const wchar_t* g_InternalScriptNames[] = {L"window.js",
-                                          L"URL.js",
-                                          L"console.js",
-                                          L"timers.js",
-                                          L"2d-context.js",
-                                          L"image.js",
-                                          L"canvas.js",
-                                          L"canvas-vr.js",
-                                          L"webgl-context.js",
-                                          L"document.js",
-                                          L"webvr.js",
-                                          L"gamepad.js",
-                                          L"xmlhttprequest.js",
-                                          L"webaudio.js"};
+const wchar_t* g_InternalScriptNames[] = {
+    L"window.js",
+    L"URL.js",
+    L"console.js",
+    L"timers.js",
+    L"2d-context.js",
+    L"image.js",
+    L"canvas.js",
+    L"canvas-vr.js",
+    L"webgl-context.js",
+    L"document.js",
+    L"webvr.js",
+    L"gamepad.js",
+    L"xmlhttprequest.js",
+    L"webaudio.js",
+    L"websocket.js",
+};
 
 IHoloJsScriptHost* __cdecl HoloJs::PrivateInterface::CreateHoloJsScriptHost() { return new HoloJsScriptHost(); }
 
@@ -34,6 +37,14 @@ HoloJsScriptHost::HoloJsScriptHost() { m_scriptsLoader = make_unique<ScriptsLoad
 
 HoloJsScriptHost::~HoloJsScriptHost()
 {
+	// Stop queueing items
+    m_runningState = HostState::Stopping;
+
+    // Wait until all outstanding work items are done (except this one)
+    while (m_outstandingWorkItems > 0) {
+        Sleep(100);
+    }
+
     m_view.reset();
     cleanupScriptContext();
 }
@@ -100,7 +111,7 @@ long HoloJsScriptHost::startUri(const wchar_t* appUrl)
             m_runningState = HostState::Running;
             runInScriptContext([this]() {
                 EXIT_IF_FAILED(initializeScriptContext());
-                m_view->executeApp(m_loadedApp);    
+                m_view->executeApp(m_loadedApp);
             });
         }
 
@@ -171,7 +182,8 @@ long HoloJsScriptHost::stopExecution()
     return HoloJs::Success;
 }
 
-void HoloJsScriptHost::startExecution(void* platformHandle) {
+void HoloJsScriptHost::startExecution(void* platformHandle)
+{
     auto result = m_scriptsLoader->loadApp(platformHandle, m_loadedApp);
 
     if (HOLOJS_FAILED(result)) {

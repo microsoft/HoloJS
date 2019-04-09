@@ -383,6 +383,9 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     <None Include="..\..\..\core\scripts\webgl-context.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\..\..\core\scripts\websocket.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\..\..\core\scripts\webvr.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

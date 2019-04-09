@@ -102,7 +102,8 @@ Blob* Blob::fromScriptData(JsValueRef blobParts,
             auto blobPart = resourceManager->externalToObject<Blob>(blobNativeRef, ObjectType::Blob);
             RETURN_NULL_IF_FALSE(blobPart != nullptr);
             partsData[i] = blobPart->m_data->data();
-            partsDataLength[i] = blobPart->m_data->size();
+			RETURN_NULL_IF_TRUE(blobPart->m_data->size() > UINT32_MAX);
+            partsDataLength[i] = static_cast<unsigned int>(blobPart->m_data->size());
         } else if (partType == JsTypedArray) {
             RETURN_NULL_IF_JS_ERROR(
                 JsGetTypedArrayStorage(partRef, &partsData[i], &partsDataLength[i], nullptr, nullptr));
@@ -113,7 +114,7 @@ Blob* Blob::fromScriptData(JsValueRef blobParts,
             stringParts.emplace_back(stringData.length() * sizeof(wchar_t));
 
             memcpy(stringParts.back().data(), stringData.c_str(), stringData.length());
-			RETURN_NULL_IF_TRUE(stringParts.back().size() > MAXUINT32);
+			RETURN_NULL_IF_TRUE(stringParts.back().size() > UINT32_MAX);
             partsDataLength[i] = static_cast<unsigned int>(stringParts.back().size());
             partsData[i] = stringParts.back().data();
         } else {
@@ -129,6 +130,7 @@ Blob* Blob::fromScriptData(JsValueRef blobParts,
     size_t appendOffset = 0;
     for (int i = 0; i < length; i++) {
         memcpy(blob->m_data->data() + appendOffset, partsData[i], partsDataLength[i]);
+		// TODO: safe add
         appendOffset += partsDataLength[i];
     }
 

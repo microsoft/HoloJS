@@ -12,9 +12,9 @@
 #ifdef _DEBUG
         scriptHost->enableDebugger();
 #endif
-        //auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/ballshooter.xrs");
-		//scriptHost->startUri(uri);
-        scriptHost->start();
+        auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/ballshooter.xrs");
+		scriptHost->startUri(uri);
+        //scriptHost->start();
     }
 
     return 0;

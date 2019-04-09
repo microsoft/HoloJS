@@ -1,12 +1,13 @@
 #pragma once
 
-#include "holojs-script-host-internal.h"
 #include "app-model.h"
 #include "canvas-render-context-2d.h"
+#include "holojs-script-host-internal.h"
 #include "holojs-view.h"
 #include "image-interface.h"
 #include "package-reader.h"
 #include "webaudio-interfaces.h"
+#include "websocket.h"
 #include "xml-http-request.h"
 #include <list>
 #include <memory>
@@ -36,14 +37,15 @@ class IPlatform {
     virtual long base64Encode(const wchar_t* toEncode, size_t toEncodeLength, std::wstring& encoded) = 0;
     virtual long base64Decode(const wchar_t* toDecode, size_t toDecodeLength, std::wstring& decoded) = 0;
 
-    
-
     virtual HoloJs::ICanvasRenderContext2D* createCanvasRenderContext2D() = 0;
 
     virtual HoloJs::IAudioContext* createAudioContext(HoloJs::IHoloJsScriptHostInternal* host) = 0;
 
     virtual HoloJs::IIMage* createImage(HoloJs::IHoloJsScriptHostInternal* host) = 0;
     virtual HoloJs::IXmlHttpRequest* createXmlHttpRequest(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual HoloJs::IWebSocket* createWebSocket(HoloJs::IHoloJsScriptHostInternal* host,
+                                                const std::wstring& url,
+                                                const std::vector<std::wstring>& protocols) = 0;
 
     virtual long getCurrentDirectory(std::wstring& currentDirectory) = 0;
 

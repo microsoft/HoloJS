@@ -5,9 +5,9 @@
 #include "holojs/windows/render-context-2d.h"
 #include "holojs/windows/xml-http-request.h"
 #include "script-resources.h"
+#include "win32-embedded-view.h"
 #include "win32-platform.h"
 #include "win32-view.h"
-#include "win32-embedded-view.h"
 #include <map>
 #include <ppltasks.h>
 #include <string>
@@ -47,12 +47,13 @@ map<std::wstring, int> g_scriptNamesMap = {{L"URL.js", URL_SCRIPT},
                                            {L"webvr.js", WEBVR_SCRIPT},
                                            {L"gamepad.js", GAMEPAD_SCRIPT},
                                            {L"xmlhttprequest.js", XHR_SCRIPT},
-                                           {L"webaudio.js", WEBAUDIO_SCRIPT}};
+                                           {L"webaudio.js", WEBAUDIO_SCRIPT},
+                                           {L"websocket.js", WEBSOCKET_SCRIPT}};
 
 HoloJs::IHoloJsView* Win32Platform::makeView(HoloJs::ViewConfiguration viewConfig)
 {
     if (viewConfig.viewMode == ViewMode::FlatEmbedded) {
-		return new Win32HoloJsEmbeddedView(viewConfig);
+        return new Win32HoloJsEmbeddedView(viewConfig);
     } else {
         return new Win32HoloJsView(viewConfig);
     }
@@ -98,9 +99,8 @@ HoloJs::IIMage* Win32Platform::createImage(HoloJs::IHoloJsScriptHostInternal* ho
 
 void Win32Platform::enableDebugger(HoloJs::IHoloJsScriptHost* host, JsRuntimeHandle runtime)
 {
-	m_debugger.reset(new HoloJs::Win32::Debugging::ScriptDebugger());
-	if (SUCCEEDED(m_debugger->start(runtime)))
-	{
-		m_debugger->waitForAttach();
-	}
+    m_debugger.reset(new HoloJs::Win32::Debugging::ScriptDebugger());
+    if (SUCCEEDED(m_debugger->start(runtime))) {
+        m_debugger->waitForAttach();
+    }
 }

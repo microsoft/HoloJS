@@ -170,6 +170,7 @@
     <ClInclude Include="timer-tests.h" />
     <ClInclude Include="web-loader-tests.h" />
     <ClInclude Include="webaudio-tests.h" />
+    <ClInclude Include="websocket-test.h" />
     <ClInclude Include="window-tests.h" />
     <ClInclude Include="xhr-tests.h" />
   </ItemGroup>
@@ -189,6 +190,7 @@
     <ClCompile Include="timer-tests.cpp" />
     <ClCompile Include="web-loader-tests.cpp" />
     <ClCompile Include="webaudio-tests.cpp" />
+    <ClCompile Include="websocket-test.cpp" />
     <ClCompile Include="window-tests.cpp" />
     <ClCompile Include="xhr-tests.cpp" />
   </ItemGroup>

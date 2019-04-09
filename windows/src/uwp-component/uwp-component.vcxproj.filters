@@ -121,5 +121,8 @@
     <None Include="..\..\..\core\scripts\xmlhttprequest.js">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\..\..\core\scripts\websocket.js">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

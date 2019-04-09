@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "holojs/private/holojs-view.h"
 #include "holojs/holojs-script-host.h"
+#include "holojs/private/holojs-view.h"
 #include "holojs/private/platform-interfaces.h"
 #include "holojs/private/webaudio-interfaces.h"
 
@@ -32,7 +32,10 @@ class WindowsPlatform : public HoloJs::IPlatform {
     virtual void debugLog(const wchar_t* message);
     virtual void debugLog(const char* message);
 
-    virtual HRESULT getAppConfigFromJson(const std::wstring& appDefinition, std::list<std::wstring>& scriptList, std::wstring& appname, std::wstring& appIconUri);
+    virtual HRESULT getAppConfigFromJson(const std::wstring& appDefinition,
+                                         std::list<std::wstring>& scriptList,
+                                         std::wstring& appname,
+                                         std::wstring& appIconUri);
 
     virtual HRESULT base64Encode(const wchar_t* toEncode, size_t toEncodeLength, std::wstring& encoded);
     virtual HRESULT base64Decode(const wchar_t* toDecode, size_t toDecodeLength, std::wstring& decoded);
@@ -40,6 +43,9 @@ class WindowsPlatform : public HoloJs::IPlatform {
     virtual long getCurrentDirectory(std::wstring& currentDirectory);
 
     virtual HoloJs::IXmlHttpRequest* createXmlHttpRequest(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual HoloJs::IWebSocket* createWebSocket(HoloJs::IHoloJsScriptHostInternal* host,
+                                                const std::wstring& url,
+                                                const std::vector<std::wstring>& protocols);
 
     virtual HoloJs::IIMage* createImage(HoloJs::IHoloJsScriptHostInternal* host) = 0;
 
