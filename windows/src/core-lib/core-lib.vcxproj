@@ -201,8 +201,10 @@
     <ClInclude Include=" ..\..\..\core\window-element.h" />
     <ClInclude Include=" ..\..\..\core\xml-http-request-projections.h" />
     <ClInclude Include="..\..\..\core\include\holojs\private\holojs-script-host-internal.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\surface-mapping.h" />
     <ClInclude Include="..\..\..\core\include\holojs\private\websocket.h" />
     <ClInclude Include="..\..\..\core\script-context.h" />
+    <ClInclude Include="..\..\..\core\surface-mapping-projection.h" />
     <ClInclude Include="..\..\..\core\websocket-projection.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -232,6 +234,7 @@
     <ClCompile Include=" ..\..\..\core\window-element.cpp" />
     <ClCompile Include=" ..\..\..\core\xml-http-request.cpp" />
     <ClCompile Include="..\..\..\core\script-context.cpp" />
+    <ClCompile Include="..\..\..\core\surface-mapping-projection.cpp" />
     <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +256,7 @@
     <None Include=" ..\..\..\core\scripts\webvr.js" />
     <None Include=" ..\..\..\core\scripts\window.js" />
     <None Include=" ..\..\..\core\scripts\xmlhttprequest.js" />
+    <None Include="..\..\..\core\scripts\surface-mapper.js" />
     <None Include="..\..\..\core\scripts\websocket.js" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

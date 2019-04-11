@@ -55,6 +55,9 @@ class WindowsPlatform : public HoloJs::IPlatform {
     virtual HoloJs::IPackageReader* getPackageReaderFromHandle(void* platformHandle);
 
     static HRESULT readfileBinaryFromHandle(HANDLE handle, std::vector<unsigned char>& data);
+
+	virtual bool isSurfaceMappingAvailable();
+	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host);
 };
 }  // namespace Platforms
 }  // namespace HoloJs

@@ -4,6 +4,7 @@
 #include "../include/holojs/private/platform-interfaces.h"
 #include "../include/holojs/private/script-host-utilities.h"
 #include "../include/holojs/private/holojs-script-host-internal.h"
+#include "../include/holojs/private/webaudio-interfaces.h"
 #include "../resource-management/resource-manager.h"
 
 using namespace HoloJs;

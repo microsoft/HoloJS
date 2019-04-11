@@ -173,6 +173,7 @@ namespace assembler_studio
             ActiveApp.RemoveScript(selectedScript);
             ScriptsList.ItemsSource = null;
             ScriptsList.ItemsSource = ActiveApp.Scripts;
+            ActiveApp.Save();
         }
 
         private void AddResourceButton_Click(object sender, RoutedEventArgs e)
@@ -187,6 +188,7 @@ namespace assembler_studio
                 ActiveApp.AddResourceFile(fullFilePath);
                 ResourcesList.ItemsSource = null;
                 ResourcesList.ItemsSource = ActiveApp.Resources;
+                ActiveApp.Save();
             }
         }
 
@@ -196,6 +198,7 @@ namespace assembler_studio
             ActiveApp.RemoveResource(selectedResource);
             ResourcesList.ItemsSource = null;
             ResourcesList.ItemsSource = ActiveApp.Resources;
+            ActiveApp.Save();
         }
 
         private void AddScriptButton_Click(object sender, RoutedEventArgs e)
@@ -210,6 +213,7 @@ namespace assembler_studio
                 ActiveApp.AddScriptFile(scriptFullPath);
                 ScriptsList.ItemsSource = null;
                 ScriptsList.ItemsSource = ActiveApp.Scripts;
+                ActiveApp.Save();
             }
         }
 

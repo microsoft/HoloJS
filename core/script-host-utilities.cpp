@@ -127,6 +127,82 @@ long ScriptHostUtilities::GetString(JsValueRef value, wstring& outString)
     return S_OK;
 }
 
+long ScriptHostUtilities::GetTypedArrayBufferFromRef(JsTypedArrayType desiredType,
+                                           JsValueRef typedArrayRef,
+                                           unsigned int* elementCount,
+                                           unsigned char** nativeBuffer)
+{
+    JsValueType refType;
+    RETURN_IF_JS_ERROR(JsGetValueType(typedArrayRef, &refType));
+    RETURN_IF_FALSE(refType == JsTypedArray);
+
+    JsTypedArrayType actualType;
+    RETURN_IF_JS_ERROR(
+        JsGetTypedArrayInfo(typedArrayRef, &actualType, nullptr, nullptr, nullptr));
+    RETURN_IF_FALSE(actualType == desiredType);
+
+    unsigned int typedBufferLength;
+    int typedBufferElementSize;
+    JsTypedArrayType typeArrayType;
+    RETURN_IF_JS_ERROR(JsGetTypedArrayStorage(
+        typedArrayRef, nativeBuffer, &typedBufferLength, &typeArrayType, &typedBufferElementSize));
+
+    *elementCount = typedBufferLength / typedBufferElementSize;
+
+    return S_OK;
+}
+
+long ScriptHostUtilities::CreateTypedArray(JsTypedArrayType type,
+                                           JsValueRef* typedArray,
+                                           unsigned int elementCount,
+                                           unsigned char** nativeBuffer)
+{
+    RETURN_IF_JS_ERROR(JsCreateTypedArray(type, JS_INVALID_REFERENCE, 0, elementCount, typedArray));
+
+    unsigned int typedBufferLength;
+    int typedBufferElementSize;
+    JsTypedArrayType typeArrayType;
+    RETURN_IF_JS_ERROR(
+        JsGetTypedArrayStorage(*typedArray, nativeBuffer, &typedBufferLength, &typeArrayType, &typedBufferElementSize));
+
+    RETURN_IF_TRUE(typedBufferLength != elementCount * typedBufferElementSize);
+
+    return S_OK;
+}
+
+long ScriptHostUtilities::CreateTypedArrayFromBuffer(JsTypedArrayType type,
+                                                     JsValueRef* typedArray,
+                                                     unsigned int elementCount,
+                                                     unsigned char* source)
+{
+    RETURN_IF_JS_ERROR(JsCreateTypedArray(type, JS_INVALID_REFERENCE, 0, elementCount, typedArray));
+
+    unsigned int typedBufferLength;
+    unsigned char* typedBufferPointer;
+    int typedBufferElementSize;
+    JsTypedArrayType typeArrayType;
+    RETURN_IF_JS_ERROR(JsGetTypedArrayStorage(
+        *typedArray, &typedBufferPointer, &typedBufferLength, &typeArrayType, &typedBufferElementSize));
+
+    RETURN_IF_TRUE(typedBufferLength != elementCount * typedBufferElementSize);
+
+    memcpy(typedBufferPointer, source, typedBufferLength);
+
+    return S_OK;
+}
+
+long ScriptHostUtilities::CreateArrayBuffer(JsValueRef* arrayBuffer, unsigned int size, unsigned char** nativeBuffer)
+{
+    RETURN_IF_JS_ERROR(JsCreateArrayBuffer(size, arrayBuffer));
+
+    unsigned int arrayBufferLength;
+    RETURN_IF_JS_ERROR(JsGetArrayBufferStorage(*arrayBuffer, nativeBuffer, &arrayBufferLength));
+
+    RETURN_IF_TRUE(arrayBufferLength != size);
+
+    return S_OK;
+}
+
 long ScriptHostUtilities::CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer,
                                                       unsigned char* nativeBuffer,
                                                       unsigned int nativeBufferLength)
@@ -147,8 +223,12 @@ long ScriptHostUtilities::CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer,
 long ScriptHostUtilities::SetFloat32ArrayProperty(
     unsigned int elementCount, JsValueRef* jsRef, float** storagePointer, JsValueRef parentObject, PCWSTR referenceName)
 {
-    return SetTypedArrayProperty(
-        elementCount, jsRef, reinterpret_cast<void**>(storagePointer), parentObject, referenceName, JsTypedArrayType::JsArrayTypeFloat32);
+    return SetTypedArrayProperty(elementCount,
+                                 jsRef,
+                                 reinterpret_cast<void**>(storagePointer),
+                                 parentObject,
+                                 referenceName,
+                                 JsTypedArrayType::JsArrayTypeFloat32);
 }
 
 long ScriptHostUtilities::SetFloat64ArrayProperty(unsigned int elementCount,
@@ -157,8 +237,12 @@ long ScriptHostUtilities::SetFloat64ArrayProperty(unsigned int elementCount,
                                                   JsValueRef parentObject,
                                                   PCWSTR referenceName)
 {
-    return SetTypedArrayProperty(
-        elementCount, jsRef, reinterpret_cast<void**>(storagePointer), parentObject, referenceName, JsTypedArrayType::JsArrayTypeFloat64);
+    return SetTypedArrayProperty(elementCount,
+                                 jsRef,
+                                 reinterpret_cast<void**>(storagePointer),
+                                 parentObject,
+                                 referenceName,
+                                 JsTypedArrayType::JsArrayTypeFloat64);
 }
 
 long ScriptHostUtilities::SetTypedArrayProperty(unsigned int elementCount,

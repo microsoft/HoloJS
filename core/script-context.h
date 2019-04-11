@@ -6,6 +6,7 @@
 #include "image-element-projections.h"
 #include "include/holojs/private/chakra.h"
 #include "resource-management/resource-manager.h"
+#include "surface-mapping-projection.h"
 #include "webaudio/audio-context-projection.h"
 #include "webgl/webgl-projections.h"
 #include "xml-http-request-projections.h"
@@ -56,6 +57,7 @@ class ScriptContext {
     std::unique_ptr<HoloJs::Interfaces::BlobProjection> m_blobProjection;
     std::unique_ptr<HoloJs::Interfaces::PromiseContinuation> m_promiseContinuation;
 	std::unique_ptr<HoloJs::WebSocketProjection> m_websocketProjection;
+	std::unique_ptr<HoloJs::SurfaceMappingProjection> m_surfaceMappingProjection;
 
     // This pointer is tracked through script ref counting; It gets released automatically when the context is detroyed
     HoloJs::Interfaces::WindowElement* m_windowElement;

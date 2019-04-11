@@ -37,6 +37,11 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
     virtual void executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem);
     virtual void executeInBackground(HoloJs::BackgroundWorkItem* workItem);
 
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    {
+        return E_FAIL;
+    }
+
     virtual HRESULT executeScript(const wchar_t* script);
     HRESULT executeScriptImmediate(const wchar_t* script);
 

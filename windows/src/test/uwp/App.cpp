@@ -12,7 +12,7 @@
 #ifdef _DEBUG
         scriptHost->enableDebugger();
 #endif
-        auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/ballshooter.xrs");
+        auto uri = ref new Platform::String(L"http://192.168.1.110/Temporary_Listen_Addresses/holojs/hololens-surface-mapping.xrs");
 		scriptHost->startUri(uri);
         //scriptHost->start();
     }

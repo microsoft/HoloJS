@@ -17,6 +17,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto configuration = HoloJs::ViewConfiguration();
     scriptHost->initialize(configuration);
 
-	scriptHost->startUri(L"http://holojs.azurewebsites.net/v7/ballshooter.xrs");
+	scriptHost->startUri(L"http://10.91.160.211/Temporary_Listen_Addresses/holojs/hololens-surface-mapping.xrs");
     return 0;
 }

@@ -34,6 +34,7 @@ enum class ObjectType {
     IAudioNode,
     IAudioParam,
 	IWebSocket,
+	ISurfaceMapper,
     None
 };
 

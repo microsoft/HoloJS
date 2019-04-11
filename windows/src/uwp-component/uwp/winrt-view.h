@@ -48,6 +48,16 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
 
 	void setViewConfiguration(HoloJs::ViewConfiguration viewConfiguration) { m_viewConfiguration = viewConfiguration; }
 
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    {
+        if (m_mixedRealityContext) {
+            *coordinateSystem = reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
+            return S_OK;
+        } else {
+            return E_FAIL;
+        }
+    }
+
    protected:
     // Application lifecycle event handlers.
     void OnActivated(Windows::ApplicationModel::Core::CoreApplicationView ^ applicationView,
@@ -165,6 +175,11 @@ class WinRTHoloJsView : public IHoloJsView {
     }
     virtual void setTitle(const std::wstring& title)
     { /* not available in UWP view */
+    }
+
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    {
+		return m_app->getStationaryCoordinateSystem(coordinateSystem);
     }
 
    private:

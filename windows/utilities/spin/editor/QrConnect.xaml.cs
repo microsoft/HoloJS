@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,7 +46,19 @@ namespace HoloJs.Spin
 
             QrImage.Source = bitmap;
 
-            EmbeddedUrl.Text = url;
+            EmbeddedUrl.NavigateUri = new Uri(url);
+            EmbeddedUrl.Inlines.Add(url);
+        }
+
+        private void CopyToClipboard_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(EmbeddedUrl.NavigateUri.AbsoluteUri);
+        }
+
+        private void EmbeddedUrl_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
     }
 }

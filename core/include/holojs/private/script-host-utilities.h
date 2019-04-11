@@ -34,9 +34,26 @@ class ScriptHostUtilities {
 
     static long GetString(JsValueRef value, std::wstring& outString);
 
+    static long GetTypedArrayBufferFromRef(JsTypedArrayType type,
+                                           JsValueRef typedArray,
+                                           unsigned int* elementCount,
+                                           unsigned char** nativeBuffer);
+
     static long CreateArrayBufferFromBuffer(JsValueRef* arrayBuffer,
                                             unsigned char* nativeBuffer,
                                             unsigned int nativeBufferLength);
+
+    static long CreateTypedArray(JsTypedArrayType type,
+                                 JsValueRef* arrayBuffer,
+                                 unsigned int elementCount,
+                                 unsigned char** nativeBuffer);
+
+    static long CreateTypedArrayFromBuffer(JsTypedArrayType type,
+                                           JsValueRef* arrayBuffer,
+                                           unsigned int elementCount,
+                                           unsigned char* source);
+
+    static long CreateArrayBuffer(JsValueRef* arrayBuffer, unsigned int size, unsigned char** nativeBuffer);
 
     static long SetFloat32ArrayProperty(unsigned int elementCount,
                                         JsValueRef* jsRef,
@@ -44,7 +61,7 @@ class ScriptHostUtilities {
                                         JsValueRef parentObject,
                                         PCWSTR referenceName);
 
-	static long SetFloat64ArrayProperty(unsigned int elementCount,
+    static long SetFloat64ArrayProperty(unsigned int elementCount,
                                         JsValueRef* jsRef,
                                         double** storagePointer,
                                         JsValueRef parentObject,

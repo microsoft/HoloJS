@@ -2,15 +2,17 @@
 #include "audio-context.h"
 #include "holojs/holojs.h"
 #include "holojs/private/error-handling.h"
+#include "holojs/private/surface-mapping.h"
 #include "include/holojs/windows/windows-platform.h"
+#include "surface-mapper.h"
 #include "websocket.h"
 #include <experimental/filesystem>
 #include <map>
 #include <memory>
-#include <vector>
 #include <ppltasks.h>
 #include <robuffer.h>
 #include <string>
+#include <vector>
 
 using namespace HoloJs::Platforms;
 using namespace Windows::Data::Json;
@@ -234,7 +236,18 @@ HoloJs::IWebSocket* WindowsPlatform::createWebSocket(HoloJs::IHoloJsScriptHostIn
                                                      const std::wstring& url,
                                                      const std::vector<std::wstring>& protocols)
 {
-	auto newWebSocket = new HoloJs::Platforms::Win32::WebSocket(host);
-	newWebSocket->connect(url, protocols);
-	return newWebSocket;
+    auto newWebSocket = new HoloJs::Platforms::Win32::WebSocket(host);
+    newWebSocket->connect(url, protocols);
+    return newWebSocket;
+}
+
+bool WindowsPlatform::isSurfaceMappingAvailable() { 
+	return Windows::Perception::Spatial::Surfaces::SpatialSurfaceObserver::IsSupported();
+}
+
+HoloJs::ISurfaceMapper* WindowsPlatform::getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host)
+{
+	RETURN_NULL_IF_FALSE(isSurfaceMappingAvailable());
+	
+	return new HoloJs::Platforms::Win32::SurfaceMapper(host);
 }

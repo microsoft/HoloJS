@@ -1,7 +1,8 @@
 #include "websocket-projection.h"
 #include "include/holojs/private/error-handling.h"
 #include "include/holojs/private/platform-interfaces.h"
-#include "include\holojs\private\script-host-utilities.h"
+#include "include/holojs/private/script-host-utilities.h"
+#include "include/holojs/private/websocket.h"
 #include "resource-management/external-object.h"
 #include "blob.h"
 

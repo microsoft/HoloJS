@@ -16,10 +16,20 @@
         </Grid.RowDefinitions>
         <Label
             FontSize="16" HorizontalAlignment="Center"
-            Content="Launch Spin on the HoloLens, point the HoloLens at this QR code and say 'scan'" />
+            Content="Run the experience from this URL or scan the QR code on your HoloLens" />
 
-        <TextBlock
-            FontSize="16" HorizontalAlignment="Center" x:Name="EmbeddedUrl" Grid.Row="2" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="16" HorizontalAlignment="Center" Grid.Row="2" >
+                <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="EmbeddedUrl_RequestNavigate"  x:Name="EmbeddedUrl" >
+                </Hyperlink>
+            </TextBlock>
+            <Button
+                Content="&#xe16d;" Margin="10, 0, 0, 0"
+                FontFamily="Segoe MDL2 Assets" Width="35" Height="35" x:Name="CopyToClipboard" Click="CopyToClipboard_Click"/>
+        </StackPanel>
+        
         <Image
             Grid.Row="3"
             x:Name="QrImage" Stretch="Uniform" StretchDirection="DownOnly"/>

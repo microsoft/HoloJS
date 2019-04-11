@@ -17,6 +17,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     return 0;
 }
 
+See http://holojs.azurewebsites.net/help/win32-apps.html for more details
+
 --------------------------------- UWP embedding -------------------------------
 
 To embed a script application in a C++ UWP project add the following code to the main function:
@@ -33,9 +35,8 @@ int main(Platform::Array<Platform::String^>^)
     return 0;
 }
 
+See http://holojs.azurewebsites.net/help/uwp-apps.html for more details.
+
 -------------------------------------------------------------------------------
 
-The XRS file in the URI is a JSON file that contains the list of scripts to execute:
-{ "scripts": [ "three.js", "app.js" ] }
-
-For a sample ThreeJS app, see http://holojs.azurewebsites.net/v7/appcode/vr-cubes.js
+See http://holojs.azurewebsites.net/help for more details about JavaScript VR experiences with HoloJs.

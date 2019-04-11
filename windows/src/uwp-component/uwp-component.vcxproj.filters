@@ -124,5 +124,8 @@
     <None Include="..\..\..\core\scripts\websocket.js">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\..\..\core\scripts\surface-mapper.js">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

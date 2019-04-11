@@ -27,6 +27,7 @@ const wchar_t* g_InternalScriptNames[] = {
     L"xmlhttprequest.js",
     L"webaudio.js",
     L"websocket.js",
+	L"surface-mapper.js"
 };
 
 IHoloJsScriptHost* __cdecl HoloJs::PrivateInterface::CreateHoloJsScriptHost() { return new HoloJsScriptHost(); }

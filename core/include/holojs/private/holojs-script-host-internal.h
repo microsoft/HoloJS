@@ -23,6 +23,8 @@ class IHoloJsScriptHostInternal : public IHoloJsScriptHost {
 
     virtual void backgroundWorkItemComplete(BackgroundWorkItem* workItem) = 0;
     virtual void contextWorkItemComplete(ScriptContextWorkItem* workItem) = 0;
+
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
 };
 
 }  // namespace HoloJs

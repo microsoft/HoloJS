@@ -44,6 +44,11 @@ void HoloJsUWPApp::initializeScript(HoloJs::IHoloJsScriptHostInternal* scriptHos
 
 HRESULT HoloJsUWPApp::executeApp(std::shared_ptr<HoloJsApp> app)
 {
+    // TODO: fix this properly. The dispatcher might not be ready if execute is called too early
+    while (m_dispatcher == nullptr) {
+        Sleep(0);
+    }
+
     m_dispatcher->RunAsync(CoreDispatcherPriority::Normal,
                            ref new DispatchedHandler([this, app]() { m_queuedApp = app; }));
 
@@ -52,6 +57,11 @@ HRESULT HoloJsUWPApp::executeApp(std::shared_ptr<HoloJsApp> app)
 
 void HoloJsUWPApp::executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem)
 {
+    // TODO: fix this properly. The dispatcher might not be ready if execute is called too early
+    while (m_dispatcher == nullptr) {
+        Sleep(0);
+    }
+
     m_dispatcher->RunAsync(CoreDispatcherPriority::Normal, ref new DispatchedHandler([workItem]() {
                                (*workItem->lambda.get())();
                                workItem->context->contextWorkItemComplete(workItem);
@@ -80,7 +90,7 @@ HRESULT HoloJsUWPApp::stopApp()
 
     m_activeApp.reset();
 
-	m_openGLContext.reset();
+    m_openGLContext.reset();
 
     return S_OK;
 }
@@ -101,13 +111,13 @@ HRESULT HoloJsUWPApp::initializeRenderingResources()
 
         vector<wstring> commands;
 
-		if (m_viewConfiguration.enableQrCodeNavigation) {
-			commands.push_back(L"scan");
-		}
+        if (m_viewConfiguration.enableQrCodeNavigation) {
+            commands.push_back(L"scan");
+        }
 
-		if (commands.size() > 0) {
-			m_voiceInput->start(commands);
-		}
+        if (commands.size() > 0) {
+            m_voiceInput->start(commands);
+        }
     }
 
     if (m_viewConfiguration.enableQrCodeNavigation) {
@@ -123,7 +133,7 @@ HRESULT HoloJsUWPApp::initializeScriptResources()
     m_windowElement = m_host->getWindowElement();
     m_windowElement->resize(getWidth(), getHeight());
 
-	m_openGLContext = make_unique<Win32::UWPOpenGLContext>();
+    m_openGLContext = make_unique<Win32::UWPOpenGLContext>();
 
     m_windowElement->setHeadsetAvailable(MixedReality::MixedRealityContext::headsetAvailable());
 
@@ -136,15 +146,14 @@ HRESULT HoloJsUWPApp::initializeScriptResources()
         m_spatialInput->setFrameOfReference(m_mixedRealityContext->getStationaryFrameOfReference());
         RETURN_IF_FAILED(m_spatialInput->initialize());
 
-		m_openGLContext->setMixedRealityContext(m_mixedRealityContext);
+        m_openGLContext->setMixedRealityContext(m_mixedRealityContext);
         m_openGLContext->initialize();
-	}
-	else {
-		m_openGLContext->setCoreWindow(m_window);
+    } else {
+        m_openGLContext->setCoreWindow(m_window);
         m_openGLContext->initialize();
         m_width = static_cast<float>(m_openGLContext->getWidth());
         m_height = static_cast<float>(m_openGLContext->getHeight());
-	}
+    }
 
     m_timers = make_unique<HoloJs::Timers>();
     m_timers->setTimersImplementation(new WinRTTimers());

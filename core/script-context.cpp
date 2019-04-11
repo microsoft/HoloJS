@@ -19,6 +19,7 @@ long ScriptContext::close()
     m_canvas2dProjections.reset();
     m_audioContextProjection.reset();
     m_blobProjection.reset();
+	m_surfaceMappingProjection.reset();
     m_view.reset();
     
     if (m_nativeInterfaceRef != JS_INVALID_REFERENCE) {
@@ -90,6 +91,9 @@ long ScriptContext::initialize()
 
 	m_websocketProjection = make_unique<HoloJs::WebSocketProjection>(m_resourceManager, m_host);
 	RETURN_IF_FAILED(m_websocketProjection->initialize());
+
+	m_surfaceMappingProjection = make_unique<HoloJs::SurfaceMappingProjection>(m_resourceManager, m_host);
+	RETURN_IF_FAILED(m_surfaceMappingProjection->initialize());
 
     return HoloJs::Success;
 }

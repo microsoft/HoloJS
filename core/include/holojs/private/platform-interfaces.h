@@ -1,18 +1,20 @@
 #pragma once
 
 #include "app-model.h"
-#include "canvas-render-context-2d.h"
 #include "holojs-script-host-internal.h"
-#include "holojs-view.h"
-#include "image-interface.h"
-#include "package-reader.h"
-#include "webaudio-interfaces.h"
-#include "websocket.h"
-#include "xml-http-request.h"
 #include <list>
 #include <memory>
 #include <string>
 namespace HoloJs {
+
+class ISurfaceMapper;
+class IPackageReader;
+class IAudioContext;
+class IWebSocket;
+class IIMage;
+class IXmlHttpRequest;
+class ICanvasRenderContext2D;
+class IHoloJsView;
 
 class IPlatform {
    public:
@@ -53,6 +55,9 @@ class IPlatform {
 
     virtual HoloJs::IPackageReader* getPackageReaderFromPath(const std::wstring& packagePath) = 0;
     virtual HoloJs::IPackageReader* getPackageReaderFromHandle(void* platformHandle) = 0;
+
+    virtual bool isSurfaceMappingAvailable() = 0;
+	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host) = 0;
 };
 
 IPlatform* __cdecl getPlatform();

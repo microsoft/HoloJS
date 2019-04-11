@@ -51,6 +51,8 @@ class IHoloJsView {
     virtual void setIcon(void* platformIcon) = 0;
 
     virtual void setTitle(const std::wstring& title) = 0;
+
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
 };
 
 }  // namespace HoloJs

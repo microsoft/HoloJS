@@ -371,6 +371,9 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     <None Include="..\..\..\core\scripts\image.js">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\..\..\core\scripts\surface-mapper.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\..\..\core\scripts\timers.js">
       <DeploymentContent>true</DeploymentContent>
     </None>

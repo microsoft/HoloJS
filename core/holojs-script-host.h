@@ -55,6 +55,8 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
     virtual long getActiveAppConfiguration(HoloJs::AppModel::AppConfiguration* configuration);
 
+	virtual long getStationaryCoordinateSystem(void** coordinateSystem) { return m_view->getStationaryCoordinateSystem(coordinateSystem); }
+
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;
     bool m_debugRequested;

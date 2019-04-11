@@ -167,6 +167,12 @@
     <ClInclude Include="..\..\..\core\websocket-projection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\surface-mapping.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\surface-mapping-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=" ..\..\..\core\blob.cpp" />
@@ -213,6 +219,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\core\script-context.cpp" />
     <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
+    <ClCompile Include="..\..\..\core\surface-mapping-projection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=" ..\..\..\core\scripts\2d-context.js">
@@ -258,6 +265,9 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\..\..\core\scripts\websocket.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\surface-mapper.js">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

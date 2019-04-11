@@ -58,6 +58,16 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
 
     virtual void setTitle(const std::wstring& title) { m_title = title; }
 
+    virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    {
+        if (m_mixedRealityContext) {
+            *coordinateSystem = reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
+            return S_OK;
+        } else {
+            return E_FAIL;
+        }
+    }
+
    private:
     HRESULT createWindow();
 
@@ -100,7 +110,7 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
     HICON m_icon;
     std::wstring m_title;
 
-	HoloJs::ViewConfiguration m_viewConfiguration;
+    HoloJs::ViewConfiguration m_viewConfiguration;
 };
 }  // namespace Win32
 }  // namespace HoloJs
