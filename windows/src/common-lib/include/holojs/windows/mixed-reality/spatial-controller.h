@@ -34,6 +34,9 @@ class SpatialController {
 
     float* m_orientationVectorStoragePointer = nullptr;
     float* m_positionVectorStoragePointer = nullptr;
+
+    JsValueRef m_orientationRef = JS_INVALID_REFERENCE;
+
     float* m_angularVelocityStoragePointer = nullptr;
     float* m_linearVelocityStoragePointer = nullptr;
     double* m_axesStoragePointer = nullptr;

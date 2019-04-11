@@ -20,6 +20,11 @@ SpatialController::SpatialController(SpatialInteractionSource ^ source)
 
 SpatialController::~SpatialController()
 {
+    if (m_orientationRef != JS_INVALID_REFERENCE) {
+        JsRelease(&m_orientationRef, nullptr);
+        m_orientationRef = JS_INVALID_REFERENCE;
+    }
+
     if (m_scriptController != JS_INVALID_REFERENCE) {
         JsRelease(m_scriptController, nullptr);
         m_scriptController = JS_INVALID_REFERENCE;
@@ -72,20 +77,25 @@ HRESULT SpatialController::createPoseProperty()
     RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, HasPositionPropertyName, hasPosition));
     RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, HasOrientationPropertyName, hasOrientation));
 
-    JsValueRef orientationRef;
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
-        4, &orientationRef, &m_orientationVectorStoragePointer, m_scriptPose, L"orientation"));
+    // Controllers don't always have orientation; create an orientation array, but don't attach it to the pose object yet
+    RETURN_IF_FAILED(ScriptHostUtilities::CreateTypedArray(
+        JsArrayTypeFloat32, &m_orientationRef, 4, reinterpret_cast<unsigned char**>(&m_orientationVectorStoragePointer)));
+    RETURN_IF_JS_ERROR(JsAddRef(m_orientationRef, nullptr));
+
+    JsValueRef nullRef;
+    RETURN_IF_JS_ERROR(JsGetNullValue(&nullRef));
+    RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, L"orientation", nullRef));
 
     JsValueRef positionRef;
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         3, &positionRef, &m_positionVectorStoragePointer, m_scriptPose, L"position"));
 
     JsValueRef angularVelocityRef;
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         3, &angularVelocityRef, &m_angularVelocityStoragePointer, m_scriptPose, L"angularVelocity"));
 
     JsValueRef linearVelocityRef;
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         3, &linearVelocityRef, &m_linearVelocityStoragePointer, m_scriptPose, L"linearVelocity"));
 
     return S_OK;
@@ -128,6 +138,10 @@ HRESULT SpatialController::update(SpatialInteractionSourceState ^ state, Spatial
     if (hasOrientation) {
         auto orientationFloat3 = location->Orientation->Value;
         CopyMemory(m_orientationVectorStoragePointer, &orientationFloat3.x, 4 * sizeof(float));
+
+        if (!m_hadOrientationPreviously) {
+            RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, L"orientation", m_orientationRef));
+        }
     }
 
     if (hasPosition != m_hadPositionPreviously) {
@@ -138,6 +152,12 @@ HRESULT SpatialController::update(SpatialInteractionSourceState ^ state, Spatial
     }
 
     if (hasOrientation != m_hadOrientationPreviously) {
+        if (m_hadOrientationPreviously) {
+            JsValueRef nullRef;
+            RETURN_IF_JS_ERROR(JsGetNullValue(&nullRef));
+            RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, L"orientation", nullRef));
+        }
+
         JsValueRef hasOrientationRef;
         RETURN_IF_JS_ERROR(JsBoolToBoolean(hasOrientation, &hasOrientationRef));
         RETURN_IF_FAILED(
