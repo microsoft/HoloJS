@@ -53,7 +53,7 @@ class HoloJsApp {
     const AppConfiguration& getAppConfiguration() { return m_appConfiguration; }
 
     std::wstring getName() { return m_name; }
-    void setName(std::wstring& name) { m_name = name; }
+    void setName(const std::wstring& name) { m_name = name; }
 
     std::wstring getIconUri() { return m_iconUri; }
     void setIconUri(std::wstring& iconUri) { m_iconUri = iconUri; }

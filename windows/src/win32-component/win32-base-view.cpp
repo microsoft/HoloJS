@@ -12,6 +12,7 @@ using namespace HoloJs::AppModel;
 using namespace std;
 using namespace concurrency;
 
+long long QueuedAppStartWorkItem::QueuedAppStartWorkItemId = 1000;
 
 void getKeyAndCodeFromVirtualKey(int vKeyCode, wstring& key, wstring& code)
 {
@@ -69,9 +70,9 @@ void Win32HoloJsBaseView::onMouseEvent(HoloJs::MouseButtonEventType eventType, W
 }
 
 void Win32HoloJsBaseView::onMouseButtonEvent(HoloJs::MouseButtonEventType eventType,
-                                                 WPARAM wParam,
-                                                 LPARAM lParam,
-                                                 HoloJs::MouseButton button)
+                                             WPARAM wParam,
+                                             LPARAM lParam,
+                                             HoloJs::MouseButton button)
 {
     if (m_windowElement == nullptr) {
         return;
@@ -115,4 +116,32 @@ void Win32HoloJsBaseView::onMouseWheelEvent(HoloJs::MouseButtonEventType eventTy
     }
 
     m_windowElement->mouseEvent(eventType, xPos, yPos, delta, buttons);
+}
+
+long Win32HoloJsBaseView::queueForegroundWorkItem(HoloJs::IForegroundWorkItem* workItem)
+{
+    std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+    shared_ptr<HoloJs::IForegroundWorkItem> trackedWorkItem(workItem);
+
+    RETURN_IF_TRUE(m_closeRequested);
+
+    m_foregroundWorkItems.push(trackedWorkItem);
+
+    return S_OK;
+}
+
+void Win32HoloJsBaseView::executeOneForegroundWorkItem()
+{
+    if (m_foregroundWorkItems.size() > 0) {
+        std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+        auto workItem = m_foregroundWorkItems.front();
+        m_foregroundWorkItems.pop();
+
+        if (workItem->getTag() == QueuedAppStartWorkItem::QueuedAppStartWorkItemId) {
+            auto app = dynamic_cast<QueuedAppStartWorkItem*>(workItem.get())->getApp();
+            runApp(app);
+        } else {
+            workItem->execute();
+        }
+    }
 }

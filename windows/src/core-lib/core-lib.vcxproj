@@ -200,6 +200,7 @@
     <ClInclude Include=" ..\..\..\core\webgl\webgl-rendering-context.h" />
     <ClInclude Include=" ..\..\..\core\window-element.h" />
     <ClInclude Include=" ..\..\..\core\xml-http-request-projections.h" />
+    <ClInclude Include="..\..\..\core\async-work-items.h" />
     <ClInclude Include="..\..\..\core\include\holojs\private\holojs-script-host-internal.h" />
     <ClInclude Include="..\..\..\core\include\holojs\private\surface-mapping.h" />
     <ClInclude Include="..\..\..\core\include\holojs\private\websocket.h" />
@@ -256,7 +257,9 @@
     <None Include=" ..\..\..\core\scripts\webvr.js" />
     <None Include=" ..\..\..\core\scripts\window.js" />
     <None Include=" ..\..\..\core\scripts\xmlhttprequest.js" />
+    <None Include="..\..\..\core\scripts\loading-animation.js" />
     <None Include="..\..\..\core\scripts\surface-mapper.js" />
+    <None Include="..\..\..\core\scripts\three.js" />
     <None Include="..\..\..\core\scripts\websocket.js" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

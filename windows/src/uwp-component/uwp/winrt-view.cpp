@@ -23,6 +23,8 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 using namespace HoloJs::AppModel;
 
+long long QueuedAppStartWorkItem::QueuedAppStartWorkItemId = 1000;
+
 HoloJsUWPApp::~HoloJsUWPApp() {}
 
 HoloJsUWPApp::HoloJsUWPApp() : m_windowClosed(false), m_windowVisible(true) {}
@@ -44,38 +46,67 @@ void HoloJsUWPApp::initializeScript(HoloJs::IHoloJsScriptHostInternal* scriptHos
 
 HRESULT HoloJsUWPApp::executeApp(std::shared_ptr<HoloJsApp> app)
 {
-    // TODO: fix this properly. The dispatcher might not be ready if execute is called too early
-    while (m_dispatcher == nullptr) {
-        Sleep(0);
+    return queueForegroundWorkItem(new QueuedAppStartWorkItem(app));
+}
+
+HRESULT HoloJsUWPApp::executeAppInternal(std::shared_ptr<HoloJsApp> app)
+{
+    if (m_activeApp) {
+        stopApp();
     }
 
-    m_dispatcher->RunAsync(CoreDispatcherPriority::Normal,
-                           ref new DispatchedHandler([this, app]() { m_queuedApp = app; }));
+    RETURN_IF_FAILED(m_host->createExecutionContext());
+    initializeScriptResources();
+
+    RETURN_IF_FAILED(m_host->executeLoadedApp(app));
+
+    m_activeApp = app;
 
     return S_OK;
 }
 
-void HoloJsUWPApp::executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem)
+long HoloJsUWPApp::executeOnViewThread(HoloJs::IForegroundWorkItem* workItem)
 {
-    // TODO: fix this properly. The dispatcher might not be ready if execute is called too early
-    while (m_dispatcher == nullptr) {
-        Sleep(0);
-    }
-
-    m_dispatcher->RunAsync(CoreDispatcherPriority::Normal, ref new DispatchedHandler([workItem]() {
-                               (*workItem->lambda.get())();
-                               workItem->context->contextWorkItemComplete(workItem);
-                           }));
+    return queueForegroundWorkItem(workItem);
 }
 
-void HoloJsUWPApp::executeInBackground(HoloJs::BackgroundWorkItem* workItem)
+long HoloJsUWPApp::executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
 {
+    RETURN_IF_TRUE(m_closeRequested || m_windowClosed);
+
     create_task([workItem]() -> long {
-        auto result = (*workItem->lambda.get())();
-        workItem->context->backgroundWorkItemComplete(workItem);
+        auto result = workItem->execute();
         delete workItem;
         return result;
     });
+
+    return S_OK;
+}
+
+long HoloJsUWPApp::queueForegroundWorkItem(HoloJs::IForegroundWorkItem* workItem)
+{
+    std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+    shared_ptr<HoloJs::IForegroundWorkItem> trackedWorkItem(workItem);
+    RETURN_IF_TRUE(m_closeRequested || m_windowClosed);
+
+    m_foregroundWorkItems.push(trackedWorkItem);
+
+    return S_OK;
+}
+
+void HoloJsUWPApp::executeOneForegroundWorkItem()
+{
+    if (m_foregroundWorkItems.size() > 0) {
+        std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+        auto workItem = m_foregroundWorkItems.front();
+        m_foregroundWorkItems.pop();
+        if (workItem->getTag() == QueuedAppStartWorkItem::QueuedAppStartWorkItemId) {
+            auto app = dynamic_cast<QueuedAppStartWorkItem*>(workItem.get())->getApp();
+            executeAppInternal(app);
+        } else {
+            workItem->execute();
+        }
+    }
 }
 
 HRESULT HoloJsUWPApp::stopApp()
@@ -158,23 +189,6 @@ HRESULT HoloJsUWPApp::initializeScriptResources()
     m_timers = make_unique<HoloJs::Timers>();
     m_timers->setTimersImplementation(new WinRTTimers());
     m_timers->initialize();
-
-    return S_OK;
-}
-
-HRESULT HoloJsUWPApp::executeLoadedScripts()
-{
-    initializeScriptResources();
-
-    auto loadedScripts = m_queuedApp->loadedScriptsList();
-
-    for (list<Script>::const_iterator it = loadedScripts->begin(); it != loadedScripts->end(); ++it) {
-        m_host->executeImmediate(it->getCode().c_str(), it->getName().c_str());
-    }
-
-    // TODO: This is not thread safe
-    m_activeApp = m_queuedApp;
-    m_queuedApp.reset();
 
     return S_OK;
 }
@@ -285,7 +299,11 @@ void HoloJsUWPApp::Run()
     initializeRenderingResources();
 
     while (!m_windowClosed && !m_closeRequested) {
-        m_viewReady = !m_mixedRealityContext || (m_mixedRealityContext && m_mixedRealityContext->isCameraAvailable());
+        const auto viewReady = !m_mixedRealityContext || (m_mixedRealityContext && m_mixedRealityContext->isCameraAvailable());
+
+        if (viewReady) {
+            executeOneForegroundWorkItem();
+        }
 
         if (m_windowVisible) {
             CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
@@ -297,8 +315,6 @@ void HoloJsUWPApp::Run()
                     m_windowElement->resize(getWidth(), getHeight());
                 }
                 Render();
-            } else if (m_queuedApp) {
-                executeLoadedScripts();
             }
         } else {
             CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(
@@ -306,9 +322,17 @@ void HoloJsUWPApp::Run()
         }
     }
 
-    stopApp();
+    // Drain foreground workitems queue
+    {
+        std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+        while (m_foregroundWorkItems.size() > 0) {
+            executeOneForegroundWorkItem();
+        }
+    }
 
-    m_viewReady = false;
+    if (m_activeApp) {
+        stopApp();
+    }
 }
 
 void HoloJsUWPApp::onSpeechRecognized(std::wstring command, double confidence)
@@ -350,10 +374,6 @@ void HoloJsUWPApp::OnActivated(CoreApplicationView ^ applicationView, IActivated
                 auto file = safe_cast<Windows::Storage::StorageFile ^>(item);
                 HANDLE fileHandle;
                 if (SUCCEEDED(getHandleFromStorageFile(file, &fileHandle))) {
-                    if (m_activeApp) {
-                        stopApp();
-                    }
-
                     m_host->executePackageFromHandle(fileHandle);
                 }
             }
@@ -364,11 +384,6 @@ void HoloJsUWPApp::OnActivated(CoreApplicationView ^ applicationView, IActivated
 
         if (_wcsnicmp(url.c_str(), holojsProtocol, wcslen(holojsProtocol)) == 0) {
             auto underlyingUri = url.substr(wcslen(holojsProtocol));
-
-            if (m_activeApp) {
-                stopApp();
-            }
-
             m_host->executeUri(underlyingUri.c_str());
         }
     }

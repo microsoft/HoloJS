@@ -21,7 +21,7 @@ int main(Platform::Array<Platform::String^>^)
     config->enableVoiceCommands();
     config->enableQrCodeNavigation();
     if (scriptHost->initialize(config)) {
-        scriptHost->start();
+        scriptHost->startWithEmptyApp();
     }
 
     return 0;

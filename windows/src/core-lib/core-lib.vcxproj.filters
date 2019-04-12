@@ -173,6 +173,9 @@
     <ClInclude Include="..\..\..\core\surface-mapping-projection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\async-work-items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=" ..\..\..\core\blob.cpp" />
@@ -268,6 +271,12 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\..\..\core\scripts\surface-mapper.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\loading-animation.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\three.js">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

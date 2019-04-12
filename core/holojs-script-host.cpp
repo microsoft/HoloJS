@@ -1,4 +1,5 @@
 #include "holojs-script-host.h"
+#include "async-work-items.h"
 #include "host-interfaces.h"
 #include "include/holojs/private/chakra.h"
 #include "include/holojs/private/platform-interfaces.h"
@@ -11,43 +12,43 @@ using namespace HoloJs;
 using namespace HoloJs::AppModel;
 using namespace std;
 
-const wchar_t* g_InternalScriptNames[] = {
-    L"window.js",
-    L"URL.js",
-    L"console.js",
-    L"timers.js",
-    L"2d-context.js",
-    L"image.js",
-    L"canvas.js",
-    L"canvas-vr.js",
-    L"webgl-context.js",
-    L"document.js",
-    L"webvr.js",
-    L"gamepad.js",
-    L"xmlhttprequest.js",
-    L"webaudio.js",
-    L"websocket.js",
-	L"surface-mapper.js"
-};
+const wchar_t* g_InternalScriptNames[] = {L"window.js",
+                                          L"URL.js",
+                                          L"console.js",
+                                          L"timers.js",
+                                          L"2d-context.js",
+                                          L"image.js",
+                                          L"canvas.js",
+                                          L"canvas-vr.js",
+                                          L"webgl-context.js",
+                                          L"document.js",
+                                          L"webvr.js",
+                                          L"gamepad.js",
+                                          L"xmlhttprequest.js",
+                                          L"webaudio.js",
+                                          L"websocket.js",
+                                          L"surface-mapper.js"};
+
+const wchar_t* g_loadingAnimationScripts[] = {L"three.js", L"loading-animation.js"};
 
 IHoloJsScriptHost* __cdecl HoloJs::PrivateInterface::CreateHoloJsScriptHost() { return new HoloJsScriptHost(); }
 
 void __cdecl HoloJs::PrivateInterface::DeleteHoloJsScriptHost(IHoloJsScriptHost* scriptHost) { delete scriptHost; }
 
-HoloJsScriptHost::HoloJsScriptHost() { m_scriptsLoader = make_unique<ScriptsLoader>(); }
+HoloJsScriptHost::HoloJsScriptHost()
+{
+    m_scriptsLoader = make_unique<ScriptsLoader>();
+    m_backgroundExecutionQueue = make_shared<HoloJs::BackgroundExecutionQueue>();
+}
 
 HoloJsScriptHost::~HoloJsScriptHost()
 {
-	// Stop queueing items
-    m_runningState = HostState::Stopping;
-
-    // Wait until all outstanding work items are done (except this one)
-    while (m_outstandingWorkItems > 0) {
-        Sleep(100);
+    while (!m_backgroundExecutionQueue->isEmpty()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
     }
 
     m_view.reset();
-    cleanupScriptContext();
+    releaseExecutionContext();
 }
 
 long HoloJsScriptHost::initialize(ViewConfiguration viewConfig)
@@ -62,7 +63,8 @@ long HoloJsScriptHost::initialize(ViewConfiguration viewConfig)
         m_view->setViewWindow(m_targetViewWindow);
     }
 
-    loadSupportScripts();
+    RETURN_IF_FAILED(loadSupportScripts());
+    RETURN_IF_FAILED(createLoadingAnimation());
 
     RETURN_IF_FAILED(m_view->initialize(this));
 
@@ -71,9 +73,50 @@ long HoloJsScriptHost::initialize(ViewConfiguration viewConfig)
     return HoloJs::Success;
 }
 
-long HoloJsScriptHost::initializeScriptContext()
+long HoloJsScriptHost::executeLoadedApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app)
 {
-    m_activeContext = make_unique<HoloJs::ScriptContext>();
+    m_loadedApp = app;
+
+    auto loadedScripts = app->loadedScriptsList();
+
+    for (list<Script>::const_iterator it = loadedScripts->begin(); it != loadedScripts->end(); ++it) {
+        RETURN_IF_FAILED(executeImmediate(it->getCode().c_str(), it->getName().c_str()));
+    }
+
+    if (app == m_internalApp) {
+        RETURN_IF_FAILED(initializeHostRenderedElement());
+    } else {
+        m_hostRenderedElements = HostRenderedElements::None;
+    }
+
+    return S_OK;
+}
+
+long HoloJsScriptHost::initializeHostRenderedElement()
+{
+    if (m_hostRenderedElements == HostRenderedElements::LoadingAnimation) {
+        RETURN_IF_FAILED(executeImmediate(L"renderLoadingAnimation();", L"inline"));
+    } else if (m_hostRenderedElements == HostRenderedElements::LoadingFailed) {
+        RETURN_IF_FAILED(
+            executeImmediate(L"renderMessageCube({icon : '\ue007', text : 'That link did not work', iconX : 250, iconY "
+                             L": 150, textX : 100, textY : 250});",
+                             L"inline"));
+    } else if (m_hostRenderedElements == HostRenderedElements::NothingLoaded) {
+        RETURN_IF_FAILED(
+            executeImmediate(L"renderMessageCube({icon : '\uf4bf', text : 'There is nothing here. Open a\\r\\nXRSX file or link to get started', iconX : 250, iconY "
+                             L": 150, textX : 10, textY : 250});",
+                             L"inline"));
+    }
+
+    return S_OK;
+}
+
+long HoloJsScriptHost::createExecutionContext()
+{
+    releaseExecutionContext();
+
+    m_activeContext = make_shared<HoloJs::ScriptContext>();
+
     m_activeContext->enableDebug(m_debugRequested);
     m_activeContext->setView(m_view);
     m_activeContext->setHost(this);
@@ -89,8 +132,15 @@ long HoloJsScriptHost::initializeScriptContext()
     return HoloJs::Success;
 }
 
-long HoloJsScriptHost::cleanupScriptContext()
+long HoloJsScriptHost::releaseExecutionContext()
 {
+    // Destroys all resources associated, waits for queued work items, etc.
+    if (m_activeContext) {
+        m_activeContext->destroy();
+    }
+
+    // Release the script context; because the context might have queued work items, deletion might be delayed until
+    // all the work items exit
     m_activeContext.reset();
     return HoloJs::Success;
 }
@@ -101,19 +151,16 @@ long HoloJsScriptHost::startUri(const wchar_t* appUrl)
 
     wstring appUrlCapture(appUrl);
 
-    m_runningState = HostState::Loading;
-    runInBackground([this, appUrlCapture]() -> long {
-        auto result = m_scriptsLoader->loadApp(appUrlCapture, m_loadedApp);
+    runInBackgroundNoContext([this, appUrlCapture]() -> long {
+        showInternalUI(HostRenderedElements::LoadingAnimation);
+
+        shared_ptr<HoloJs::AppModel::HoloJsApp> newApp;
+        auto result = m_scriptsLoader->loadApp(appUrlCapture, newApp);
 
         if (HOLOJS_FAILED(result)) {
-            m_runningState = HostState::Idle;
-            m_view->onError(ScriptHostErrorType::LoadingError);
+            showInternalUI(HostRenderedElements::LoadingFailed);
         } else {
-            m_runningState = HostState::Running;
-            runInScriptContext([this]() {
-                EXIT_IF_FAILED(initializeScriptContext());
-                m_view->executeApp(m_loadedApp);
-            });
+            m_view->executeApp(newApp);
         }
 
         return HoloJs::Success;
@@ -128,20 +175,18 @@ long HoloJsScriptHost::start(const wchar_t* script)
 {
     RETURN_IF_TRUE(m_runningState != HostState::Initialized);
 
-    RETURN_IF_FAILED(initializeScriptContext());
-
     wstring scriptCapture(script);
 
-    m_runningState = HostState::Loading;
-    runInBackground([this, scriptCapture]() -> long {
-        auto result = m_scriptsLoader->loadScriptInline(scriptCapture, m_loadedApp);
+    runInBackgroundNoContext([this, scriptCapture]() -> long {
+        showInternalUI(HostRenderedElements::LoadingAnimation);
+
+        shared_ptr<HoloJs::AppModel::HoloJsApp> newApp;
+        auto result = m_scriptsLoader->loadScriptInline(scriptCapture, newApp);
 
         if (HOLOJS_FAILED(result)) {
-            m_runningState = HostState::Idle;
-            m_view->onError(ScriptHostErrorType::LoadingError);
+            showInternalUI(HostRenderedElements::LoadingFailed);
         } else {
-            m_runningState = HostState::Running;
-            m_view->executeApp(m_loadedApp);
+            m_view->executeApp(newApp);
         }
 
         return HoloJs::Success;
@@ -152,24 +197,15 @@ long HoloJsScriptHost::start(const wchar_t* script)
     return HoloJs::Success;
 }
 
-long HoloJsScriptHost::start()
-{
-    m_runningState = HostState::Idle;
-    m_view->run();
-    return HoloJs::Success;
-}
-
 long HoloJsScriptHost::startWithEmptyApp()
 {
     RETURN_IF_TRUE(m_runningState != HostState::Initialized);
 
-    RETURN_IF_FAILED(cleanupScriptContext());
-    RETURN_IF_FAILED(initializeScriptContext());
+    runInBackgroundNoContext([this]() -> long {
+        showInternalUI(HostRenderedElements::NothingLoaded);
+        return S_OK;
+    });
 
-    m_runningState = HostState::Loading;
-    auto result = m_scriptsLoader->createEmptyApp(m_loadedApp);
-    m_runningState = HostState::Running;
-    m_view->executeApp(m_loadedApp);
     m_view->run();
 
     return HoloJs::Success;
@@ -185,139 +221,82 @@ long HoloJsScriptHost::stopExecution()
 
 void HoloJsScriptHost::startExecution(void* platformHandle)
 {
-    auto result = m_scriptsLoader->loadApp(platformHandle, m_loadedApp);
+    shared_ptr<HoloJs::AppModel::HoloJsApp> newApp;
+    auto result = m_scriptsLoader->loadApp(platformHandle, newApp);
 
     if (HOLOJS_FAILED(result)) {
-        m_runningState = HostState::Idle;
-        m_view->onError(ScriptHostErrorType::LoadingError);
+        showInternalUI(HostRenderedElements::LoadingFailed);
     } else {
-        m_runningState = HostState::Running;
-        m_view->executeApp(m_loadedApp);
+        m_view->executeApp(newApp);
     }
 }
 
 void HoloJsScriptHost::startExecution(const wstring appUrl)
 {
-    auto result = m_scriptsLoader->loadApp(appUrl, m_loadedApp);
+    shared_ptr<HoloJs::AppModel::HoloJsApp> newApp;
+    auto result = m_scriptsLoader->loadApp(appUrl, newApp);
 
     if (HOLOJS_FAILED(result)) {
-        m_runningState = HostState::Idle;
-        m_view->onError(ScriptHostErrorType::LoadingError);
+        showInternalUI(HostRenderedElements::LoadingFailed);
     } else {
-        m_runningState = HostState::Running;
-        m_view->executeApp(m_loadedApp);
+        m_view->executeApp(newApp);
     }
 }
 
 long HoloJsScriptHost::executeUri(const wchar_t* appUrl)
 {
+    RETURN_IF_TRUE(m_runningState != HostState::Initialized);
+
     wstring appUrlCapture(appUrl);
-    RETURN_IF_TRUE(m_runningState != HostState::Idle && m_runningState != HostState::Running);
 
-    if (m_runningState == HostState::Running) {
-        runInBackground([this, appUrlCapture]() -> long {
-            // Stop queueing items
-            m_runningState = HostState::Stopping;
+    showInternalUI(HostRenderedElements::LoadingAnimation);
 
-            // Wait until all outstanding work items are done (except this one)
-            while (m_outstandingWorkItems > 1) {
-                Sleep(100);
-            }
-
-            // We're sneaking a work item on the view thread to cleanup the script context
-            {
-                std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-                m_outstandingWorkItems++;
-            }
-
-            m_view->executeOnViewThread(
-                new ScriptContextWorkItem(this, make_shared<std::function<void()>>([this, appUrlCapture]() {
-                                              EXIT_IF_FAILED(cleanupScriptContext());
-                                              EXIT_IF_FAILED(initializeScriptContext());
-
-                                              m_runningState = HostState::Loading;
-                                              runInBackground([this, appUrlCapture]() -> long {
-                                                  startExecution(appUrlCapture);
-                                                  return HoloJs::Success;
-                                              });
-                                          })));
-
-            return HoloJs::Success;
-        });
-    } else {
-        RETURN_IF_FAILED(cleanupScriptContext());
-        RETURN_IF_FAILED(initializeScriptContext());
-
-        m_runningState = HostState::Loading;
-        runInBackground([this, appUrlCapture]() -> long {
-            startExecution(appUrlCapture);
-            return HoloJs::Success;
-        });
-    }
+    runInBackgroundNoContext([this, appUrlCapture]() -> long {
+        startExecution(appUrlCapture);
+        return HoloJs::Success;
+    });
 
     return HoloJs::Success;
 }
 
 long HoloJsScriptHost::executePackageFromHandle(void* platformPackageHandle)
 {
-    RETURN_IF_TRUE(m_runningState != HostState::Idle && m_runningState != HostState::Running);
+    RETURN_IF_TRUE(m_runningState != HostState::Initialized);
 
-    if (m_runningState == HostState::Running) {
-        runInBackground([this, platformPackageHandle]() -> long {
-            // Stop queueing items
-            m_runningState = HostState::Stopping;
+    showInternalUI(HostRenderedElements::LoadingAnimation);
 
-            // Wait until all outstanding work items are done (except this one)
-            while (m_outstandingWorkItems > 1) {
-                Sleep(100);
-            }
-
-            // We're sneaking a work item on the view thread to cleanup the script context
-            {
-                std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-                m_outstandingWorkItems++;
-            }
-
-            m_view->executeOnViewThread(
-                new ScriptContextWorkItem(this, make_shared<std::function<void()>>([this, platformPackageHandle]() {
-                                              EXIT_IF_FAILED(cleanupScriptContext());
-                                              EXIT_IF_FAILED(initializeScriptContext());
-
-                                              m_runningState = HostState::Loading;
-                                              runInBackground([this, platformPackageHandle]() -> long {
-                                                  startExecution(platformPackageHandle);
-                                                  return HoloJs::Success;
-                                              });
-                                          })));
-
-            return HoloJs::Success;
-        });
-    } else {
-        RETURN_IF_FAILED(cleanupScriptContext());
-        RETURN_IF_FAILED(initializeScriptContext());
-
-        m_runningState = HostState::Loading;
-        runInBackground([this, platformPackageHandle]() -> long {
-            startExecution(platformPackageHandle);
-            return HoloJs::Success;
-        });
-    }
+    runInBackgroundNoContext([this, platformPackageHandle]() -> long {
+        startExecution(platformPackageHandle);
+        return HoloJs::Success;
+    });
 
     return HoloJs::Success;
 }
 
 long HoloJsScriptHost::execute(const wchar_t* script)
 {
-    wstring scriptCapture(script);
-    RETURN_IF_TRUE(m_runningState != HostState::Running);
     m_view->executeScript(script);
-
     return HoloJs::Success;
 }
 
 long HoloJsScriptHost::executeImmediate(const wchar_t* script, const wchar_t* scriptName)
 {
     return m_activeContext->execute(script, scriptName);
+}
+
+void HoloJsScriptHost::showInternalUI(HostRenderedElements type)
+{
+    if (m_debugRequested) {
+        return;
+    }
+
+    if (m_loadedApp != m_internalApp) {
+        m_hostRenderedElements = type;
+        m_view->executeApp(m_internalApp);
+    } else if (m_hostRenderedElements != type) {
+        m_hostRenderedElements = type;
+        runInScriptContext([this]() { initializeHostRenderedElement(); });
+    }
 }
 
 void HoloJsScriptHost::enableDebugger() { m_debugRequested = true; }
@@ -341,39 +320,22 @@ long HoloJsScriptHost::getActiveAppConfiguration(HoloJs::AppModel::AppConfigurat
 
 HoloJs::IWindow* HoloJsScriptHost::getWindowElement() { return m_activeContext->getWindowElement(); }
 
+void HoloJsScriptHost::runInBackgroundNoContext(std::function<long()> backgroundWork)
+{
+    m_view->executeInBackground(
+        new HostBackgroundWorkItem(m_backgroundExecutionQueue, make_shared<std::function<long()>>(backgroundWork)));
+}
+
 void HoloJsScriptHost::runInBackground(std::function<long()> backgroundWork)
 {
-    std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-
-    EXIT_IF_TRUE(m_runningState != HostState::Loading && m_runningState != HostState::Running);
-
-    m_view->executeInBackground(new BackgroundWorkItem(this, make_shared<std::function<long()>>(backgroundWork)));
-    m_outstandingWorkItems++;
+    m_view->executeInBackground(
+        new BackgroundWorkItem(m_activeContext, make_shared<std::function<long()>>(backgroundWork)));
 }
 
 void HoloJsScriptHost::runInScriptContext(std::function<void()> contextWork)
 {
-    std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-
-    EXIT_IF_TRUE(m_runningState != HostState::Loading && m_runningState != HostState::Running);
-
-    m_view->executeOnViewThread(new ScriptContextWorkItem(this, make_shared<std::function<void()>>(contextWork)));
-    m_outstandingWorkItems++;
-}
-
-void HoloJsScriptHost::backgroundWorkItemComplete(BackgroundWorkItem* workItem)
-{
-    std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-
-    assert(m_outstandingWorkItems > 0);
-    m_outstandingWorkItems--;
-}
-
-void HoloJsScriptHost::contextWorkItemComplete(ScriptContextWorkItem* workItem)
-{
-    std::lock_guard<std::mutex> guard(m_workItemQueueLock);
-    assert(m_outstandingWorkItems > 0);
-    m_outstandingWorkItems--;
+    m_view->executeOnViewThread(
+        new ForegroundWorkItem(m_activeContext, make_shared<std::function<void()>>(contextWork)));
 }
 
 long HoloJsScriptHost::loadSupportScripts()
@@ -390,4 +352,18 @@ long HoloJsScriptHost::loadSupportScripts()
     m_scriptsLoader->setSupportScripts(m_supportScripts);
 
     return HoloJs::Success;
+}
+
+long HoloJsScriptHost::createLoadingAnimation()
+{
+    auto loadingAnimationScripts = make_shared<std::list<HoloJs::AppModel::Script>>();
+
+    for (auto& internalScriptName : g_loadingAnimationScripts) {
+        std::wstring scriptText;
+        RETURN_IF_FAILED(HoloJs::getPlatform()->readResourceScript(internalScriptName, scriptText));
+        loadingAnimationScripts->emplace_back(internalScriptName, move(scriptText));
+        loadingAnimationScripts->back().setName(internalScriptName);
+    }
+
+    return m_scriptsLoader->createAppFromScripts(L"Loading", loadingAnimationScripts, m_internalApp);
 }

@@ -8,8 +8,12 @@
 using namespace HoloJs;
 using namespace std;
 
-long ScriptContext::close()
+long ScriptContext::destroy()
 {
+    while (m_asyncWorkerCount > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(15));
+    }
+
     m_console.reset();
     m_domEventRegistration.reset();
     m_promiseContinuation.reset();

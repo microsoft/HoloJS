@@ -127,5 +127,11 @@
     <None Include="..\..\..\core\scripts\surface-mapper.js">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\..\..\core\scripts\loading-animation.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\three.js">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

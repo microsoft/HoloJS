@@ -61,7 +61,7 @@ ref class HoloJsScriptHost sealed {
     }
     void enableDebugger() { m_scriptHost->enableDebugger(); }
     bool startUri(Platform::String ^ uri) { return SUCCEEDED(m_scriptHost->startUri(uri->Data())); }
-    bool start() { return SUCCEEDED(m_scriptHost->start()); }
+    bool startWithEmptyApp() { return SUCCEEDED(m_scriptHost->startWithEmptyApp()); }
 
    private:
     std::unique_ptr<HoloJs::IHoloJsScriptHost> m_scriptHost;

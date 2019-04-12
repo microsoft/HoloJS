@@ -12,6 +12,7 @@
 #include "win32-timers-implementation.h"
 #include <memory>
 #include <wrl.h>
+#include <mutex>
 
 namespace HoloJs {
 namespace Win32 {
@@ -28,14 +29,10 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
 
     virtual void onError(HoloJs::ScriptHostErrorType errorType);
 
-    virtual HRESULT executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> appDefinition)
-    {
-        runAppOnDispatcherThread(appDefinition);
-        return S_OK;
-    }
+    virtual HRESULT executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
-    virtual void executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem);
-    virtual void executeInBackground(HoloJs::BackgroundWorkItem* workItem);
+    virtual long executeOnViewThread(HoloJs::IForegroundWorkItem* workItem);
+    virtual long executeInBackground(HoloJs::IBackgroundWorkItem* workItem);
 
 	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
     {
@@ -57,7 +54,7 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
     virtual bool isWindingOrderReversed() { return false; }
 
     void tick();
-    void runApp();
+    virtual void runApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
     virtual void setIcon(void* platformIcon)
     { /* not available in embedded view */
@@ -68,7 +65,6 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
     }
 
    private:
-    void runAppOnDispatcherThread(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
     HWND m_window;
 	int m_width, m_height;
@@ -94,9 +90,6 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
     std::unique_ptr<OpenGL::OpenGLContext> m_openglContext;
 
     HRESULT onOpenGLDeviceLost();
-
-    std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_queuedApp;
-    std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_activeApp;
 
 	HoloJs::ViewConfiguration m_viewConfiguration;
 };

@@ -7,14 +7,34 @@
 #include "holojs/private/script-host-errors.h"
 #include "holojs/private/script-window.h"
 #include "holojs/private/timers.h"
-#include "holojs/windows/voice-input.h"
-#include "holojs/windows/qr-scanner.h"
 #include "holojs/windows/mixed-reality/mixed-reality-context.h"
+#include "holojs/windows/qr-scanner.h"
+#include "holojs/windows/voice-input.h"
 #include "winrt-timers-implementation.h"
 #include <exception>
+#include <memory>
+#include <queue>
 
 namespace HoloJs {
 namespace UWP {
+
+class QueuedAppStartWorkItem : public IForegroundWorkItem {
+   public:
+    QueuedAppStartWorkItem(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app) : m_app(app) {}
+
+    virtual ~QueuedAppStartWorkItem() {}
+
+    virtual void execute() {}
+
+    std::shared_ptr<HoloJs::AppModel::HoloJsApp> getApp() { return m_app; }
+
+    virtual long long getTag() { return 1000; }
+
+    static long long QueuedAppStartWorkItemId;
+
+   private:
+    std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_app;
+};
 
 // Main entry point for our app. Connects the app with the Windows shell and handles application lifecycle events.
 ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFrameworkView {
@@ -37,8 +57,8 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
 
     HRESULT executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
-    virtual void executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem);
-    virtual void executeInBackground(HoloJs::BackgroundWorkItem* workItem);
+    virtual long executeOnViewThread(HoloJs::IForegroundWorkItem* workItem);
+    virtual long executeInBackground(HoloJs::IBackgroundWorkItem* workItem);
 
     bool isWindingOrderReversed() { return m_mixedRealityContext && m_mixedRealityContext->isWindingOrderReversed(); }
 
@@ -46,12 +66,13 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
     HRESULT initializeScriptResources();
     HRESULT stopApp();
 
-	void setViewConfiguration(HoloJs::ViewConfiguration viewConfiguration) { m_viewConfiguration = viewConfiguration; }
+    void setViewConfiguration(HoloJs::ViewConfiguration viewConfiguration) { m_viewConfiguration = viewConfiguration; }
 
-	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    virtual long getStationaryCoordinateSystem(void** coordinateSystem)
     {
         if (m_mixedRealityContext) {
-            *coordinateSystem = reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
+            *coordinateSystem =
+                reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
             return S_OK;
         } else {
             return E_FAIL;
@@ -113,7 +134,8 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
 
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_queuedApp;
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_activeApp;
-    HRESULT executeLoadedScripts();
+
+    HRESULT executeAppInternal(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
     void registerEventHandlers();
     void OnKeyUp(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ args);
@@ -123,7 +145,12 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
     void OnPointerReleased(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
     void OnPointerMoved(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
 
-	HoloJs::ViewConfiguration m_viewConfiguration;
+    HoloJs::ViewConfiguration m_viewConfiguration;
+
+    std::recursive_mutex m_foregroundWorkItemQueue;
+    std::queue<std::shared_ptr<HoloJs::IForegroundWorkItem>> m_foregroundWorkItems;
+    long queueForegroundWorkItem(HoloJs::IForegroundWorkItem* workItem);
+    void executeOneForegroundWorkItem();
 };
 
 ref class HoloJsViewSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource {
@@ -145,9 +172,9 @@ class WinRTHoloJsView : public IHoloJsView {
     {
         m_viewSource = ref new HoloJsViewSource();
         m_app = ref new HoloJsUWPApp();
-		m_app->setViewConfiguration(viewConfiguration);
+        m_app->setViewConfiguration(viewConfiguration);
         m_viewSource->SetHoloJsApp(m_app);
-		m_viewConfiguration = viewConfiguration;
+        m_viewConfiguration = viewConfiguration;
     }
 
     virtual ~WinRTHoloJsView();
@@ -163,8 +190,14 @@ class WinRTHoloJsView : public IHoloJsView {
 
     virtual HRESULT executeScript(const wchar_t* script) { return E_FAIL; }
 
-    virtual void executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem) { m_app->executeOnViewThread(workItem); }
-    virtual void executeInBackground(HoloJs::BackgroundWorkItem* workItem) { m_app->executeInBackground(workItem); }
+    virtual long executeOnViewThread(HoloJs::IForegroundWorkItem* workItem)
+    {
+        return m_app->executeOnViewThread(workItem);
+    }
+    virtual long executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
+    {
+        return m_app->executeInBackground(workItem);
+    }
 
     virtual void onError(HoloJs::ScriptHostErrorType errorType);
 
@@ -177,9 +210,9 @@ class WinRTHoloJsView : public IHoloJsView {
     { /* not available in UWP view */
     }
 
-	virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    virtual long getStationaryCoordinateSystem(void** coordinateSystem)
     {
-		return m_app->getStationaryCoordinateSystem(coordinateSystem);
+        return m_app->getStationaryCoordinateSystem(coordinateSystem);
     }
 
    private:
@@ -187,7 +220,7 @@ class WinRTHoloJsView : public IHoloJsView {
 
     HoloJsUWPApp ^ m_app;
 
-	HoloJs::ViewConfiguration m_viewConfiguration;
+    HoloJs::ViewConfiguration m_viewConfiguration;
 };
 }  // namespace UWP
 }  // namespace HoloJs

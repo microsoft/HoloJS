@@ -9,24 +9,17 @@ namespace HoloJs {
 
 class IHoloJsScriptHostInternal;
 
-class BackgroundWorkItem {
+class IBackgroundWorkItem {
    public:
-    BackgroundWorkItem(IHoloJsScriptHostInternal* host, std::shared_ptr<std::function<long()>> workItem)
-        : context(host), lambda(workItem)
-    {
-    }
-    IHoloJsScriptHostInternal* context;
-    std::shared_ptr<std::function<long()>> lambda;
+    virtual ~IBackgroundWorkItem() {}
+    virtual long execute() = 0;
 };
 
-class ScriptContextWorkItem {
+class IForegroundWorkItem {
    public:
-    ScriptContextWorkItem(IHoloJsScriptHostInternal* host, std::shared_ptr<std::function<void()>> workItem)
-        : context(host), lambda(workItem)
-    {
-    }
-    IHoloJsScriptHostInternal* context;
-    std::shared_ptr<std::function<void()>> lambda;
+    virtual ~IForegroundWorkItem(){}
+    virtual void execute() = 0;
+    virtual long long getTag() = 0;
 };
 
 class IHoloJsView {
@@ -41,8 +34,8 @@ class IHoloJsView {
     virtual long executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app) = 0;
     virtual long executeScript(const wchar_t* script) = 0;
 
-    virtual void executeOnViewThread(ScriptContextWorkItem* workItem) = 0;
-    virtual void executeInBackground(BackgroundWorkItem* workItem) = 0;
+    virtual long executeOnViewThread(IForegroundWorkItem* workItem) = 0;
+    virtual long executeInBackground(IBackgroundWorkItem* workItem) = 0;
 
     virtual void onError(HoloJs::ScriptHostErrorType errorType) = 0;
 
@@ -52,7 +45,7 @@ class IHoloJsView {
 
     virtual void setTitle(const std::wstring& title) = 0;
 
-	virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
+    virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
 };
 
 }  // namespace HoloJs

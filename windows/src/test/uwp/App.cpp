@@ -12,9 +12,9 @@
 #ifdef _DEBUG
         scriptHost->enableDebugger();
 #endif
-        auto uri = ref new Platform::String(L"http://192.168.1.110/Temporary_Listen_Addresses/holojs/hololens-surface-mapping.xrs");
+        auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/vr-cubes.xrs");
 		scriptHost->startUri(uri);
-        //scriptHost->start();
+        //scriptHost->startWithEmptyApp();
     }
 
     return 0;

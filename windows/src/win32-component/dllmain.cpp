@@ -43,11 +43,6 @@ __declspec(dllexport) void __cdecl holoJsScriptHost_setViewWindow(HoloJs::IHoloJ
     scriptHost->setViewWindow(window);
 }
 
-__declspec(dllexport) long __cdecl holoJsScriptHost_start(HoloJs::IHoloJsScriptHost* scriptHost)
-{
-    return scriptHost->start();
-}
-
 __declspec(dllexport) long __cdecl holoJsScriptHost_startScript(HoloJs::IHoloJsScriptHost* scriptHost, const wchar_t* script)
 {
     return scriptHost->start(script);

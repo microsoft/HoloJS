@@ -14,27 +14,15 @@ using namespace concurrency;
 
 #define STOP_EXECUTION WM_USER
 #define EXECUTE_SCRIPT (WM_USER + 1)
-#define EXECUTE_APP (WM_USER + 2)
 #define RESIZE_NOTIFICATION (WM_USER + 3)
-#define EXECUTE_CALLBACK (WM_USER + 4)
 
 // Step 4: the Window Procedure
-LRESULT CALLBACK SubclassWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+LRESULT CALLBACK
+SubclassWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
 {
     Win32HoloJsEmbeddedView* window = reinterpret_cast<Win32HoloJsEmbeddedView*>(dwRefData);
 
     switch (msg) {
-        case EXECUTE_APP:
-            window->runApp();
-            break;
-
-        case EXECUTE_CALLBACK: {
-            auto workItem = reinterpret_cast<HoloJs::ScriptContextWorkItem*>(lParam);
-            (*workItem->lambda.get())();
-            workItem->context->contextWorkItemComplete(workItem);
-            delete workItem;
-        } break;
-
         case EXECUTE_SCRIPT: {
             window->executeScriptImmediate(reinterpret_cast<wchar_t*>(lParam));
             delete reinterpret_cast<wchar_t*>(lParam);
@@ -49,7 +37,7 @@ LRESULT CALLBACK SubclassWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
             window->onKeyDown(wParam, lParam);
             return DefWindowProc(hwnd, msg, wParam, lParam);
 
-        case WM_KEYUP: 
+        case WM_KEYUP:
             window->onKeyUp(wParam, lParam);
             return DefWindowProc(hwnd, msg, wParam, lParam);
 
@@ -62,43 +50,43 @@ LRESULT CALLBACK SubclassWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
             window->onMouseEvent(HoloJs::MouseButtonEventType::Move, wParam, lParam);
         } break;
 
-        case WM_RBUTTONDBLCLK: 
+        case WM_RBUTTONDBLCLK:
             window->onMouseButtonEvent(
                 HoloJs::MouseButtonEventType::DblClick, wParam, lParam, HoloJs::MouseButton::Second);
             break;
 
-        case WM_MBUTTONDBLCLK: 
+        case WM_MBUTTONDBLCLK:
             window->onMouseButtonEvent(
                 HoloJs::MouseButtonEventType::DblClick, wParam, lParam, HoloJs::MouseButton::Auxiliary);
             break;
 
-        case WM_LBUTTONDBLCLK: 
+        case WM_LBUTTONDBLCLK:
             window->onMouseButtonEvent(
                 HoloJs::MouseButtonEventType::DblClick, wParam, lParam, HoloJs::MouseButton::Main);
             break;
 
-        case WM_RBUTTONUP: 
+        case WM_RBUTTONUP:
             window->onMouseButtonEvent(HoloJs::MouseButtonEventType::Up, wParam, lParam, HoloJs::MouseButton::Second);
             break;
 
-        case WM_LBUTTONUP: 
+        case WM_LBUTTONUP:
             window->onMouseButtonEvent(
                 HoloJs::MouseButtonEventType::Up, wParam, lParam, HoloJs::MouseButton::Auxiliary);
             break;
 
-        case WM_MBUTTONUP: 
+        case WM_MBUTTONUP:
             window->onMouseButtonEvent(HoloJs::MouseButtonEventType::Up, wParam, lParam, HoloJs::MouseButton::Main);
             break;
 
-        case WM_RBUTTONDOWN: 
+        case WM_RBUTTONDOWN:
             window->onMouseButtonEvent(HoloJs::MouseButtonEventType::Down, wParam, lParam, HoloJs::MouseButton::Second);
             break;
 
-        case WM_LBUTTONDOWN: 
+        case WM_LBUTTONDOWN:
             window->onMouseButtonEvent(HoloJs::MouseButtonEventType::Down, wParam, lParam, HoloJs::MouseButton::Main);
             break;
 
-        case WM_MBUTTONDOWN: 
+        case WM_MBUTTONDOWN:
             window->onMouseButtonEvent(
                 HoloJs::MouseButtonEventType::Down, wParam, lParam, HoloJs::MouseButton::Auxiliary);
             break;
@@ -125,7 +113,7 @@ LRESULT CALLBACK SubclassWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 HRESULT Win32HoloJsEmbeddedView::initialize(HoloJs::IHoloJsScriptHostInternal* host)
 {
-	m_host = host;
+    m_host = host;
 
     CoInitializeEx(nullptr, 0);
 
@@ -146,7 +134,11 @@ void CALLBACK VSyncTimerproc(HWND Arg1, UINT Arg2, UINT_PTR Arg3, DWORD Arg4)
     window->tick();
 }
 
-void Win32HoloJsEmbeddedView::tick() { render(); }
+void Win32HoloJsEmbeddedView::tick()
+{
+    executeOneForegroundWorkItem();
+    render();
+}
 
 void Win32HoloJsEmbeddedView::run()
 {
@@ -195,18 +187,19 @@ HRESULT Win32HoloJsEmbeddedView::onOpenGLDeviceLost()
 void Win32HoloJsEmbeddedView::stop()
 {
     KillTimer(m_window, reinterpret_cast<UINT_PTR>(this));
-	m_timers.reset();
+    m_timers.reset();
     RemoveWindowSubclass(m_window, SubclassWndProc, 0);
 }
 
-void Win32HoloJsEmbeddedView::runAppOnDispatcherThread(std::shared_ptr<HoloJsApp> app)
+HRESULT Win32HoloJsEmbeddedView::executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app)
 {
-    m_queuedApp = app;
-    SendMessage(m_window, EXECUTE_APP, 0, 0);
+    return queueForegroundWorkItem(new QueuedAppStartWorkItem(app));
 }
 
-void Win32HoloJsEmbeddedView::runApp()
+void Win32HoloJsEmbeddedView::runApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app)
 {
+    EXIT_IF_FAILED(m_host->createExecutionContext());
+
     m_timers = make_unique<HoloJs::Timers>();
     m_timers->setTimersImplementation(new Win32Timers(m_window));
     EXIT_IF_FAILED(m_timers->initialize());
@@ -215,15 +208,9 @@ void Win32HoloJsEmbeddedView::runApp()
     m_windowElement->setHeadsetAvailable(false);
     m_windowElement->resize(m_width, m_height);
 
-    SetWindowText(m_window, m_queuedApp->getName().empty() ? L"HoloJs App" : m_queuedApp->getName().c_str());
+    SetWindowText(m_window, app->getName().empty() ? L"HoloJs App" : app->getName().c_str());
 
-    auto loadedScripts = m_queuedApp->loadedScriptsList();
-    for (list<Script>::const_iterator it = loadedScripts->begin(); it != loadedScripts->end(); ++it) {
-        m_host->executeImmediate(it->getCode().c_str(), it->getName().c_str());
-    }
-
-    m_activeApp = m_queuedApp;
-    m_queuedApp.reset();
+    EXIT_IF_FAILED(m_host->executeLoadedApp(app));
 }
 
 HRESULT Win32HoloJsEmbeddedView::executeScriptImmediate(const wchar_t* script)
@@ -241,18 +228,19 @@ HRESULT Win32HoloJsEmbeddedView::executeScript(const wchar_t* script)
     return S_OK;
 }
 
-void Win32HoloJsEmbeddedView::executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem)
+long Win32HoloJsEmbeddedView::executeOnViewThread(HoloJs::IForegroundWorkItem* workItem)
 {
-    PostMessage(m_window, EXECUTE_CALLBACK, 0, reinterpret_cast<LPARAM>(workItem));
+    return queueForegroundWorkItem(workItem);
 }
 
-void Win32HoloJsEmbeddedView::executeInBackground(HoloJs::BackgroundWorkItem* workItem)
+long Win32HoloJsEmbeddedView::executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
 {
     create_task([workItem]() -> long {
-        auto result = (*workItem->lambda.get())();
-        workItem->context->backgroundWorkItemComplete(workItem);
+        auto result = workItem->execute();
         delete workItem;
 
         return result;
     });
+
+    return S_OK;
 }

@@ -49,7 +49,9 @@ map<std::wstring, int> g_scriptNamesMap = {{L"URL.js", URL_SCRIPT},
                                            {L"xmlhttprequest.js", XHR_SCRIPT},
                                            {L"webaudio.js", WEBAUDIO_SCRIPT},
                                            {L"websocket.js", WEBSOCKET_SCRIPT},
-                                           {L"surface-mapper.js", SURFACE_MAPPER_SCRIPT}};
+                                           {L"surface-mapper.js", SURFACE_MAPPER_SCRIPT},
+                                           {L"three.js", THREEJS_SCRIPT},
+                                           {L"loading-animation.js", LOADING_ANIMATION_SCRIPT}};
 
 HoloJs::IHoloJsView* Win32Platform::makeView(HoloJs::ViewConfiguration viewConfig)
 {

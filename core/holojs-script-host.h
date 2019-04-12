@@ -1,6 +1,7 @@
 #pragma once
 #include "host-interfaces.h"
 
+#include "async-work-items.h"
 #include "include/holojs/private/chakra.h"
 #include "include/holojs/private/holojs-script-host-internal.h"
 #include "resource-management/resource-manager.h"
@@ -20,7 +21,6 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
     virtual long startUri(const wchar_t* appUri);
     virtual long start(const wchar_t* script);
-    virtual long start();
     virtual long startWithEmptyApp();
 
     virtual long execute(const wchar_t* script);
@@ -31,8 +31,6 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
     virtual void runInBackground(std::function<long()> backgroundWork);
     virtual void runInScriptContext(std::function<void()> contextWork);
-    virtual void backgroundWorkItemComplete(BackgroundWorkItem* workItem);
-    virtual void contextWorkItemComplete(ScriptContextWorkItem* workItem);
 
     virtual void enableDebugger();
     virtual void setConsoleConfig(HoloJs::IConsoleConfiguration* consoleConfig)
@@ -55,47 +53,60 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
     virtual long getActiveAppConfiguration(HoloJs::AppModel::AppConfiguration* configuration);
 
-	virtual long getStationaryCoordinateSystem(void** coordinateSystem) { return m_view->getStationaryCoordinateSystem(coordinateSystem); }
+    virtual long getStationaryCoordinateSystem(void** coordinateSystem)
+    {
+        return m_view->getStationaryCoordinateSystem(coordinateSystem);
+    }
+
+    virtual long createExecutionContext();
+    virtual long executeLoadedApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;
     bool m_debugRequested;
 
+    enum class HostRenderedElements
+    {
+        None,
+        LoadingAnimation,
+        LoadingFailed,
+        NothingLoaded
+    };
+
+    //{icon : "\ue007", text : "That link did not work", iconX : 250, iconY : 150, textX : 100, textY : 250}
+    HostRenderedElements m_hostRenderedElements = HostRenderedElements::None;
+    std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_internalApp;
+    void showInternalUI(HostRenderedElements type);
+    long initializeHostRenderedElement();
+
+    void runInBackgroundNoContext(std::function<long()> backgroundWork);
+
     long loadSupportScripts();
     std::shared_ptr<std::list<HoloJs::AppModel::Script>> m_supportScripts;
+
+    long createLoadingAnimation();
 
     HoloJs::IConsoleConfiguration* m_consoleConfiguration;
 
     std::unique_ptr<HoloJs::AppModel::ScriptsLoader> m_scriptsLoader;
 
     std::shared_ptr<IHoloJsView> m_view;
-    std::unique_ptr<HoloJs::ScriptContext> m_activeContext;
+    std::shared_ptr<HoloJs::ScriptContext> m_activeContext;
+
+    std::shared_ptr<BackgroundExecutionQueue> m_backgroundExecutionQueue;
 
     void* m_targetViewWindow;
 
     void* m_viewIcon;
     std::wstring m_viewTitle;
 
-    long initializeScriptContext();
-    long cleanupScriptContext();
+    long releaseExecutionContext();
 
-    std::mutex m_workItemQueueLock;
-    unsigned int m_outstandingWorkItems = 0;
-
-    enum class HostState
-    {
-        NotInitialized,
-        Initialized,
-        Idle,
-        Loading,
-        Stopping,
-        Running
-    };
+    enum class HostState { NotInitialized, Initialized };
 
     void startExecution(const std::wstring appUrl);
     void startExecution(void* platformHandle);
 
     HostState m_runningState = HostState::NotInitialized;
-
 };
 }  // namespace HoloJs

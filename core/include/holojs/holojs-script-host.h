@@ -30,7 +30,6 @@ class IHoloJsScriptHost {
 
     virtual long startUri(const wchar_t* appUri) = 0;
     virtual long start(const wchar_t* script) = 0;
-    virtual long start() = 0;
     virtual long startWithEmptyApp() = 0;
 
     virtual long execute(const wchar_t* script) = 0;

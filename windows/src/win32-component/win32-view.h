@@ -11,6 +11,7 @@
 #include "win32-opengl-context.h"
 #include "win32-timers-implementation.h"
 #include <memory>
+#include <queue>
 #include <string>
 #include <wrl.h>
 
@@ -29,14 +30,10 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
 
     virtual void onError(HoloJs::ScriptHostErrorType errorType);
 
-    virtual HRESULT executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> appDefinition)
-    {
-        runAppOnDispatcherThread(appDefinition);
-        return S_OK;
-    }
+    virtual HRESULT executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> appDefinition);
 
-    virtual void executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem);
-    virtual void executeInBackground(HoloJs::BackgroundWorkItem* workItem);
+    virtual long executeOnViewThread(HoloJs::IForegroundWorkItem* workItem);
+    virtual long executeInBackground(HoloJs::IBackgroundWorkItem* workItem);
 
     virtual HRESULT executeScript(const wchar_t* script);
 
@@ -61,20 +58,21 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
     virtual long getStationaryCoordinateSystem(void** coordinateSystem)
     {
         if (m_mixedRealityContext) {
-            *coordinateSystem = reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
+            *coordinateSystem =
+                reinterpret_cast<void*>(m_mixedRealityContext->getStationaryFrameOfReference()->CoordinateSystem);
             return S_OK;
         } else {
             return E_FAIL;
         }
     }
 
+    virtual void runApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
+
    private:
     HRESULT createWindow();
 
-    void runAppOnDispatcherThread(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
-    void runApp();
-
     long initializeScriptResources();
+    long releaseScriptResources();
 
     HWND m_window;
     int m_width, m_height;
@@ -105,7 +103,6 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
     HRESULT onOpenGLDeviceLost();
 
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_activeApp;
-    std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_queuedApp;
 
     HICON m_icon;
     std::wstring m_title;

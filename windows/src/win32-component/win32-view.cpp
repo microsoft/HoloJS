@@ -17,9 +17,7 @@ static ATOM g_windowRegistrationAtom = 0;
 
 #define STOP_EXECUTION WM_USER
 #define EXECUTE_SCRIPT (WM_USER + 1)
-#define EXECUTE_APP (WM_USER + 2)
 #define RESIZE_NOTIFICATION (WM_USER + 3)
-#define EXECUTE_CALLBACK (WM_USER + 4)
 
 #define INITIAL_WIDTH 640
 #define INITIAL_HEIGHT 320
@@ -218,6 +216,22 @@ HRESULT Win32HoloJsView::initialize(HoloJs::IHoloJsScriptHostInternal* host)
     return S_OK;
 }
 
+long Win32HoloJsView::releaseScriptResources() { 
+    m_windowElement = nullptr;
+    m_timers.reset();
+    m_spatialInput.reset();
+
+    if (m_mixedRealityContext) {
+        m_mixedRealityContext->releaseScriptResources();
+    }
+
+    m_activeApp.reset();
+
+    m_openglContext.reset();
+
+    return S_OK;
+}
+
 long Win32HoloJsView::initializeScriptResources()
 {
     m_timers = make_unique<HoloJs::Timers>();
@@ -225,6 +239,9 @@ long Win32HoloJsView::initializeScriptResources()
     RETURN_IF_FAILED(m_timers->initialize());
 
     m_windowElement = m_host->getWindowElement();
+
+    m_openglContext = std::make_unique<Win32::Win32OpenGLContext>();
+    m_openglContext->setWindow(m_window);
 
     if (m_mixedRealityContext) {
         m_mixedRealityContext->setScriptWindow(m_windowElement);
@@ -236,7 +253,11 @@ long Win32HoloJsView::initializeScriptResources()
         m_spatialInput->setFrameOfReference(m_mixedRealityContext->getStationaryFrameOfReference());
         m_spatialInput->setScriptWindow(m_windowElement);
         m_spatialInput->initialize();
+
+        m_openglContext->setMixedRealityContext(m_mixedRealityContext);
     }
+
+    RETURN_IF_FAILED(m_openglContext->initialize());
 
     if (m_mixedRealityContext) {
         onResize(static_cast<int>(m_mixedRealityContext->getWidth()),
@@ -250,40 +271,39 @@ long Win32HoloJsView::initializeScriptResources()
 
 void Win32HoloJsView::run()
 {
-    m_openglContext = std::make_unique<Win32::Win32OpenGLContext>();
-    m_openglContext->setWindow(m_window);
-
-    if (m_mixedRealityContext) {
-        m_openglContext->setMixedRealityContext(m_mixedRealityContext);
-    }
-
-    EXIT_IF_FAILED(m_openglContext->initialize());
-
-    
-
     MSG msg;
-    while (true) {
+
+    while (!m_closeRequested) {
         if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
             if (msg.message == STOP_EXECUTION) {
-                break;
+                m_closeRequested = true;
             } else if (msg.message == EXECUTE_SCRIPT) {
                 m_host->executeImmediate(reinterpret_cast<wchar_t*>(msg.lParam), nullptr);
                 delete reinterpret_cast<wchar_t*>(msg.lParam);
-            } else if (msg.message == EXECUTE_APP) {
-                runApp();
-            } else if (msg.message == EXECUTE_CALLBACK) {
-                auto workItem = reinterpret_cast<HoloJs::ScriptContextWorkItem*>(msg.lParam);
-                (*workItem->lambda.get())();
-                workItem->context->contextWorkItemComplete(workItem);
-                delete workItem;
             }
 
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
 
-        if (m_activeApp) {
-            render();
+        const auto isViewReady =
+            !m_mixedRealityContext || (m_mixedRealityContext && m_mixedRealityContext->isCameraAvailable());
+
+        if (isViewReady) {
+            executeOneForegroundWorkItem();
+
+            if (m_activeApp) {
+                render();
+            }
+        }
+    }
+
+
+    // Drain foreground workitems queue
+    {
+        std::lock_guard<std::recursive_mutex> guard(m_foregroundWorkItemQueue);
+        while (m_foregroundWorkItems.size() > 0) {
+            executeOneForegroundWorkItem();
         }
     }
 
@@ -341,32 +361,32 @@ HRESULT Win32HoloJsView::onOpenGLDeviceLost()
 
 void Win32HoloJsView::stop() { SendMessage(m_window, WM_CLOSE, 0, 0); }
 
-void Win32HoloJsView::runAppOnDispatcherThread(std::shared_ptr<HoloJsApp> app)
+HRESULT Win32HoloJsView::executeApp(std::shared_ptr<HoloJsApp> app)
 {
-    m_queuedApp = app;
-    PostThreadMessageW(g_viewThreadId, EXECUTE_APP, 0, 0);
+    return queueForegroundWorkItem(new QueuedAppStartWorkItem(app));
 }
 
-void Win32HoloJsView::runApp()
+void Win32HoloJsView::runApp(shared_ptr<HoloJs::AppModel::HoloJsApp> app)
 {
+    if (m_activeApp) {
+        releaseScriptResources();
+    }
+
+    m_activeApp = app;
+
     wstring windowTitle;
-    if (!m_queuedApp->getName().empty()) {
-        windowTitle = m_queuedApp->getName();
+    if (!app->getName().empty()) {
+        windowTitle = app->getName();
     } else if (!m_title.empty()) {
         windowTitle = m_title;
     }
 
     SetWindowText(m_window, windowTitle.c_str());
 
-    initializeScriptResources();
+    EXIT_IF_FAILED(m_host->createExecutionContext());
+    EXIT_IF_FAILED(initializeScriptResources());
 
-    auto loadedScripts = m_queuedApp->loadedScriptsList();
-    for (list<Script>::const_iterator it = loadedScripts->begin(); it != loadedScripts->end(); ++it) {
-        m_host->executeImmediate(it->getCode().c_str(), it->getName().c_str());
-    }
-
-    m_activeApp = m_queuedApp;
-    m_queuedApp.reset();
+    EXIT_IF_FAILED(m_host->executeLoadedApp(app));
 }
 
 HRESULT Win32HoloJsView::executeScript(const wchar_t* script)
@@ -379,18 +399,22 @@ HRESULT Win32HoloJsView::executeScript(const wchar_t* script)
     return S_OK;
 }
 
-void Win32HoloJsView::executeOnViewThread(HoloJs::ScriptContextWorkItem* workItem)
+long Win32HoloJsView::executeOnViewThread(HoloJs::IForegroundWorkItem* workItem)
 {
-    PostThreadMessageW(g_viewThreadId, EXECUTE_CALLBACK, 0, reinterpret_cast<LPARAM>(workItem));
+    return queueForegroundWorkItem(workItem);
 }
 
-void Win32HoloJsView::executeInBackground(HoloJs::BackgroundWorkItem* workItem)
+long Win32HoloJsView::executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
 {
+    RETURN_IF_TRUE(m_closeRequested);
+
     create_task([workItem]() -> long {
-        auto result = (*workItem->lambda.get())();
-        workItem->context->backgroundWorkItemComplete(workItem);
+        auto result = workItem->execute();
+        OutputDebugString(L"deleting work item\r\n");
         delete workItem;
 
         return result;
     });
+
+    return S_OK;
 }

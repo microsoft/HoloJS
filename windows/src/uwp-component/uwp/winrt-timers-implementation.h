@@ -17,7 +17,7 @@ class WinRTTimers : public HoloJs::ITimersImplementation {
     WinRTTimers() { }
     ~WinRTTimers() {
 		for (auto& timer : m_timers) {
-			timer->m_thredpoolTimer->Cancel();
+			timer->cancel();
 		}
 	}
 
@@ -25,7 +25,7 @@ class WinRTTimers : public HoloJs::ITimersImplementation {
     class TimerDefinition {
        public:
         TimerDefinition(int duration);
-		~TimerDefinition() { m_thredpoolTimer->Cancel();  releaseScriptResources(); }
+        ~TimerDefinition() { cancel(); }
 
         // Captures the script callback and parameters to be passed to this callback
         HRESULT captureScriptResources(JsValueRef scriptCallback,
@@ -37,7 +37,11 @@ class WinRTTimers : public HoloJs::ITimersImplementation {
         // Invokes the script callback
         HRESULT invokeScriptCallback();
 
-        Windows::System::Threading::ThreadPoolTimer ^ m_thredpoolTimer;
+        void cancel();
+
+        void setTimer(Windows::System::Threading::ThreadPoolTimer ^ timer) { m_threadpoolTimer = timer; }
+
+        bool isCancelled() const { return m_isCancelled; }
 
         int m_id;
 
@@ -45,10 +49,12 @@ class WinRTTimers : public HoloJs::ITimersImplementation {
         // Script resources
         JsValueRef m_scriptCallback = JS_INVALID_REFERENCE;
         std::vector<JsValueRef> m_scriptCallbackParameters;
-    };
 
-    // Lock for the list of active timers
-    std::mutex m_timersLock;
+        Windows::System::Threading::ThreadPoolTimer ^ m_threadpoolTimer;
+        bool m_isCancelled = false;
+
+        std::mutex m_timerLock;
+    };
 
     // List of active timers
     // On timer clear or timer firing, it is removed from this list

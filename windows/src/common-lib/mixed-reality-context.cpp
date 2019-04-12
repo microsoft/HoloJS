@@ -67,38 +67,45 @@ HRESULT MixedRealityContext::initializeScriptHost()
     JsValueRef nativeInterface;
     RETURN_IF_FAILED(ScriptHostUtilities::GetNativeInterfaceJsProperty(&nativeInterface));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat64ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat64ArrayProperty(
         2, &m_nearFarScriptProjection, &m_nearFarStoragePointer, nativeInterface, L"xrNearFar"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_nearFarScriptProjection, nullptr));
 
     m_nearFarStoragePointer[0] = 0.01;
     m_nearFarStoragePointer[1] = 10000.0;
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         16, &m_leftViewMatrixScriptProjection, &m_leftViewMatrixStoragePointer, nativeInterface, L"xrLeftView"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_leftViewMatrixScriptProjection, nullptr));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         16, &m_rightViewMatrixScriptProjection, &m_rightViewMatrixStoragePointer, nativeInterface, L"xrRightView"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_rightViewMatrixScriptProjection, nullptr));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(16,
-                                                                    &m_leftProjectionMatrixScriptProjection,
-                                                                    &m_leftProjectionMatrixStoragePointer,
-                                                                    nativeInterface,
-                                                                    L"xrLeftProjection"));
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(16,
+                                                                  &m_leftProjectionMatrixScriptProjection,
+                                                                  &m_leftProjectionMatrixStoragePointer,
+                                                                  nativeInterface,
+                                                                  L"xrLeftProjection"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_leftProjectionMatrixScriptProjection, nullptr));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(16,
-                                                                    &m_rightProjectionMatrixScriptProjection,
-                                                                    &m_rightProjectionMatrixStoragePointer,
-                                                                    nativeInterface,
-                                                                    L"xrRightProjection"));
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(16,
+                                                                  &m_rightProjectionMatrixScriptProjection,
+                                                                  &m_rightProjectionMatrixStoragePointer,
+                                                                  nativeInterface,
+                                                                  L"xrRightProjection"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_rightProjectionMatrixScriptProjection, nullptr));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(
         4, &m_positionVectorScriptProjection, &m_positionVectorStoragePointer, nativeInterface, L"xrPosition"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_positionVectorScriptProjection, nullptr));
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat32ArrayProperty(4,
-                                                                    &m_orientationVectorScriptProjection,
-                                                                    &m_orientationVectorStoragePointer,
-                                                                    nativeInterface,
-                                                                    L"xrOrientation"));
+    RETURN_IF_FAILED(ScriptHostUtilities::SetFloat32ArrayProperty(4,
+                                                                  &m_orientationVectorScriptProjection,
+                                                                  &m_orientationVectorStoragePointer,
+                                                                  nativeInterface,
+                                                                  L"xrOrientation"));
+    RETURN_IF_JS_ERROR(JsAddRef(m_orientationVectorScriptProjection, nullptr));
 
     return S_OK;
 }
@@ -107,40 +114,39 @@ void MixedRealityContext::releaseScriptResources()
 {
     if (m_nearFarScriptProjection != JS_INVALID_REFERENCE) {
         JsRelease(m_nearFarScriptProjection, nullptr);
-		m_nearFarScriptProjection = JS_INVALID_REFERENCE;
+        m_nearFarScriptProjection = JS_INVALID_REFERENCE;
         m_nearFarStoragePointer = nullptr;
     }
 
     if (m_orientationVectorScriptProjection != JS_INVALID_REFERENCE) {
         JsRelease(m_orientationVectorScriptProjection, nullptr);
-		m_orientationVectorScriptProjection = JS_INVALID_REFERENCE;
+        m_orientationVectorScriptProjection = JS_INVALID_REFERENCE;
         m_orientationVectorStoragePointer = nullptr;
     }
 
     if (m_rightProjectionMatrixScriptProjection != JS_INVALID_REFERENCE) {
-		m_rightProjectionMatrixScriptProjection = JS_INVALID_REFERENCE;
+        m_rightProjectionMatrixScriptProjection = JS_INVALID_REFERENCE;
         JsRelease(m_rightProjectionMatrixScriptProjection, nullptr);
         m_rightProjectionMatrixStoragePointer = nullptr;
     }
 
-	if (m_leftProjectionMatrixScriptProjection != JS_INVALID_REFERENCE) {
-		JsRelease(m_leftProjectionMatrixScriptProjection, nullptr);
-		m_leftProjectionMatrixScriptProjection = JS_INVALID_REFERENCE;
-		m_leftProjectionMatrixStoragePointer = nullptr;
-	}
-    
-	if (m_rightViewMatrixScriptProjection != JS_INVALID_REFERENCE) {
-		JsRelease(m_rightViewMatrixScriptProjection, nullptr);
-		m_rightViewMatrixScriptProjection = JS_INVALID_REFERENCE;
-		m_rightViewMatrixStoragePointer = nullptr;
-	}
+    if (m_leftProjectionMatrixScriptProjection != JS_INVALID_REFERENCE) {
+        JsRelease(m_leftProjectionMatrixScriptProjection, nullptr);
+        m_leftProjectionMatrixScriptProjection = JS_INVALID_REFERENCE;
+        m_leftProjectionMatrixStoragePointer = nullptr;
+    }
 
-	if (m_leftViewMatrixScriptProjection != JS_INVALID_REFERENCE) {
-		JsRelease(m_leftViewMatrixScriptProjection, nullptr);
-		m_leftViewMatrixScriptProjection = JS_INVALID_REFERENCE;
-		m_leftViewMatrixStoragePointer = nullptr;
-	}
-    
+    if (m_rightViewMatrixScriptProjection != JS_INVALID_REFERENCE) {
+        JsRelease(m_rightViewMatrixScriptProjection, nullptr);
+        m_rightViewMatrixScriptProjection = JS_INVALID_REFERENCE;
+        m_rightViewMatrixStoragePointer = nullptr;
+    }
+
+    if (m_leftViewMatrixScriptProjection != JS_INVALID_REFERENCE) {
+        JsRelease(m_leftViewMatrixScriptProjection, nullptr);
+        m_leftViewMatrixScriptProjection = JS_INVALID_REFERENCE;
+        m_leftViewMatrixStoragePointer = nullptr;
+    }
 }
 
 DirectX::XMMATRIX MixedRealityContext::getHeadTransform(SpatialPointerPose ^ spatialPointerPose)

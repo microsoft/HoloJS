@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" IgnorableNamespaces="uap mp uap2">
-  <Identity Name="ec9bcf13-9468-4683-97a6-2f2926ecb8df" Publisher="CN=Cristian Petruta (crispet@microsoft.com)" Version="1.0.6.0" />
+  <Identity Name="ec9bcf13-9468-4683-97a6-2f2926ecb8df" Publisher="CN=Cristian Petruta (crispet@microsoft.com)" Version="1.0.7.0" />
   <mp:PhoneIdentity PhoneProductId="ec9bcf13-9468-4683-97a6-2f2926ecb8df" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Spin View</DisplayName>

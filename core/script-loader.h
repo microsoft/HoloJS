@@ -19,6 +19,10 @@ class ScriptsLoader {
     long loadScriptInline(const std::wstring& script, std::shared_ptr<HoloJsApp>& scriptApp);
     void setSupportScripts(std::shared_ptr<std::list<HoloJs::AppModel::Script>> supportScripts) { m_supportScripts = supportScripts; }
 
+    long createAppFromScripts(const std::wstring& appName,
+                              std::shared_ptr<std::list<HoloJs::AppModel::Script>> scripts,
+                              std::shared_ptr<HoloJsApp>& scriptApp);
+
     static bool isAbsoluteWebUri(std::wstring appUri);
 
    private:

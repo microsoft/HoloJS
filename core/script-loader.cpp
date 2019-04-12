@@ -152,11 +152,45 @@ long ScriptsLoader::createEmptyApp(std::shared_ptr<HoloJsApp>& scriptApp)
     newScriptApp->setName(appName);
     newScriptApp->setIconUri(appIconUri);
 
+    // Add just the support scripts
+    for (const auto& supportScript : *m_supportScripts) {
+        auto scriptCopy = supportScript.getCode();
+        newScriptApp->loadedScriptsList()->emplace_back(supportScript.getPath(), move(scriptCopy));
+        newScriptApp->loadedScriptsList()->back().setName(supportScript.getName());
+    }
+
+    scriptApp = newScriptApp;
+
+    return HoloJs::Success;
+}
+
+long ScriptsLoader::createAppFromScripts(const wstring& appName,
+                                         shared_ptr<list<HoloJs::AppModel::Script>> scripts,
+                                         std::shared_ptr<HoloJsApp>& scriptApp)
+{
+    AppConfiguration appConfig;
+    appConfig.source = AppSource::FileSystem;
+    appConfig.baseUri = L"\\";
+
+    shared_ptr<HoloJsApp> newScriptApp = make_shared<HoloJsApp>(appConfig);
+
+    list<wstring> scriptsList;
+    wstring appIconUri = L"";
+
+    newScriptApp->setName(appName);
+    newScriptApp->setIconUri(appIconUri);
+
     // First add the support scripts
     for (const auto& supportScript : *m_supportScripts) {
         auto scriptCopy = supportScript.getCode();
         newScriptApp->loadedScriptsList()->emplace_back(supportScript.getPath(), move(scriptCopy));
         newScriptApp->loadedScriptsList()->back().setName(supportScript.getName());
+    }
+
+    for (const auto& appScript : *scripts.get()) {
+        auto scriptCopy = appScript.getCode();
+        newScriptApp->loadedScriptsList()->emplace_back(appScript.getPath(), move(scriptCopy));
+        newScriptApp->loadedScriptsList()->back().setName(appScript.getName());
     }
 
     scriptApp = newScriptApp;

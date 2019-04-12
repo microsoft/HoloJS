@@ -47,6 +47,11 @@ HRESULT WinRTTimers::TimerDefinition::releaseScriptResources()
 HRESULT WinRTTimers::TimerDefinition::invokeScriptCallback()
 {
     // Call the script
+    std::lock_guard<std::mutex> guard(m_timerLock);
+
+    if (isCancelled()) {
+        return S_OK;
+    }
 
     RETURN_IF_TRUE(m_scriptCallback == JS_INVALID_REFERENCE);
 
@@ -59,11 +64,25 @@ HRESULT WinRTTimers::TimerDefinition::invokeScriptCallback()
     return S_OK;
 }
 
+void WinRTTimers::TimerDefinition::cancel()
+{
+    std::lock_guard<std::mutex> guard(m_timerLock);
+
+    if (m_threadpoolTimer != nullptr) {
+        m_threadpoolTimer->Cancel();
+        m_threadpoolTimer = nullptr;
+    }
+
+    releaseScriptResources();
+
+    m_isCancelled = true;
+}
+
 JsValueRef WinRTTimers::clearTimer(int timerId)
 {
     for (const auto& timerInstance : m_timers) {
         if (timerId == timerInstance->m_id) {
-            timerInstance->m_thredpoolTimer->Cancel();
+            timerInstance->cancel();
             m_timers.remove(timerInstance);
 
             break;
@@ -97,26 +116,34 @@ JsValueRef WinRTTimers::createTimer(HoloJs::TimerType type,
     RETURN_INVALID_REF_IF_FAILED(timer->captureScriptResources(scriptCallback, capturedParameters));
 
     insertInTimersList(timer);
-    
+
     ThreadPoolTimer ^ tpTimer;
     Windows::Foundation::TimeSpan period;
     period.Duration = timeoutValue * 1000 * 10;
+
+    std::weak_ptr<TimerDefinition> timerWeakReference = timer;
     if (type == HoloJs::TimerType::Interval) {
-        timer->m_thredpoolTimer = ThreadPoolTimer::CreatePeriodicTimer(
-            ref new TimerElapsedHandler([timer](ThreadPoolTimer ^ source) {
-                CoreApplication::MainView->Dispatcher->RunAsync(
-                    CoreDispatcherPriority::Normal,
-                    ref new DispatchedHandler([timer]() { timer->invokeScriptCallback(); }));
+        timer->setTimer(ThreadPoolTimer::CreatePeriodicTimer(
+            ref new TimerElapsedHandler([timerWeakReference](ThreadPoolTimer ^ source) {
+                CoreApplication::MainView->Dispatcher->RunAsync(CoreDispatcherPriority::Normal,
+                                                                ref new DispatchedHandler([timerWeakReference]() {
+                                                                    if (auto timer = timerWeakReference.lock()) {
+                                                                        timer->invokeScriptCallback();
+                                                                    }
+                                                                }));
             }),
-            period);
+            period));
     } else {
-        timer->m_thredpoolTimer = ThreadPoolTimer::CreateTimer(
-            ref new TimerElapsedHandler([timer](ThreadPoolTimer ^ source) {
-                CoreApplication::MainView->Dispatcher->RunAsync(
-                    CoreDispatcherPriority::Normal,
-                    ref new DispatchedHandler([timer]() { timer->invokeScriptCallback(); }));
+        timer->setTimer(ThreadPoolTimer::CreateTimer(
+            ref new TimerElapsedHandler([timerWeakReference](ThreadPoolTimer ^ source) {
+                CoreApplication::MainView->Dispatcher->RunAsync(CoreDispatcherPriority::Normal,
+                                                                ref new DispatchedHandler([timerWeakReference]() {
+                                                                    if (auto timer = timerWeakReference.lock()) {
+                                                                        timer->invokeScriptCallback();
+                                                                    }
+                                                                }));
             }),
-            period);
+            period));
     }
 
     JsValueRef retValue;

@@ -24,11 +24,11 @@ class HoloJsScriptHost;
 class ScriptContext {
    public:
     ScriptContext() {}
-    ~ScriptContext() { close(); }
+    ~ScriptContext() { destroy(); }
 
     long initialize();
 
-    long close();
+    long destroy();
 
     void setView(std::shared_ptr<IHoloJsView> view) { m_view = view; }
     void setHost(HoloJs::HoloJsScriptHost* host) { m_host = host; }
@@ -43,6 +43,9 @@ class ScriptContext {
     void reverseWebGlWindingOrder() { m_webglProjections->isContextFrontFaceSwitched = true; }
 
     std::shared_ptr<ResourceManagement::ResourceManager>& getResourceManager() { return m_resourceManager; }
+
+    void asyncWorkerStarted() { m_asyncWorkerCount++; }
+    void asyncWorkerExited() { m_asyncWorkerCount--; }
 
    private:
     std::shared_ptr<ResourceManagement::ResourceManager> m_resourceManager;
@@ -72,6 +75,8 @@ class ScriptContext {
     JsSourceContext m_jsSourceContext = 0;
 
     JsValueRef m_nativeInterfaceRef = JS_INVALID_REFERENCE;
+
+    std::atomic<unsigned int> m_asyncWorkerCount = 0;
 };
 
 }  // namespace HoloJs

@@ -23,9 +23,6 @@ namespace HoloJs.DotNet
         public static extern int holoJsScriptHost_initialize(IntPtr scriptHost, ref ViewConfiguration viewConfig);
 
         [DllImport("libholojs-native.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int holoJsScriptHost_start(IntPtr scriptHost);
-
-        [DllImport("libholojs-native.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         public static extern int holoJsScriptHost_start(IntPtr scriptHost, string script);
 
         [DllImport("libholojs-native.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
@@ -88,14 +85,6 @@ namespace HoloJs.DotNet
         public void SetViewWindow(IntPtr windowHandle)
         {
             HoloJsScriptHostInterop.holoJsScriptHost_setViewWindow(NativeHoloJsScriptHost, windowHandle);
-        }
-
-        public void Start()
-        {
-            if (HoloJsScriptHostInterop.holoJsScriptHost_start(NativeHoloJsScriptHost) < 0)
-            {
-                throw new Exception("failed to start");
-            }
         }
 
         public void StartUri(string appUri)

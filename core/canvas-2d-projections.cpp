@@ -75,7 +75,7 @@ long CanvasProjections::initialize()
 
 JsValueRef CanvasProjections::createContext2D(JsValueRef* arguments, unsigned short argumentCount)
 {
-    return m_resourceManager->objectToDirectExternal(getPlatform()->createCanvasRenderContext2D(), ObjectType::Blob);
+    return m_resourceManager->objectToDirectExternal(getPlatform()->createCanvasRenderContext2D(), ObjectType::ICanvasRenderContext2D);
 }
 
 JsValueRef CanvasProjections::drawImage(JsValueRef* arguments, unsigned short argumentCount)
