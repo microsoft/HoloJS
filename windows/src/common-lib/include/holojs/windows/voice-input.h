@@ -12,12 +12,14 @@ class VoiceInput {
    public:
     VoiceInput(HoloJs::IHoloJsScriptHostInternal* host) : m_host(host) {}
 
-    HRESULT start(std::vector<std::wstring> commands);
+    HRESULT start();
     HRESULT stop();
     void setOnResultsCallback(std::function<void(std::wstring command, double confidence)> callback)
     {
         m_callback = callback;
     }
+
+    void setVoiceCommands(std::vector<std::wstring> commands) { m_voiceCommands = commands; }
 
    private:
     Windows::Media::SpeechRecognition::SpeechRecognizer ^ m_speechRecognizer;
@@ -33,6 +35,8 @@ class VoiceInput {
     std::function<void(std::wstring command, double confidence)> m_callback;
 
     HoloJs::IHoloJsScriptHostInternal* m_host;
+
+    std::vector<std::wstring> m_voiceCommands;
 };
 
 }  // namespace Win32

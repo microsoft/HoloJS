@@ -106,7 +106,7 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
     void onSpeechRecognized(std::wstring command, double confidence);
 
     std::unique_ptr<HoloJs::Platforms::Win32::QrScanner> m_qrScanner;
-    void onQrRecognized(std::wstring text);
+    void onQrRecognized(bool succes, std::wstring text);
 
     HoloJs::IWindow* m_windowElement;
     HoloJs::IHoloJsScriptHostInternal* m_host;

@@ -61,17 +61,13 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
     virtual long createExecutionContext();
     virtual long executeLoadedApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
+	virtual long showHostRenderedElement(HoloJs::HostRenderedElements element);
+
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;
     bool m_debugRequested;
 
-    enum class HostRenderedElements
-    {
-        None,
-        LoadingAnimation,
-        LoadingFailed,
-        NothingLoaded
-    };
+    ViewConfiguration m_viewConfiguration;
 
     //{icon : "\ue007", text : "That link did not work", iconX : 250, iconY : 150, textX : 100, textY : 250}
     HostRenderedElements m_hostRenderedElements = HostRenderedElements::None;

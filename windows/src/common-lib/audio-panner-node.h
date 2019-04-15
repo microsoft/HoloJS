@@ -25,10 +25,7 @@ class PannerNode : public HoloJs::IPannerNode, public AudioNode {
 
     virtual void Release() {}
 
-    virtual JsValueRef connect(IAudioNode* destination)
-    {
-        return AudioNode::audioNodeConnect(destination);
-    }
+    virtual JsValueRef connect(IAudioNode* destination) { return AudioNode::audioNodeConnect(destination); }
 
     virtual JsValueRef disconnect() { return AudioNode::audioNodeDisconnect(); }
 
@@ -36,85 +33,93 @@ class PannerNode : public HoloJs::IPannerNode, public AudioNode {
     virtual void setOrientation(float x, float y, float z) { m_pannerNode->setOrientation(lab::FloatPoint3D(x, y, z)); }
     virtual void setVelocity(float x, float y, float z) { m_pannerNode->setVelocity(x, y, z); }
 
-	virtual void setRefDistance(float refDistance) { m_pannerNode->setRefDistance(refDistance); }
-	virtual float getRefDistance() { return m_pannerNode->refDistance(); }
+    virtual void setRefDistance(float refDistance) { m_pannerNode->setRefDistance(refDistance); }
+    virtual float getRefDistance() { return m_pannerNode->refDistance(); }
 
-	virtual std::wstring getPanningModel() { 
-		switch (m_pannerNode->panningModel())
-		{
-		case lab::PanningMode::HRTF:
-			return L"HRTF";
+    virtual std::wstring getPanningModel()
+    {
+        // TODO: use m_pannerNode->panningModel() after LabSound fix for https://github.com/LabSound/LabSound/issues/120
+        switch (m_panningMode) {
+            case lab::PanningMode::HRTF:
+                return L"HRTF";
 
-		case lab::PanningMode::EQUALPOWER:
-			return L"equalpower";
+            case lab::PanningMode::EQUALPOWER:
+                return L"equalpower";
 
-		default:
-			return L"";
-		};
-	}
+            default:
+                return L"";
+        };
 
-	virtual void setPanningModel(const std::wstring& panningModel) {
-		if (_wcsicmp(panningModel.c_str(), L"HRTF") == 0) {
-			m_pannerNode->setPanningModel(lab::PanningMode::HRTF);
-		}
-		else if (_wcsicmp(panningModel.c_str(), L"equalpower") == 0) {
-			m_pannerNode->setPanningModel(lab::PanningMode::EQUALPOWER);
-		}
-	}
+        return L"";
+    }
 
-	virtual std::wstring getDistanceModel() {
-		switch (m_pannerNode->distanceModel()) {
-		case 0:
-			return L"linear";
+    virtual void setPanningModel(const std::wstring& panningModel)
+    {
+        if (_wcsicmp(panningModel.c_str(), L"HRTF") == 0) {
+            m_pannerNode->setPanningModel(lab::PanningMode::HRTF);
+            // TODO: Remove this after fix for https://github.com/LabSound/LabSound/issues/120
+            m_panningMode = lab::PanningMode::HRTF;
+        } else if (_wcsicmp(panningModel.c_str(), L"equalpower") == 0) {
+            m_pannerNode->setPanningModel(lab::PanningMode::EQUALPOWER);
+            // TODO: Remove this after firx for https://github.com/LabSound/LabSound/issues/120
+            m_panningMode = lab::PanningMode::EQUALPOWER;
+        }
+    }
 
-		case 1:
-			return L"inverse";
+    virtual std::wstring getDistanceModel()
+    {
+        switch (m_pannerNode->distanceModel()) {
+            case lab::PannerNode::DistanceModel::LINEAR_DISTANCE:
+                return L"linear";
 
-		case 2:
-			return L"exponential";
+            case lab::PannerNode::DistanceModel::INVERSE_DISTANCE:
+                return L"inverse";
 
-		default:
-			return L"";
-		}
-	}
+            case lab::PannerNode::DistanceModel::EXPONENTIAL_DISTANCE:
+                return L"exponential";
 
-	virtual void setDistanceModel(const std::wstring& distanceModel) {
-		if (_wcsicmp(distanceModel.c_str(), L"linear")) {
-			m_pannerNode->setDistanceModel(0);
-		}
-		else if (_wcsicmp(distanceModel.c_str(), L"inverse")) {
-			m_pannerNode->setDistanceModel(1);
-		}
-		else if (_wcsicmp(distanceModel.c_str(), L"exponential")) {
-			m_pannerNode->setDistanceModel(2);
-		}
-	}
+            default:
+                return L"";
+        }
+    }
 
-	virtual IAudioParam* positionX() { return new AudioParam(m_context, m_pannerNode->positionX()); }
-	virtual IAudioParam* positionY() { return new AudioParam(m_context, m_pannerNode->positionY()); }
-	virtual IAudioParam* positionZ() { return new AudioParam(m_context, m_pannerNode->positionZ()); }
+    virtual void setDistanceModel(const std::wstring& distanceModel)
+    {
+        if (_wcsicmp(distanceModel.c_str(), L"linear")) {
+            m_pannerNode->setDistanceModel(lab::PannerNode::DistanceModel::LINEAR_DISTANCE);
+        } else if (_wcsicmp(distanceModel.c_str(), L"inverse")) {
+            m_pannerNode->setDistanceModel(lab::PannerNode::DistanceModel::INVERSE_DISTANCE);
+        } else if (_wcsicmp(distanceModel.c_str(), L"exponential")) {
+            m_pannerNode->setDistanceModel(lab::PannerNode::DistanceModel::EXPONENTIAL_DISTANCE);
+        }
+    }
 
-	virtual IAudioParam* orientationX() { return new AudioParam(m_context, m_pannerNode->orientationX()); }
-	virtual IAudioParam* orientationY() { return new AudioParam(m_context, m_pannerNode->orientationY()); }
-	virtual IAudioParam* orientationZ() { return new AudioParam(m_context, m_pannerNode->orientationZ()); }
+    virtual IAudioParam* positionX() { return new AudioParam(m_context, m_pannerNode->positionX()); }
+    virtual IAudioParam* positionY() { return new AudioParam(m_context, m_pannerNode->positionY()); }
+    virtual IAudioParam* positionZ() { return new AudioParam(m_context, m_pannerNode->positionZ()); }
 
-	virtual float getMaxDistance() { return m_pannerNode->maxDistance(); }
-	virtual void setMaxDistance(float maxDistance) { return m_pannerNode->setMaxDistance(maxDistance); }
+    virtual IAudioParam* orientationX() { return new AudioParam(m_context, m_pannerNode->orientationX()); }
+    virtual IAudioParam* orientationY() { return new AudioParam(m_context, m_pannerNode->orientationY()); }
+    virtual IAudioParam* orientationZ() { return new AudioParam(m_context, m_pannerNode->orientationZ()); }
 
-	virtual float getRolloffFactor() { return m_pannerNode->rolloffFactor(); }
-	virtual void setRolloffFactor(float rolloffFactor) { return m_pannerNode->setRolloffFactor(rolloffFactor); }
+    virtual float getMaxDistance() { return m_pannerNode->maxDistance(); }
+    virtual void setMaxDistance(float maxDistance) { return m_pannerNode->setMaxDistance(maxDistance); }
 
-	virtual float getConeInnerAngle() { return m_pannerNode->coneInnerAngle(); }
-	virtual void setConeInnerAngle(float innerAngle) { return m_pannerNode->setConeInnerAngle(innerAngle); }
+    virtual float getRolloffFactor() { return m_pannerNode->rolloffFactor(); }
+    virtual void setRolloffFactor(float rolloffFactor) { return m_pannerNode->setRolloffFactor(rolloffFactor); }
 
-	virtual float getConeOuterAngle() { return m_pannerNode->coneOuterAngle(); }
-	virtual void setConeOuterAngle(float outerAngle) { return m_pannerNode->setConeOuterAngle(outerAngle); }
+    virtual float getConeInnerAngle() { return m_pannerNode->coneInnerAngle(); }
+    virtual void setConeInnerAngle(float innerAngle) { return m_pannerNode->setConeInnerAngle(innerAngle); }
 
-	virtual float getConeOuterGain() { return m_pannerNode->coneOuterGain(); }
-	virtual void setConeOuterGain(float outerGain) { return m_pannerNode->setConeOuterGain(outerGain); }
+    virtual float getConeOuterAngle() { return m_pannerNode->coneOuterAngle(); }
+    virtual void setConeOuterAngle(float outerAngle) { return m_pannerNode->setConeOuterAngle(outerAngle); }
+
+    virtual float getConeOuterGain() { return m_pannerNode->coneOuterGain(); }
+    virtual void setConeOuterGain(float outerGain) { return m_pannerNode->setConeOuterGain(outerGain); }
 
    private:
     std::shared_ptr<lab::AudioContext> m_context;
+    lab::PanningMode m_panningMode;
     std::shared_ptr<lab::PannerNode> m_pannerNode;
 };
 }  // namespace WebAudio

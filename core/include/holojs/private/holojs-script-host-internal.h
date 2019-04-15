@@ -8,6 +8,8 @@
 #include <memory>
 namespace HoloJs {
 
+enum class HostRenderedElements { None, LoadingAnimation, LoadingFailed, NothingLoaded, QrScanGuide };
+
 class IHoloJsScriptHostInternal : public IHoloJsScriptHost {
    public:
     virtual HoloJs::IWindow* getWindowElement() = 0;
@@ -25,6 +27,8 @@ class IHoloJsScriptHostInternal : public IHoloJsScriptHost {
 
     virtual long createExecutionContext() = 0;
     virtual long executeLoadedApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app) = 0;
+
+	virtual long showHostRenderedElement(HoloJs::HostRenderedElements element) = 0;
 };
 
 }  // namespace HoloJs

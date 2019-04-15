@@ -17,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto configuration = HoloJs::ViewConfiguration();
     scriptHost->initialize(configuration);
 
-	scriptHost->startUri(L"http://holojs.azurewebsites.net/v7/vr-cubes.xrs");
-    //scriptHost->startWithEmptyApp();
+	//scriptHost->startUri(L"C:\\Users\\crispet\\Desktop\\qr-guide\\qr-guide.xrs");
+    scriptHost->startWithEmptyApp();
     return 0;
 }

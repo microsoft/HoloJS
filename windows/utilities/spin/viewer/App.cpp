@@ -18,8 +18,13 @@ int main(Platform::Array<Platform::String^>^)
 {
 	auto scriptHost = ref new HoloJs::UWP::HoloJsScriptHost();
     auto config = ref new HoloJs::UWP::ViewConfiguration();
-    config->enableVoiceCommands();
-    config->enableQrCodeNavigation();
+
+    std::wstring deviceFamily = Windows::System::Profile::AnalyticsInfo::VersionInfo->DeviceFamily->Data();
+    if (_wcsicmp(deviceFamily.c_str(), L"Windows.Holographic") == 0) {
+        config->enableVoiceCommands();
+        config->enableQrCodeNavigation();
+    }
+
     if (scriptHost->initialize(config)) {
         scriptHost->startWithEmptyApp();
     }

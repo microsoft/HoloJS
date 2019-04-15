@@ -25,6 +25,13 @@ using namespace HoloJs::AppModel;
 
 long long QueuedAppStartWorkItem::QueuedAppStartWorkItemId = 1000;
 
+enum class VoiceCommandIntent { LoadOtherApp };
+
+map<wstring, VoiceCommandIntent> g_voiceCommands = {{L"scan", VoiceCommandIntent::LoadOtherApp},
+                                                    {L"load another app", VoiceCommandIntent::LoadOtherApp},
+                                                    {L"scan qr code", VoiceCommandIntent::LoadOtherApp},
+                                                    {L"load", VoiceCommandIntent::LoadOtherApp}};
+
 HoloJsUWPApp::~HoloJsUWPApp() {}
 
 HoloJsUWPApp::HoloJsUWPApp() : m_windowClosed(false), m_windowVisible(true) {}
@@ -143,17 +150,22 @@ HRESULT HoloJsUWPApp::initializeRenderingResources()
         vector<wstring> commands;
 
         if (m_viewConfiguration.enableQrCodeNavigation) {
-            commands.push_back(L"scan");
+            for (const auto& command : g_voiceCommands) {
+                if (command.second == VoiceCommandIntent::LoadOtherApp) {
+                    commands.push_back(command.first);
+                }
+            }
         }
 
         if (commands.size() > 0) {
-            m_voiceInput->start(commands);
+            m_voiceInput->setVoiceCommands(commands);
+            m_voiceInput->start();
         }
     }
 
     if (m_viewConfiguration.enableQrCodeNavigation) {
         m_qrScanner = make_unique<HoloJs::Platforms::Win32::QrScanner>(m_host);
-        m_qrScanner->setOnResultsCallback([this](wstring result) { onQrRecognized(result); });
+        m_qrScanner->setOnResultsCallback([this](bool success, wstring result) { onQrRecognized(success, result); });
     }
 
     return S_OK;
@@ -299,7 +311,8 @@ void HoloJsUWPApp::Run()
     initializeRenderingResources();
 
     while (!m_windowClosed && !m_closeRequested) {
-        const auto viewReady = !m_mixedRealityContext || (m_mixedRealityContext && m_mixedRealityContext->isCameraAvailable());
+        const auto viewReady =
+            !m_mixedRealityContext || (m_mixedRealityContext && m_mixedRealityContext->isCameraAvailable());
 
         if (viewReady) {
             executeOneForegroundWorkItem();
@@ -337,21 +350,22 @@ void HoloJsUWPApp::Run()
 
 void HoloJsUWPApp::onSpeechRecognized(std::wstring command, double confidence)
 {
-    if (_wcsicmp(command.c_str(), L"scan") == 0) {
-        OutputDebugString(L"Scanning QR code");
-        m_qrScanner->tryDecode();
+    auto match = g_voiceCommands.find(command);
+    if (match != g_voiceCommands.end()) {
+        if (match->second == VoiceCommandIntent::LoadOtherApp) {
+            m_host->showHostRenderedElement(HoloJs::HostRenderedElements::QrScanGuide);
+            m_qrScanner->tryDecode();
+        }
     }
 }
 
-void HoloJsUWPApp::onQrRecognized(std::wstring text)
+void HoloJsUWPApp::onQrRecognized(bool success, std::wstring text)
 {
-    m_dispatcher->RunAsync(CoreDispatcherPriority::Normal, ref new DispatchedHandler([this, text]() {
-                               if (m_activeApp) {
-                                   stopApp();
-                               }
-
-                               m_host->executeUri(text.c_str());
-                           }));
+    if (success) {
+        m_host->executeUri(text.c_str());
+    } else {
+        m_host->showHostRenderedElement(HoloJs::HostRenderedElements::NothingLoaded);
+    }
 }
 
 // Required for IFrameworkView.
@@ -419,6 +433,7 @@ void HoloJsUWPApp::OnResuming(Platform::Object ^ sender, Platform::Object ^ args
     // does not occur if the app was previously terminated.
 
     // Insert your code here.
+    m_voiceInput->start();
 }
 
 // Window event handlers.

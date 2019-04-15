@@ -9,8 +9,17 @@ using namespace Windows::Media::SpeechRecognition;
 using namespace Windows::Foundation;
 using namespace std;
 
-HRESULT VoiceInput::start(vector<wstring> commands)
+HRESULT VoiceInput::start()
 {
+    if (m_voiceCommands.size() == 0) {
+        return S_OK;
+    }
+
+    if (m_speechRecognizer != nullptr) {
+        m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated -= m_resultGeneratedToken;
+        m_speechRecognizer = nullptr;
+    }
+
     m_speechRecognizer = ref new SpeechRecognizer();
 
     m_resultGeneratedToken = m_speechRecognizer->ContinuousRecognitionSession->ResultGenerated +=
@@ -19,11 +28,11 @@ HRESULT VoiceInput::start(vector<wstring> commands)
             [this](SpeechContinuousRecognitionSession ^ session,
                    SpeechContinuousRecognitionResultGeneratedEventArgs ^ args) { onResultGenerated(session, args); });
 
-    create_task([this, commands]() {
+    create_task([this]() {
         Platform::Collections::Vector<Platform::String ^> ^ speechCommandList =
             ref new Platform::Collections::Vector<Platform::String ^>();
-        for (size_t i = 0; i < commands.size(); i++) {
-            speechCommandList->Append(Platform::StringReference(commands[i].c_str()));
+        for (const auto& voiceCommand : m_voiceCommands) {
+            speechCommandList->Append(Platform::StringReference(voiceCommand.c_str()));
         }
 
         SpeechRecognitionListConstraint ^ spConstraint = ref new SpeechRecognitionListConstraint(speechCommandList);

@@ -55,6 +55,8 @@ long HoloJsScriptHost::initialize(ViewConfiguration viewConfig)
 {
     RETURN_IF_TRUE(m_runningState != HostState::NotInitialized);
 
+    m_viewConfiguration = viewConfig;
+
     m_view.reset(HoloJs::getPlatform()->makeView(viewConfig));
     m_view->setIcon(m_viewIcon);
     m_view->setTitle(m_viewTitle);
@@ -97,15 +99,14 @@ long HoloJsScriptHost::initializeHostRenderedElement()
     if (m_hostRenderedElements == HostRenderedElements::LoadingAnimation) {
         RETURN_IF_FAILED(executeImmediate(L"renderLoadingAnimation();", L"inline"));
     } else if (m_hostRenderedElements == HostRenderedElements::LoadingFailed) {
-        RETURN_IF_FAILED(
-            executeImmediate(L"renderMessageCube({icon : '\ue007', text : 'That link did not work', iconX : 250, iconY "
-                             L": 150, textX : 100, textY : 250});",
-                             L"inline"));
+        RETURN_IF_FAILED(executeImmediate(L"loadingFailedMessage();", L"inline"));
     } else if (m_hostRenderedElements == HostRenderedElements::NothingLoaded) {
-        RETURN_IF_FAILED(
-            executeImmediate(L"renderMessageCube({icon : '\uf4bf', text : 'There is nothing here. Open a\\r\\nXRSX file or link to get started', iconX : 250, iconY "
-                             L": 150, textX : 10, textY : 250});",
-                             L"inline"));
+        if (m_view)
+            RETURN_IF_FAILED(executeImmediate(m_viewConfiguration.enableQrCodeNavigation ? L"getStartedMessageWithQr();"
+                                                                                         : L"getStartedMessageNoQr();",
+                                              L"inline"));
+    } else if (m_hostRenderedElements == HostRenderedElements::QrScanGuide) {
+        RETURN_IF_FAILED(executeImmediate(L"renderQRScanGuide();", L"inline"));
     }
 
     return S_OK;
@@ -257,6 +258,12 @@ long HoloJsScriptHost::executeUri(const wchar_t* appUrl)
     });
 
     return HoloJs::Success;
+}
+
+long HoloJsScriptHost::showHostRenderedElement(HoloJs::HostRenderedElements element)
+{
+    showInternalUI(element);
+    return S_OK;
 }
 
 long HoloJsScriptHost::executePackageFromHandle(void* platformPackageHandle)

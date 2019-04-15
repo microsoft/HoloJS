@@ -13,6 +13,8 @@ STDAPI getSharedDevice(void** deviceUnknown);
 
 STDAPI getCanvasTextFormat(void** canvasTextFormatUnknown);
 
+STDAPI getCanvasStrokeStyle(void** canvasStrokeStyleUnknown);
+
 STDAPI getCanvasLinearGradientBrush(void* rendererUnknown,
                                     Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop* stops,
                                     unsigned int stopCount,
@@ -25,3 +27,9 @@ STDAPI createCanvasBitmapFromBytes(void* rendererUnknown,
                                    int height,
                                    Windows::Graphics::DirectX::DirectXPixelFormat pixelFormat,
                                    void** canvasBitmapUnknown);
+
+STDAPI getCanvasPathBuilder(void* sessionUnknown, void** canvasPathBuilderUnknown);
+
+STDAPI getCanvasTextLayout(void* sessionUnknown, const wchar_t* text, void* canvasTextFormatUnknown, float width, float height, void** canvasPathBuilderUnknown);
+
+STDAPI canvasGeometryCreatePath(void* pathUnknown, void** canvasGeometryUnknown);

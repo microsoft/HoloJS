@@ -25,6 +25,53 @@ using namespace Windows::Security::Cryptography;
 using namespace Windows::Storage::Streams;
 using namespace std;
 
+CanvasLinearGradientBrush ^
+    getCanvasLinearGradientBrush(void* rendererUnknown,
+                                 Microsoft::Graphics::Canvas::Brushes::CanvasGradientStop* stops,
+                                 unsigned int stopCount) {
+        void* brushPtr;
+        RETURN_NULL_IF_FAILED(getCanvasLinearGradientBrush(rendererUnknown, stops, stopCount, &brushPtr));
+        return safe_cast<CanvasLinearGradientBrush ^>(reinterpret_cast<Platform::Object ^>(brushPtr));
+    }
+
+    CanvasTextFormat
+    ^
+    getCanvasTextFormat() {
+        void* formatRaw;
+        RETURN_NULL_IF_FAILED(getCanvasTextFormat(&formatRaw));
+
+        return safe_cast<CanvasTextFormat ^>(reinterpret_cast<Platform::Object ^>(formatRaw));
+    }
+
+	CanvasTextLayout ^ getCanvasTextLayout(CanvasDrawingSession^ session,
+		const wchar_t* text,
+		CanvasTextFormat^ canvasTextFormat,
+		float width,
+		float height)
+	{
+		void* sessionUnknown = reinterpret_cast<IInspectable*>(session);
+		void* canvasTextFormatUnknown = reinterpret_cast<IInspectable*>(canvasTextFormat);
+
+		void* canvasTextLayoutUnknown = nullptr;
+		RETURN_NULL_IF_FAILED(getCanvasTextLayout(sessionUnknown, text, canvasTextFormatUnknown, width, height, &canvasTextLayoutUnknown));
+		return safe_cast<CanvasTextLayout ^>(reinterpret_cast<Platform::Object ^>(canvasTextLayoutUnknown));
+	}
+
+	Geometry::CanvasStrokeStyle^ getCanvasStrokeStyle()
+	{
+		void* canvasStrokeStyleUnknown;
+		RETURN_NULL_IF_FAILED(getCanvasStrokeStyle(&canvasStrokeStyleUnknown));
+		return safe_cast<Geometry::CanvasStrokeStyle ^>(reinterpret_cast<Platform::Object ^>(canvasStrokeStyleUnknown));
+	}
+
+	Geometry::CanvasGeometry ^ canvasGeometryCreatePath(Geometry::CanvasPathBuilder^ path)
+	{
+		void* pathUnknown = reinterpret_cast<IInspectable*>(path);
+		void *canvasGeometryUnknown;
+		RETURN_NULL_IF_FAILED(canvasGeometryCreatePath(pathUnknown, &canvasGeometryUnknown));
+		return safe_cast<Geometry::CanvasGeometry ^>(reinterpret_cast<Platform::Object ^>(canvasGeometryUnknown));
+	}
+
 HRESULT parseColor(JsValueRef objRef, Color& color)
 {
     JsValueRef redRef;
@@ -225,9 +272,9 @@ JsValueRef RenderContext2D::fillRectGradient(JsValueRef* arguments, unsigned sho
         RETURN_INVALID_REF_IF_FAILED(parseColor(colorRef, stops[i].Color));
     }
 
-    void* brushPtr;
-    RETURN_INVALID_REF_IF_FAILED(getCanvasLinearGradientBrush(m_rendererPtr, stops->Data, stopsLength, &brushPtr));
-    auto brush = safe_cast<CanvasLinearGradientBrush ^>(reinterpret_cast<Platform::Object ^>(brushPtr));
+    auto brush = getCanvasLinearGradientBrush(m_rendererPtr, stops->Data, stopsLength);
+    RETURN_INVALID_REF_IF_NULL(brush);
+
     brush->StartPoint = start;
     brush->EndPoint = end;
     brush->Opacity = m_globalOpacity;
@@ -270,10 +317,9 @@ JsValueRef RenderContext2D::fillText(JsValueRef* arguments, unsigned short argum
 
     const int alignment = ScriptHostUtilities::GLintFromJsRef(arguments[6]);
 
-    void* formatRaw;
-    RETURN_INVALID_REF_IF_FAILED(getCanvasTextFormat(&formatRaw));
+    auto format = getCanvasTextFormat();
+    RETURN_INVALID_REF_IF_NULL(format);
 
-    auto format = safe_cast<CanvasTextFormat ^>(reinterpret_cast<Platform::Object ^>(formatRaw));
     format->FontFamily = ref new Platform::String(fontFamily.c_str());
     if (fontWeight == L"bold") {
         format->FontWeight = Windows::UI::Text::FontWeights::Bold;
@@ -315,12 +361,13 @@ JsValueRef RenderContext2D::measureText(JsValueRef* arguments, unsigned short ar
     std::wstring fontFamily;
     ScriptHostUtilities::GetString(arguments[4], fontFamily);
 
-    CanvasTextFormat ^ format = ref new CanvasTextFormat();
+    auto format = getCanvasTextFormat();
+    RETURN_INVALID_REF_IF_NULL(format);
+
     format->FontFamily = ref new Platform::String(fontFamily.c_str());
     format->FontSize = static_cast<float>(fontSize);
     format->WordWrapping = Microsoft::Graphics::Canvas::Text::CanvasWordWrapping::NoWrap;
-    CanvasTextLayout ^ layout =
-        ref new CanvasTextLayout(m_session, ref new Platform::String(text.c_str()), format, 0, 0);
+	CanvasTextLayout ^ layout = getCanvasTextLayout(m_session, text.c_str(), format, 0.0, 0.0);
 
     JsValueRef returnValue;
     RETURN_INVALID_REF_IF_JS_ERROR(JsDoubleToNumber(layout->DrawBounds.Width, &returnValue));
@@ -331,7 +378,10 @@ JsValueRef RenderContext2D::beginPath()
 {
     RETURN_INVALID_REF_IF_FALSE(m_isInitialized);
 
-    m_pathBuilder = ref new Geometry::CanvasPathBuilder(m_session);
+    void* sessionUnknown = reinterpret_cast<IInspectable*>(m_session);
+    void* pathBuilderUnknown;
+    RETURN_INVALID_REF_IF_FAILED(getCanvasPathBuilder(sessionUnknown, &pathBuilderUnknown));
+    m_pathBuilder = safe_cast<Geometry::CanvasPathBuilder ^>(reinterpret_cast<Platform::Object ^>(pathBuilderUnknown));
     m_figurePresent = false;
 
     return JS_INVALID_REFERENCE;
@@ -532,7 +582,9 @@ JsValueRef RenderContext2D::fill(JsValueRef* arguments, unsigned short argumentC
     Color cm = color;
     cm.A = (unsigned char)(m_globalOpacity * cm.A);
 
-    Geometry::CanvasGeometry ^ geometry = Geometry::CanvasGeometry::CreatePath(m_pathBuilder);
+    Geometry::CanvasGeometry ^ geometry = canvasGeometryCreatePath(m_pathBuilder);
+	RETURN_INVALID_REF_IF_NULL(geometry);
+
     m_session->FillGeometry(geometry, cm);
 
     m_session->Transform = tmp;
@@ -594,9 +646,11 @@ JsValueRef RenderContext2D::fillGradient(JsValueRef* arguments, unsigned short a
     float3x2 tmp = m_session->Transform;
     m_session->Transform = float3x2::identity();
 
-    Geometry::CanvasGeometry ^ geometry = Geometry::CanvasGeometry::CreatePath(m_pathBuilder);
+    Geometry::CanvasGeometry ^ geometry = canvasGeometryCreatePath(m_pathBuilder);
+	RETURN_INVALID_REF_IF_NULL(geometry);
 
-    auto brush = ref new CanvasLinearGradientBrush(m_renderer, stops);
+    auto brush = getCanvasLinearGradientBrush(m_rendererPtr, stops->Data, stopsLength);
+    RETURN_INVALID_REF_IF_NULL(brush);
     brush->StartPoint = start;
     brush->EndPoint = end;
     m_session->FillGeometry(geometry, brush);
@@ -629,9 +683,11 @@ JsValueRef RenderContext2D::stroke(JsValueRef* arguments, unsigned short argumen
     float3x2 tmp = m_session->Transform;
     m_session->Transform = float3x2::identity();
 
-    Geometry::CanvasGeometry ^ geometry = Geometry::CanvasGeometry::CreatePath(m_pathBuilder);
+    Geometry::CanvasGeometry ^ geometry = canvasGeometryCreatePath(m_pathBuilder);
+	RETURN_INVALID_REF_IF_NULL(geometry);
 
-    Geometry::CanvasStrokeStyle ^ style = ref new Geometry::CanvasStrokeStyle();
+    Geometry::CanvasStrokeStyle ^ style = getCanvasStrokeStyle();
+	RETURN_INVALID_REF_IF_NULL(style);
     style->StartCap = m_capStyle;
     style->EndCap = m_capStyle;
     style->LineJoin = m_joinStyle;
@@ -700,9 +756,12 @@ JsValueRef RenderContext2D::strokeGradient(JsValueRef* arguments, unsigned short
     float3x2 tmp = m_session->Transform;
     m_session->Transform = float3x2::identity();
 
-    Geometry::CanvasGeometry ^ geometry = Geometry::CanvasGeometry::CreatePath(m_pathBuilder);
+    Geometry::CanvasGeometry ^ geometry = canvasGeometryCreatePath(m_pathBuilder);
+	RETURN_INVALID_REF_IF_NULL(geometry);
 
-    auto brush = ref new CanvasLinearGradientBrush(m_renderer, stops);
+    auto brush = getCanvasLinearGradientBrush(m_rendererPtr, stops->Data, stopsLength);
+    RETURN_INVALID_REF_IF_NULL(brush);
+
     brush->StartPoint = start;
     brush->EndPoint = end;
     m_session->DrawGeometry(geometry, brush);
