@@ -132,11 +132,6 @@
                         Content="&#xf4bf;" FontFamily="Segoe MDL2 Assets" Width="40" Height="40" Margin="10, 5, 10, 5"
                         Click="RunAppVR_Click" FontSize="18"/>
                     <Button
-                        x:Name="BrowserPreviewButton"
-                        IsEnabled="{Binding ElementName=_this, Path=AppLoaded}" 
-                        Content="&#xe12b;" FontFamily="Segoe MDL2 Assets" Width="40" Height="40" Margin="10, 5, 10, 5"
-                        Click="RunAppBrowser_Click"  FontSize="18"/>
-                    <Button
                         x:Name="RemoteConnectButton"
                         IsEnabled="{Binding ElementName=_this, Path=AppLoaded}" 
                         Content="&#xe88a;" FontFamily="Segoe MDL2 Assets" Width="40" Height="40" Margin="10, 5, 10, 5"

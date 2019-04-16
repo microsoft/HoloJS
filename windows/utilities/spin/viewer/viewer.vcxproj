@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\holojs.1.3.3-alpha\build\native\holojs.props" Condition="Exists('..\packages\holojs.1.3.3-alpha\build\native\holojs.props')" />
+  <Import Project="..\packages\holojs.1.3.4-alpha\build\native\holojs.props" Condition="Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -129,9 +129,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>viewer_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>6CD692F3350A160BE390AA9D5C31DC96CAEB98DF</PackageCertificateThumbprint>
-    <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+    <PackageCertificateKeyFile>viewer_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>9500CB9D1647BA2BFACC948D6FF923F89A440282</PackageCertificateThumbprint>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
@@ -321,20 +321,24 @@
     </AppxManifest>
     <None Include="packages.config" />
     <None Include="spin-package_TemporaryKey.pfx" />
+    <None Include="viewer_StoreKey.pfx" />
     <None Include="viewer_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\MeshContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ShaderGraphContentTask.targets" />
-    <Import Project="..\packages\holojs.1.3.3-alpha\build\native\holojs.targets" Condition="Exists('..\packages\holojs.1.3.3-alpha\build\native\holojs.targets')" />
+    <Import Project="..\packages\holojs.1.3.4-alpha\build\native\holojs.targets" Condition="Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\holojs.1.3.3-alpha\build\native\holojs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.3-alpha\build\native\holojs.props'))" />
-    <Error Condition="!Exists('..\packages\holojs.1.3.3-alpha\build\native\holojs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.3-alpha\build\native\holojs.targets'))" />
+    <Error Condition="!Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.4-alpha\build\native\holojs.props'))" />
+    <Error Condition="!Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.4-alpha\build\native\holojs.targets'))" />
   </Target>
 </Project>

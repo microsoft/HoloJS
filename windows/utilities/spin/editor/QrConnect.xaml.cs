@@ -46,13 +46,12 @@ namespace HoloJs.Spin
 
             QrImage.Source = bitmap;
 
-            EmbeddedUrl.NavigateUri = new Uri(url);
-            EmbeddedUrl.Inlines.Add(url);
+            UrlText.Text = "spin.exe --uri " + url;
         }
 
         private void CopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(EmbeddedUrl.NavigateUri.AbsoluteUri);
+            Clipboard.SetText(UrlText.Text);
         }
 
         private void EmbeddedUrl_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)

@@ -10,12 +10,12 @@
 
     <Grid>
         <StackPanel>
-            <Label Content="Create things for AR and VR devices using JavaScript in 6 steps:" FontSize="16" FontWeight="DemiBold"/>
+            <Label Content="Create VR or AR experiences using JavaScript:" FontSize="16" FontWeight="DemiBold"/>
             <Label Content="1. Click 'New'" FontSize="14" />
-            <Label Content="2. Pick a name, save location and WebGL framework for your thing" FontSize="14"/>
+            <Label Content="2. Pick a name, save location and WebGL framework" FontSize="14"/>
             <Label Content="3. Click 'Edit in Visual Studio Code'" FontSize="14"/>
             <Label Content="4. Change the JavaScript code to do what you want" FontSize="14"/>
-            <Label Content="5. Hit F5 in VS code and see the thing in your Windows Mixed Reality device" FontSize="14"/>
+            <Label Content="5. Hit F5 in VS code and experience it in a Windows Mixed Reality headset" FontSize="14"/>
         </StackPanel>
     </Grid>
 </Page>

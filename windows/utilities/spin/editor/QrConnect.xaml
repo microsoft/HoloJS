@@ -10,28 +10,33 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="3*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Label
-            FontSize="16" HorizontalAlignment="Center"
-            Content="Run the experience from this URL or scan the QR code on your HoloLens" />
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20">
             <TextBlock
-                VerticalAlignment="Center"
-                FontSize="16" HorizontalAlignment="Center" Grid.Row="2" >
-                <Hyperlink NavigateUri="http://www.google.com" RequestNavigate="EmbeddedUrl_RequestNavigate"  x:Name="EmbeddedUrl" >
-                </Hyperlink>
+                FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="To test the experience from another PC, run Spin Make on it with this command line:" />
+            <TextBlock 
+                    VerticalAlignment="Center" x:Name="UrlText" Text="asdfasdfsd" Margin="10, 0, 0, 0"
+                    FontSize="16" Grid.Row="2" >
             </TextBlock>
             <Button
-                Content="&#xe16d;" Margin="10, 0, 0, 0"
-                FontFamily="Segoe MDL2 Assets" Width="35" Height="35" x:Name="CopyToClipboard" Click="CopyToClipboard_Click"/>
+                    Content="&#xe16d;" Margin="10, 0, 0, 0"
+                    FontFamily="Segoe MDL2 Assets" Width="35" Height="35" x:Name="CopyToClipboard" Click="CopyToClipboard_Click"/>
         </StackPanel>
-        
+        <Label
+            FontSize="16" Grid.Row="2" Margin="20, 25, 0, 0"
+            Content="To test the experience on the HoloLens, run Spin View on the HoloLens and scan the QR code" />
+
         <Image
-            Grid.Row="3"
+            Grid.Row="4"
             x:Name="QrImage" Stretch="Uniform" StretchDirection="DownOnly"/>
+
+        <Label
+            FontSize="16" HorizontalAlignment="Center" Grid.Row="5" VerticalAlignment="Bottom" FontWeight="DemiBold"
+            Content="This is a test HTTP server. Do not use it in production environments. The URLs listed above only work on the local network." />
     </Grid>
 </Window>

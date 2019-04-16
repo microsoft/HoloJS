@@ -40,3 +40,6 @@ See http://holojs.azurewebsites.net/help/uwp-apps.html for more details.
 -------------------------------------------------------------------------------
 
 See http://holojs.azurewebsites.net/help for more details about JavaScript VR experiences with HoloJs.
+
+Changelog:
+1.3.4: Make the UWP library Microsoft Store compliant by replacing non-compliant APIs with accepted alternatives.
