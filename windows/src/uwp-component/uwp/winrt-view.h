@@ -9,7 +9,7 @@
 #include "holojs/private/timers.h"
 #include "holojs/windows/mixed-reality/mixed-reality-context.h"
 #include "holojs/windows/qr-scanner.h"
-#include "holojs/windows/voice-input.h"
+#include "holojs/windows/speech-recognizer.h"
 #include "winrt-timers-implementation.h"
 #include <exception>
 #include <memory>
@@ -102,7 +102,7 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
     std::shared_ptr<MixedReality::MixedRealityContext> m_mixedRealityContext;
     std::unique_ptr<MixedReality::Input::SpatialInput> m_spatialInput;
 
-    std::unique_ptr<HoloJs::Platforms::Win32::VoiceInput> m_voiceInput;
+    std::unique_ptr<HoloJs::Platforms::Win32::SpeechRecognizer> m_voiceInput;
     void onSpeechRecognized(std::wstring command, double confidence);
 
     std::unique_ptr<HoloJs::Platforms::Win32::QrScanner> m_qrScanner;

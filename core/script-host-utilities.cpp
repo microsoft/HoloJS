@@ -25,6 +25,14 @@ long ScriptHostUtilities::SetJsProperty(JsValueRef& parentObject, const std::wst
     return SetJsProperty(parentObject, propertyName, propertyRef);
 }
 
+long ScriptHostUtilities::SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, double doubleProperty)
+{
+    JsValueRef propertyRef;
+    RETURN_IF_JS_ERROR(JsDoubleToNumber(doubleProperty, &propertyRef));
+    return SetJsProperty(parentObject, propertyName, propertyRef);
+}
+
+
 long ScriptHostUtilities::SetJsProperty(JsValueRef& parentObject,
                                         const std::wstring& propertyName,
                                         const std::wstring& stringProperty)

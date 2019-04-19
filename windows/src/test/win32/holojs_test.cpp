@@ -15,9 +15,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                                                           &HoloJs::DeleteHoloJsScriptHost);
 
 	auto configuration = HoloJs::ViewConfiguration();
+    //configuration.enableVoiceCommands = true;
     scriptHost->initialize(configuration);
 
-	//scriptHost->startUri(L"C:\\Users\\crispet\\Desktop\\qr-guide\\qr-guide.xrs");
-    scriptHost->startWithEmptyApp();
+	scriptHost->startUri(L"C:\\Users\\cristi\\Desktop\\voice-demo\\voice-demo.xrs");
+    //scriptHost->startWithEmptyApp();
     return 0;
 }

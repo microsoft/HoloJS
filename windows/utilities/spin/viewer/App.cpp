@@ -21,9 +21,10 @@ int main(Platform::Array<Platform::String^>^)
 
     std::wstring deviceFamily = Windows::System::Profile::AnalyticsInfo::VersionInfo->DeviceFamily->Data();
     if (_wcsicmp(deviceFamily.c_str(), L"Windows.Holographic") == 0) {
-        config->enableVoiceCommands();
         config->enableQrCodeNavigation();
     }
+
+    config->enableVoiceCommands();
 
     if (scriptHost->initialize(config)) {
         scriptHost->startWithEmptyApp();

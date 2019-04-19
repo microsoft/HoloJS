@@ -99,9 +99,6 @@
     <ClInclude Include="package-reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\holojs\windows\voice-input.h">
-      <Filter>include\holojs\windows\mixed-reality</Filter>
-    </ClInclude>
     <ClInclude Include="include\holojs\windows\qr-scanner.h">
       <Filter>include\holojs\windows</Filter>
     </ClInclude>
@@ -110,6 +107,12 @@
     </ClInclude>
     <ClInclude Include="surface-mapper.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="speech-recognizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\speech-recognizer.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -145,9 +148,6 @@
     <ClCompile Include="package-reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="voice-input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="qr-scanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,6 +155,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="surface-mapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="speech-recognizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

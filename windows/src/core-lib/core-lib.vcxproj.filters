@@ -176,6 +176,12 @@
     <ClInclude Include="..\..\..\core\async-work-items.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\speech-recognizer.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\speech-recognizer-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=" ..\..\..\core\blob.cpp" />
@@ -223,6 +229,7 @@
     <ClCompile Include="..\..\..\core\script-context.cpp" />
     <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
     <ClCompile Include="..\..\..\core\surface-mapping-projection.cpp" />
+    <ClCompile Include="..\..\..\core\speech-recognizer-projection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=" ..\..\..\core\scripts\2d-context.js">
@@ -277,6 +284,9 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\..\..\core\scripts\three.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\speech-recognizer.js">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

@@ -28,6 +28,7 @@ class ScriptHostUtilities {
     static long SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, JsValueRef& propertyValue);
 
     static long SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, int intProperty);
+    static long SetJsProperty(JsValueRef& parentObject, const std::wstring& propertyName, double doubleProperty);
     static long SetJsProperty(JsValueRef& parentObject,
                               const std::wstring& propertyName,
                               const std::wstring& stringProperty);

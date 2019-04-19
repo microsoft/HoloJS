@@ -63,13 +63,14 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
 	virtual long showHostRenderedElement(HoloJs::HostRenderedElements element);
 
+    const ViewConfiguration& getViewConfiguration() const { return m_viewConfiguration; }
+
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;
     bool m_debugRequested;
 
     ViewConfiguration m_viewConfiguration;
 
-    //{icon : "\ue007", text : "That link did not work", iconX : 250, iconY : 150, textX : 100, textY : 250}
     HostRenderedElements m_hostRenderedElements = HostRenderedElements::None;
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_internalApp;
     void showInternalUI(HostRenderedElements type);

@@ -201,11 +201,12 @@
     <ClInclude Include="include\holojs\windows\mixed-reality\spatial-input.h" />
     <ClInclude Include="include\holojs\windows\opengl-context.h" />
     <ClInclude Include="include\holojs\windows\performance-tracker.h" />
-    <ClInclude Include="include\holojs\windows\voice-input.h" />
     <ClInclude Include="include\holojs\windows\qr-scanner.h" />
+    <ClInclude Include="include\holojs\windows\speech-recognizer.h" />
     <ClInclude Include="include\holojs\windows\windows-platform.h" />
     <ClInclude Include="include\holojs\windows\xml-http-request.h" />
     <ClInclude Include="package-reader.h" />
+    <ClInclude Include="speech-recognizer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="surface-mapper.h" />
     <ClInclude Include="targetver.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="qr-scanner.cpp" />
     <ClCompile Include="spatial-controller.cpp" />
     <ClCompile Include="spatial-input.cpp" />
+    <ClCompile Include="speech-recognizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -228,7 +230,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="surface-mapper.cpp" />
-    <ClCompile Include="voice-input.cpp" />
     <ClCompile Include="websocket.cpp" />
     <ClCompile Include="windows-image-element.cpp" />
     <ClCompile Include="windows-platform.cpp" />

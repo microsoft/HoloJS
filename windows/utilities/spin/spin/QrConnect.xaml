@@ -1,0 +1,42 @@
+﻿<Window x:Class="HoloJs.Spin.QrConnect"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HoloJs.Spin"
+        mc:Ignorable="d" Icon="logo-black-background.ico"
+        Title="Spin Make - HoloLens Connector" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="20">
+            <TextBlock
+                FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Text="To test the experience from another PC, run Spin Make on it with this command line:" />
+            <TextBlock 
+                    VerticalAlignment="Center" x:Name="UrlText" Text="asdfasdfsd" Margin="10, 0, 0, 0"
+                    FontSize="16" Grid.Row="2" >
+            </TextBlock>
+            <Button
+                    Content="&#xe16d;" Margin="10, 0, 0, 0"
+                    FontFamily="Segoe MDL2 Assets" Width="35" Height="35" x:Name="CopyToClipboard" Click="CopyToClipboard_Click"/>
+        </StackPanel>
+        <Label
+            FontSize="16" Grid.Row="2" Margin="20, 25, 0, 0"
+            Content="To test the experience on the HoloLens, run Spin View on the HoloLens and scan the QR code" />
+
+        <Image
+            Grid.Row="4"
+            x:Name="QrImage" Stretch="Uniform" StretchDirection="DownOnly"/>
+
+        <Label
+            FontSize="16" HorizontalAlignment="Center" Grid.Row="5" VerticalAlignment="Bottom" FontWeight="DemiBold"
+            Content="This is a test HTTP server. Do not use it in production environments. The URLs listed above only work on the local network." />
+    </Grid>
+</Window>

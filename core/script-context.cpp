@@ -1,8 +1,8 @@
 #include "script-context.h"
-#include "include/holojs/private/platform-interfaces.h"
-#include "include/holojs/private/error-handling.h"
-#include "include/holojs/private/script-host-utilities.h"
 #include "holojs-script-host.h"
+#include "include/holojs/private/error-handling.h"
+#include "include/holojs/private/platform-interfaces.h"
+#include "include/holojs/private/script-host-utilities.h"
 #include "window-element.h"
 
 using namespace HoloJs;
@@ -23,9 +23,10 @@ long ScriptContext::destroy()
     m_canvas2dProjections.reset();
     m_audioContextProjection.reset();
     m_blobProjection.reset();
-	m_surfaceMappingProjection.reset();
+    m_surfaceMappingProjection.reset();
+    m_speechRecognizerProjection.reset();
     m_view.reset();
-    
+
     if (m_nativeInterfaceRef != JS_INVALID_REFERENCE) {
         JsRelease(m_nativeInterfaceRef, nullptr);
         m_nativeInterfaceRef = JS_INVALID_REFERENCE;
@@ -93,11 +94,18 @@ long ScriptContext::initialize()
     m_blobProjection = make_unique<HoloJs::Interfaces::BlobProjection>(m_resourceManager);
     RETURN_IF_FAILED(m_blobProjection->initialize());
 
-	m_websocketProjection = make_unique<HoloJs::WebSocketProjection>(m_resourceManager, m_host);
-	RETURN_IF_FAILED(m_websocketProjection->initialize());
+    m_websocketProjection = make_unique<HoloJs::WebSocketProjection>(m_resourceManager, m_host);
+    RETURN_IF_FAILED(m_websocketProjection->initialize());
 
-	m_surfaceMappingProjection = make_unique<HoloJs::SurfaceMappingProjection>(m_resourceManager, m_host);
-	RETURN_IF_FAILED(m_surfaceMappingProjection->initialize());
+    m_surfaceMappingProjection = make_unique<HoloJs::SurfaceMappingProjection>(m_resourceManager, m_host);
+    RETURN_IF_FAILED(m_surfaceMappingProjection->initialize());
+
+    m_speechRecognizerProjection = make_unique<HoloJs::SpeechRecognizerProjection>(m_resourceManager, m_host);
+    RETURN_IF_FAILED(m_speechRecognizerProjection->initialize());
+
+    if (m_host->getViewConfiguration().enableVoiceCommands) {
+        m_speechRecognizerProjection->enable();
+    }
 
     return HoloJs::Success;
 }

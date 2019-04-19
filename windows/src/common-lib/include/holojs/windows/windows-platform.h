@@ -58,6 +58,9 @@ class WindowsPlatform : public HoloJs::IPlatform {
 
 	virtual bool isSurfaceMappingAvailable();
 	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host);
+
+    virtual bool isSpeechRecognizerAvailable();
+	virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host);
 };
 }  // namespace Platforms
 }  // namespace HoloJs

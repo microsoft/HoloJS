@@ -133,5 +133,8 @@
     <None Include="..\..\..\core\scripts\three.js">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\..\..\core\scripts\speech-recognizer.js">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

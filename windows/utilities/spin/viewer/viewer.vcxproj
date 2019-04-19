@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\holojs.1.3.4-alpha\build\native\holojs.props" Condition="Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.props')" />
+  <Import Project="..\packages\holojs.1.3.5-alpha\build\native\holojs.props" Condition="Exists('..\packages\holojs.1.3.5-alpha\build\native\holojs.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -138,6 +138,30 @@
     <AppInstallerUri>http://holojs.azurewebsites.net/spin-view/</AppInstallerUri>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\viewer\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <Link>
@@ -332,13 +356,13 @@
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\MeshContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ShaderGraphContentTask.targets" />
-    <Import Project="..\packages\holojs.1.3.4-alpha\build\native\holojs.targets" Condition="Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.targets')" />
+    <Import Project="..\packages\holojs.1.3.5-alpha\build\native\holojs.targets" Condition="Exists('..\packages\holojs.1.3.5-alpha\build\native\holojs.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.4-alpha\build\native\holojs.props'))" />
-    <Error Condition="!Exists('..\packages\holojs.1.3.4-alpha\build\native\holojs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.4-alpha\build\native\holojs.targets'))" />
+    <Error Condition="!Exists('..\packages\holojs.1.3.5-alpha\build\native\holojs.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.5-alpha\build\native\holojs.props'))" />
+    <Error Condition="!Exists('..\packages\holojs.1.3.5-alpha\build\native\holojs.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\holojs.1.3.5-alpha\build\native\holojs.targets'))" />
   </Target>
 </Project>

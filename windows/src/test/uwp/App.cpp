@@ -8,16 +8,16 @@
     auto viewConfiguration = ref new HoloJs::UWP::ViewConfiguration();
 
     std::wstring deviceFamily = Windows::System::Profile::AnalyticsInfo::VersionInfo->DeviceFamily->Data();
-    if (_wcsicmp(deviceFamily.c_str(), L"Windows.Holographic") == 0) {
+    //if (_wcsicmp(deviceFamily.c_str(), L"Windows.Holographic") == 0) {
         viewConfiguration->enableVoiceCommands();
         viewConfiguration->enableQrCodeNavigation();
-    }
+    //}
 
     viewConfiguration->setViewMode(HoloJs::UWP::ViewMode::Default);
     if (scriptHost->initialize(viewConfiguration)) {
         auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/bouncing-sound.xrs");
-        // scriptHost->startUri(uri);
-        scriptHost->startWithEmptyApp();
+        scriptHost->startUri(uri);
+        //scriptHost->startWithEmptyApp();
     }
 
     return 0;

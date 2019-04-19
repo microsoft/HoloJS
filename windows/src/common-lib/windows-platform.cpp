@@ -4,6 +4,7 @@
 #include "holojs/private/error-handling.h"
 #include "holojs/private/surface-mapping.h"
 #include "include/holojs/windows/windows-platform.h"
+#include "speech-recognizer.h"
 #include "surface-mapper.h"
 #include "websocket.h"
 #include <experimental/filesystem>
@@ -241,13 +242,21 @@ HoloJs::IWebSocket* WindowsPlatform::createWebSocket(HoloJs::IHoloJsScriptHostIn
     return newWebSocket;
 }
 
-bool WindowsPlatform::isSurfaceMappingAvailable() { 
-	return Windows::Perception::Spatial::Surfaces::SpatialSurfaceObserver::IsSupported();
+bool WindowsPlatform::isSurfaceMappingAvailable()
+{
+    return Windows::Perception::Spatial::Surfaces::SpatialSurfaceObserver::IsSupported();
 }
 
 HoloJs::ISurfaceMapper* WindowsPlatform::getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host)
 {
-	RETURN_NULL_IF_FALSE(isSurfaceMappingAvailable());
-	
-	return new HoloJs::Platforms::Win32::SurfaceMapper(host);
+    RETURN_NULL_IF_FALSE(isSurfaceMappingAvailable());
+
+    return new HoloJs::Platforms::Win32::SurfaceMapper(host);
+}
+
+bool WindowsPlatform::isSpeechRecognizerAvailable() { return true; }
+
+HoloJs::ISpeechRecognizer* WindowsPlatform::getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host)
+{
+    return new HoloJs::Platforms::Win32::SpeechRecognizer(host);
 }

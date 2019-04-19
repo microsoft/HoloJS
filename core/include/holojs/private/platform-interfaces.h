@@ -15,6 +15,7 @@ class IIMage;
 class IXmlHttpRequest;
 class ICanvasRenderContext2D;
 class IHoloJsView;
+class ISpeechRecognizer;
 
 class IPlatform {
    public:
@@ -58,6 +59,9 @@ class IPlatform {
 
     virtual bool isSurfaceMappingAvailable() = 0;
 	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+
+    virtual bool isSpeechRecognizerAvailable() = 0;
+	virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host) = 0;
 };
 
 IPlatform* __cdecl getPlatform();

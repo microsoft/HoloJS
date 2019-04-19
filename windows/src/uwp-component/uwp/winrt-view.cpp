@@ -140,30 +140,25 @@ HRESULT HoloJsUWPApp::initializeRenderingResources()
         m_height = m_mixedRealityContext->getHeight();
     }
 
-    if (m_viewConfiguration.enableVoiceCommands) {
-        m_voiceInput = make_unique<HoloJs::Platforms::Win32::VoiceInput>(m_host);
-        m_voiceInput->setOnResultsCallback([this](wstring command, double confidence) {
+    if (m_viewConfiguration.enableQrCodeNavigation) {
+        m_voiceInput = make_unique<HoloJs::Platforms::Win32::SpeechRecognizer>(m_host);
+        m_voiceInput->setOnResultsCallback([this](const wstring& command, double confidence) -> bool {
             onSpeechRecognized(command, confidence);
-            return S_OK;
+            return true;
         });
 
         vector<wstring> commands;
-
-        if (m_viewConfiguration.enableQrCodeNavigation) {
-            for (const auto& command : g_voiceCommands) {
-                if (command.second == VoiceCommandIntent::LoadOtherApp) {
-                    commands.push_back(command.first);
-                }
+        for (const auto& command : g_voiceCommands) {
+            if (command.second == VoiceCommandIntent::LoadOtherApp) {
+                commands.push_back(command.first);
             }
         }
 
         if (commands.size() > 0) {
-            m_voiceInput->setVoiceCommands(commands);
+            m_voiceInput->setKeywords(commands);
             m_voiceInput->start();
         }
-    }
 
-    if (m_viewConfiguration.enableQrCodeNavigation) {
         m_qrScanner = make_unique<HoloJs::Platforms::Win32::QrScanner>(m_host);
         m_qrScanner->setOnResultsCallback([this](bool success, wstring result) { onQrRecognized(success, result); });
     }
