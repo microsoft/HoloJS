@@ -43,4 +43,8 @@ See http://holojs.azurewebsites.net/help for more details about JavaScript VR ex
 
 Changelog:
 1.3.4: Make the UWP library Microsoft Store compliant by replacing non-compliant APIs with accepted alternatives.
+
 1.3.5: Add a SpeechRecognizer JavaScript API for enabling voice command recognition in the guest script.
+https://github.com/Microsoft/HoloJS/wiki/SpeechRecognizer
+
+1.3.6: Fix unexpected closing of immersive view when running the HoloJs host in a .NET process.

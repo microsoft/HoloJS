@@ -24,7 +24,7 @@ namespace HoloJs.Spin
         private const string ThreeJsSampleAppPath = @"templates\three_template.js";
 
         private string XrsFilePath => Path.Combine(ProjectPath, XrsFileName);
-        private string XrsFileName => ProjectName + ".xrs";
+        private string XrsFileName => ProjectName + ".json";
 
         private string LaunchJsonPath => Path.Combine(ProjectPath, ".vscode");
         private string LaunchJsonFile => Path.Combine(LaunchJsonPath, "launch.json");
@@ -118,7 +118,7 @@ namespace HoloJs.Spin
 
             var defaultConfiguration = new LaunchJsonConfiguration();
             defaultConfiguration.runtimeArgs.Add("run");
-            defaultConfiguration.runtimeArgs.Add("--uri");
+            defaultConfiguration.runtimeArgs.Add("--path");
             defaultConfiguration.runtimeArgs.Add(xrsPath);
             defaultConfiguration.runtimeArgs.Add("--debug");
             defaultConfiguration.runtimeExecutable = System.Reflection.Assembly.GetEntryAssembly().Location;

@@ -15,14 +15,16 @@ static unsigned int g_viewThreadId{static_cast<unsigned int>(-1)};
 
 static ATOM g_windowRegistrationAtom = 0;
 
-#define STOP_EXECUTION WM_USER
+#define STOP_EXECUTION (WM_USER + 6)
 #define EXECUTE_SCRIPT (WM_USER + 1)
 #define RESIZE_NOTIFICATION (WM_USER + 3)
 
 #define INITIAL_WIDTH 640
 #define INITIAL_HEIGHT 320
 
-Win32HoloJsView::Win32HoloJsView(HoloJs::ViewConfiguration viewConfiguration) : m_viewConfiguration(viewConfiguration) {}
+Win32HoloJsView::Win32HoloJsView(HoloJs::ViewConfiguration viewConfiguration) : m_viewConfiguration(viewConfiguration)
+{
+}
 
 Win32HoloJsView::~Win32HoloJsView()
 {
@@ -216,7 +218,8 @@ HRESULT Win32HoloJsView::initialize(HoloJs::IHoloJsScriptHostInternal* host)
     return S_OK;
 }
 
-long Win32HoloJsView::releaseScriptResources() { 
+long Win32HoloJsView::releaseScriptResources()
+{
     m_windowElement = nullptr;
     m_timers.reset();
     m_spatialInput.reset();
@@ -297,7 +300,6 @@ void Win32HoloJsView::run()
             }
         }
     }
-
 
     // Drain foreground workitems queue
     {

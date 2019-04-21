@@ -61,7 +61,7 @@ class Win32HoloJsBaseView {
     long queueForegroundWorkItem(HoloJs::IForegroundWorkItem* workItem);
     void executeOneForegroundWorkItem();
 
-    bool m_closeRequested;
+    bool m_closeRequested = false;
 };
 }  // namespace Win32
 }  // namespace HoloJs

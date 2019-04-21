@@ -28,14 +28,10 @@ namespace HoloJs.Spin
 
         public string AppBasePath => Path.GetDirectoryName(AppPath);
 
-        public string HtmlAppName => Path.GetFileName(HtmlAppPath);
         public string XsrFileName => Path.GetFileName(AppPath);
 
         [JsonIgnore]
         public string AppPath;
-
-        [JsonIgnore]
-        public string HtmlAppPath;
 
         public string name;
 
@@ -110,8 +106,7 @@ namespace HoloJs.Spin
         public static XrsPackage CreateNew(string appJson)
         {
             var returnValue = new XrsPackage();
-            returnValue.AppPath = appJson;
-            returnValue.HtmlAppPath = Path.Combine(Path.GetDirectoryName(appJson), Path.GetFileNameWithoutExtension(appJson) + ".html");
+            returnValue.AppPath = Path.GetFullPath(appJson);
 
             return returnValue;
         }
@@ -120,8 +115,7 @@ namespace HoloJs.Spin
         {
             var jsonContent = File.ReadAllText(appJson);
             var returnValue = JsonConvert.DeserializeObject<XrsPackage>(jsonContent);
-            returnValue.AppPath = appJson;
-            returnValue.HtmlAppPath = Path.Combine(Path.GetDirectoryName(appJson), Path.GetFileNameWithoutExtension(appJson) + ".html");
+            returnValue.AppPath = Path.GetFullPath(appJson);
 
             returnValue.scripts =  returnValue.scripts.ConvertAll(e => e.ToLower());
             returnValue.resources =  returnValue.resources.ConvertAll(e => e.ToLower());

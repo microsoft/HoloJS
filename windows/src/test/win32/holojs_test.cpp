@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //configuration.enableVoiceCommands = true;
     scriptHost->initialize(configuration);
 
-	scriptHost->startUri(L"C:\\Users\\cristi\\Desktop\\voice-demo\\voice-demo.xrs");
-    //scriptHost->startWithEmptyApp();
+	//scriptHost->startUri(L"C:\\Users\\cristi\\Desktop\\voice-demo\\voice-demo.xrs");
+    scriptHost->startWithEmptyApp();
     return 0;
 }

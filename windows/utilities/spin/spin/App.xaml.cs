@@ -44,7 +44,13 @@ namespace spin
 
             holoJsHost.Initialize(viewConfiguration);
 
-            holoJsHost.StartUri(options.Uri);
+            if (!string.IsNullOrEmpty(options.Path))
+            {
+                holoJsHost.StartUri(System.IO.Path.GetFullPath(options.Path));
+            } else
+            {
+                holoJsHost.StartUri(options.Uri);
+            }
         }
 
         private void CreateNewHoloJsApp(AppCreationOptions opts)
@@ -58,7 +64,7 @@ namespace spin
             var generator = new ProjectGenerator(opts.Path);
             generator.Generate();
 
-            RunVsCode(opts.Path);
+            RunVsCode(System.IO.Path.GetFullPath(opts.Path));
         }
 
         private void ServeHoloJsApp(ServeAppOptions opts)
@@ -70,7 +76,7 @@ namespace spin
             }
             catch (Exception)
             {
-                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the source points to a valid XRS file.");
+                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the source points to a valid Spin app.");
                 return;
             }
 
@@ -106,13 +112,14 @@ namespace spin
             }
             catch(Exception)
             {
-                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the source points to a valid XRS file.");
+                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the source points to a valid Spin app.");
                 return;
             }
 
             if (System.IO.File.Exists(opts.DestinationPath) && !opts.Overwrite)
             {
                 Console.WriteLine("a XRSX file with this name already exists. Use --overwrite to overwrite it.");
+                return;
             }
 
             Console.WriteLine("Writing XRSX file ...");
@@ -131,7 +138,7 @@ namespace spin
             }
             catch (Exception)
             {
-                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the path to a valid XRS file.");
+                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the path to a valid Spin app.");
                 return;
             }
 
@@ -172,7 +179,7 @@ namespace spin
             }
             catch (Exception)
             {
-                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the path to a valid XRS file.");
+                Console.WriteLine("Cannot open the specified HoloJs app. Make sure the path to a valid Spin app.");
                 return;
             }
 

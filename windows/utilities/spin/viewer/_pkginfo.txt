@@ -1,1 +1,1 @@
-E:\src\holojs-r\windows\utilities\spin\x64\Release\viewer\Upload\viewer_1.0.12.0\viewer_1.0.12.0_x86_x64.appxbundle
+E:\src\holojs-r\windows\utilities\spin\out\Release\x64\viewer\Upload\viewer_1.0.13.0\viewer_1.0.13.0_x86_x64.appxbundle

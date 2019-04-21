@@ -10,8 +10,11 @@ namespace spin
     [Verb("run", HelpText = "Run a HoloJs app.")]
     class RunAppOptions
     {
-        [Option('u', "uri", Required = true, HelpText = "The local path or URL to run.")]
+        [Option('u', "uri", Required = false, HelpText = "The URL to run.", SetName ="source")]
         public string Uri { get; set; }
+
+        [Option('u', "path", Required = false, HelpText = "The local path to run.", SetName ="source")]
+        public string Path { get; set; }
 
         [Option('d', "debug", Default = false, Required = false, HelpText = "Enable script debugging. The script will not run until a debugger attaches.")]
         public bool Debug { get; set; }
