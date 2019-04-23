@@ -20,8 +20,8 @@ class IHoloJsScriptHostInternal : public IHoloJsScriptHost {
 
     virtual long getActiveAppConfiguration(HoloJs::AppModel::AppConfiguration* configuration) = 0;
 
-    virtual void runInBackground(std::function<long()> backgroundWork) = 0;
-    virtual void runInScriptContext(std::function<void()> contextWork) = 0;
+    virtual long runInBackground(std::function<long()> backgroundWork) = 0;
+    virtual long runInScriptContext(std::function<void()> contextWork) = 0;
 
     virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
 

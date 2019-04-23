@@ -328,22 +328,38 @@ long HoloJsScriptHost::getActiveAppConfiguration(HoloJs::AppModel::AppConfigurat
 
 HoloJs::IWindow* HoloJsScriptHost::getWindowElement() { return m_activeContext->getWindowElement(); }
 
-void HoloJsScriptHost::runInBackgroundNoContext(std::function<long()> backgroundWork)
+long HoloJsScriptHost::runInBackgroundNoContext(std::function<long()> backgroundWork)
 {
+    RETURN_IF_FALSE(m_view);
+
     m_view->executeInBackground(
         new HostBackgroundWorkItem(m_backgroundExecutionQueue, make_shared<std::function<long()>>(backgroundWork)));
+
+	return HoloJs::Success;
 }
 
-void HoloJsScriptHost::runInBackground(std::function<long()> backgroundWork)
+long HoloJsScriptHost::runInBackground(std::function<long()> backgroundWork)
 {
-    m_view->executeInBackground(
-        new BackgroundWorkItem(m_activeContext, make_shared<std::function<long()>>(backgroundWork)));
+    RETURN_IF_FALSE(m_view);
+
+    if (!m_activeContext) {
+        runInBackgroundNoContext(backgroundWork);
+    } else {
+        m_view->executeInBackground(
+            new BackgroundWorkItem(m_activeContext, make_shared<std::function<long()>>(backgroundWork)));
+    }
+
+	return HoloJs::Success;
 }
 
-void HoloJsScriptHost::runInScriptContext(std::function<void()> contextWork)
+long HoloJsScriptHost::runInScriptContext(std::function<void()> contextWork)
 {
+    RETURN_IF_FALSE(m_view);
+
     m_view->executeOnViewThread(
         new ForegroundWorkItem(m_activeContext, make_shared<std::function<void()>>(contextWork)));
+
+	return HoloJs::Success;
 }
 
 long HoloJsScriptHost::loadSupportScripts()

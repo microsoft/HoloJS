@@ -48,3 +48,5 @@ Changelog:
 https://github.com/Microsoft/HoloJS/wiki/SpeechRecognizer
 
 1.3.6: Fix unexpected closing of immersive view when running the HoloJs host in a .NET process.
+
+1.3.7: Fix issues in SpeechRecognizer. Add free dictation mode to the SpeechRecognizer. Refer to the SpeechRecognizer wiki entry (see 1.3.5) for more information.

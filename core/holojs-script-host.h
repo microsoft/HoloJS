@@ -29,8 +29,8 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
 
     virtual long stopExecution();
 
-    virtual void runInBackground(std::function<long()> backgroundWork);
-    virtual void runInScriptContext(std::function<void()> contextWork);
+    virtual long runInBackground(std::function<long()> backgroundWork);
+    virtual long runInScriptContext(std::function<void()> contextWork);
 
     virtual void enableDebugger();
     virtual void setConsoleConfig(HoloJs::IConsoleConfiguration* consoleConfig)
@@ -76,7 +76,7 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
     void showInternalUI(HostRenderedElements type);
     long initializeHostRenderedElement();
 
-    void runInBackgroundNoContext(std::function<long()> backgroundWork);
+    long runInBackgroundNoContext(std::function<long()> backgroundWork);
 
     long loadSupportScripts();
     std::shared_ptr<std::list<HoloJs::AppModel::Script>> m_supportScripts;

@@ -412,7 +412,6 @@ long Win32HoloJsView::executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
 
     create_task([workItem]() -> long {
         auto result = workItem->execute();
-        OutputDebugString(L"deleting work item\r\n");
         delete workItem;
 
         return result;

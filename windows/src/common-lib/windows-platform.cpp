@@ -4,7 +4,7 @@
 #include "holojs/private/error-handling.h"
 #include "holojs/private/surface-mapping.h"
 #include "include/holojs/windows/windows-platform.h"
-#include "speech-recognizer.h"
+#include "include/holojs/windows/speech-recognizer.h"
 #include "surface-mapper.h"
 #include "websocket.h"
 #include <experimental/filesystem>
