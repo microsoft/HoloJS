@@ -1,7 +1,0 @@
-git clone --recursive git@github.com:Almost-Done/dom.js.git
-
-sudo apt-get install make
-curl -sL https://deb.nodesource.com/setup_9.x | sudo -E bash -
-sudo apt install nodejs
-sudo apt install ant
-make

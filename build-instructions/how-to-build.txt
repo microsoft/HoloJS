@@ -1,0 +1,35 @@
+1. Make sure to clone all submodules
+git submodule init
+git submodule update --recursive
+
+cd deps\LabSound
+git submodule init
+git submodule update
+
+cd deps\ChakraCore-Debugger
+git submodule init
+git submodule update
+
+2. Build angle-microsoft from deps\angle-microsoft\winrt\10\src\angle.sln
+Debug and Release, X86 and X64
+
+3. Build google-angle. See angle-build-steps.txt for details
+
+4. Build win2d from deps\win2d\Win2D.uap.sln
+Debug and Release, X64 and X86
+
+5. Build LabSound
+a.  Copy build-instructions/CMakeSettings.json to deps/LabSound
+b.  Open the LabSound CMake project in Visual Studio
+c.  Build for all configurations
+
+6. Build ChakraCore (x64 and x86) from deps\ChakraCore\Build\Chakra.Core.sln
+
+7. Build ChakraCore-Debugger
+
+8. Build zxing
+a.  Copy build-instructions/CMakeSettings.json to deps/zxing-cpp/core
+b.  Open the ZXing srcCMake project from deps/zxing-cpp/core in Visual Studio
+c.  Build for all configurations
+
+9. Open and build windows\src\win-holojs.sln

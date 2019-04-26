@@ -1,0 +1,116 @@
+<html>
+<header>
+    <title>The HoloJs app</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>HoloJs apps</h1>
+        The easiest way to create a HoloJs app is to generate one with <a href="spin-make.html">Spin</a>. You can then inspect the auto-generated app to understand it's structure.
+        <h3>The JSON file</h3>
+        A HoloJs app is comprised of JavaScript files and resource files alongside a JSON file that stores a list of these files:
+        <div class="code">
+            {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"scripts":["threejs/three.js", "app.js"],<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"resources":["media/images/crate.png"]<br>
+            }<br>
+        </div><br>
+        It is important that all scripts and resources reside under the same directory as the JSON file. Paths in
+        the JSON file are resolved relative to the location of the JSON file itself. HoloJs will not read files outside of the
+        app's directory. <br>
+        For web hosted JSON files, scripts and resources are resolved relative to the base URL of the JSON file.
+        <div class="note">
+            <span class="bold">Note: </span>All text files must be UTF8 encoded
+        </div>
+
+        <h3>The XRSX package</h3>
+        To simplify sharing of apps, the JSON file and all scripts and resources can be packaged in a XRSX file. HoloJs will automatically decompress and execute files with this extension.<br><br>
+        The <a href="spin-make.html#packaged">Spin</a> tool can be used to create XRSX packages from a JSON file:
+        <div class="code">spin publish --source [path_to_app_json] --destination [path_to_xrs]</div><br>
+        If crafting the XRSX file manually, please consider the following:
+        <ul>
+            <li>The XRSX file is just a zip file containing the files in the app's directory (scripts, resources, json file)</li>
+            <li>The app's JSON file must be named app.xrs in the XRSX package</li>
+            <li>Paths and file names in the XRSX file are case sensitive; HoloJs uses lower case lookup in XRSX files and consequently files should be archived with lower case names.</li>
+        </ul>        
+        <h3>Script files</h3>
+        <ul>
+            <li>Script files are standard JavaScript code (UTF8 encoded). They execute in the order they appear in the
+                JSON file. They can be minified, uglified etc.</li><br>
+            <li>
+                Scripts check if they execute under HoloJs by looking for the holojs object in the navigator:
+                <div class="code">
+                    const isHoloJs = typeof navigator.holojs !== 'undefined';
+                </div>
+            </li>
+        </ul>
+        <h3>Rendering</h3>
+        <ul>
+            <li>In HoloJs, scripts always render to the canvasvr. Use the following code to obtain the canvasvr:
+                <div class="code">
+                    const canvas = document.createElement('canvasvr');
+                </div>
+                That is all you need to initialize the rendering canvas. You can obtain a webgl context for it and start
+                rendering.<br>
+                <div class="note">
+                    <span class="bold">Note: </span>You cannot modify the size of the canvasvr or obtain a 2d context
+                    for it.<br>
+                </div>
+
+                If you want to reuse code in a web browser:
+                <div class="code">
+                    const canvas = document.createElement(isHoloJs ? 'canvasvr' : 'canvas');<br>
+                    if (isHoloJs === false) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;// If running in browser, add the canvas to the DOM<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;canvas.width = window.innerWidth;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;canvas.height = window.innerHeight;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;document.body.appendChild(canvas);<br>
+                    }
+                </div><br>
+            </li>
+            <li>
+                You can create additional canvases for offscreen rendering, but as of now only the 2d context is
+                supported for them and with a limited instruction set. Offscreen canvases are intended to be used for
+                image scaling and text rendering. They can be used as textures for the webgl context.
+            </li>
+        </ul>
+        <h3>WebVR</h3>
+        HoloJs apps should always attempt to render for WebVR. The underlying HoloJs runtime always
+        initializes in VR mode if a headset is available (or on the HoloLens). Unlike in a web browser, the
+        JavaScript code can request access to the VR headset without user input. Just execute this code:
+        <div class="code">
+            navigator.getVRDisplays().then(<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;function (value) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (value.length > 0) {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Add code here to initialize your renderer for VR.
+            This example assumes a ThreeJS renderer<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;renderer.vr.enabled = true;<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;renderer.vr.setDevice(value[0]);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value[0].requestPresent([{ source:
+            renderer.domElement }]);<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            });<br>
+        </div>
+        This code differs from a web browser code only by the fact that it can be called at any time, not just on a user
+        action callback.
+        <br>If a WebVR device is not available, the app can continue to render in simple mode.
+        <h3>
+            WebAudio, Gamepad, Image, XmlHttpRequest, Blob
+        </h3>
+        Work just like in a web browser.
+    </div>
+</body>
+
+</html>

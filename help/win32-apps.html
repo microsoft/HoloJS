@@ -1,0 +1,119 @@
+<html>
+<header>
+    <title>Use HoloJs in Win32 C++ projects</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1><span>Hosting HoloJs in a Win32 C++ application</span></h1>
+        After following the steps outlined bellow, you will have a Win32 application that is executing a 3D application
+        written in JavaScript and WebGL.
+        <h3>Requirements:</h3>
+        <ol>
+            <li>Visual Studio 2017 with C++ development components installed</li>
+            <li>Visual Studio Code for debugging your JavaScript</li>
+        </ol>
+        <h3>Steps:</h3>
+        <ol>
+            <li>In Visual Studio, create a new C++ console application:<br>
+                <img src="img/new-console-application.png" width="600"> </li><br>
+            <li>Add the HoloJs Nuget package. Since its a pre-release package, make sure to check the "Include
+                prerelease" checkbox when searching. <br>
+                <img src="img/add-holojs-package.png" width="600">
+            </li>
+            <li>
+                In the source file that contains your main function, add these headers:
+                <div class="code">
+                    #include "holojs/holojs.h"<br>
+                    #include &lt;memory&gt;<br>
+                    #include &lt;Windows.h&gt;<br><br>
+
+                    using namespace std;<br>
+                    using namespace HoloJs;<br><br>
+                </div>
+            </li>
+            <li>
+                Replace the main function body with these lines:
+                <div class="code">
+                    <br>// Instantiate the HoloJs object<br>
+                    shared_ptr&lt;IHoloJsScriptHost&gt; scriptHost(CreateHoloJsScriptHost(),
+                    &DeleteHoloJsScriptHost);<br><br>
+                    // Create a default configuration<br>
+                    auto configuration = HoloJs::ViewConfiguration();<br>
+                    scriptHost->initialize(configuration);<br><br>
+                    // Run the app; this method returns when the user closes the window on desktop or <br>// switches away from the app on VR and HoloLens.<br>
+                    scriptHost->startUri(L"http://holojs.azurewebsites.net/v7/vr-cubes.xrs");<br><br>
+                </div>
+            </li>
+            <li>
+                Press F5 to run.<br>
+                Without a VR headset, you should get a window that renders cubes floating in space:<br>
+                <img src="img/win32-cubes.png" width="600px"><br>
+                If you have a VR headset connected, you should see cubes floating around you in a virtual room:<br>
+                <video src="img/win32-cubes-vr.mp4" controls="controls" width="600px"></video>
+                
+            </li>
+        </ol>
+        <h4>Debugging scripts running inside HoloJs</h4>
+        When HoloJs is hosted inside a Win32 app, you will use Visual Studio Code to debug your scripts.
+        <ol>
+            <li>Enable debugging in HoloJs by adding this line of code before you start the script app:<br>
+                <span class="code">scriptHost-&gt;enableDebugger();</span>
+                <div class="note">
+                    <span class="bold">Note: </span>With the debugger enabled, the script app will not start until a debugger attaches. The window will appear hung until then.
+                </div>
+            </li>
+            <li>
+                Start Visual Studio Code and open the folder where the scripts are located
+            </li>
+            <li>
+                Create a debug configuration
+                <ol type="a">
+                    <li>Go to the debugger panel (Ctrl + Shift + D)</li>
+                    <li>Add a new debug configuration<br>
+                    <img src="img/vs-code-add-config.png" width="600px"></li>
+                    Pick "node.js" from the options list<br>
+                    <img src="img/select-nodejs.png" width="600px"></li>
+                    <li>
+                            Add the following to the launch.json file:<br>
+                            {<br>
+                                "type": "node",<br>
+                                "request": "attach",<br>
+                                "name": "Attach",<br>
+                                "port": 9229,<br>
+                                "protocol": "inspector"<br>
+                            }<br>
+                    </li>
+                    <li>
+                        This debug configuration is now saved in .vscode/launch.json and it will work every time you open this folder in Visual Studio Code.
+                    </li>
+                </ol>
+            </li>
+            <li>
+                Start your Win32 app. You can launch it from Visual Studio (F5) or any other way.
+            </li>
+            <li>
+                Press F5 in Visual Studio Code. The debugger will break in immediatelly. You can now step through your code, set breakpoints, continue execution, etc.
+                <div class="note">
+                    <span class="bold">Note: </span>The list of scripts running can be found in the debug panel, under "Loaded scripts"<br>
+                    <img src="img/loaded-scripts-collapsed.png" width="300px">
+                </div>
+            </li>
+        </ol>
+    </div>
+
+</body>
+
+</html>

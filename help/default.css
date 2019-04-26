@@ -1,0 +1,35 @@
+body {
+        font-family: 'Segoe UI', Helvetica, Tahoma, Verdana, sans-serif
+    }
+
+    .content {
+        line-height: 1.75em;
+        margin: auto;
+        max-width: 800px;
+        margin-left: 320px;
+    }
+
+    h1 {
+        color: maroon;
+    }
+
+    .bold {
+        font-weight: bolder
+    }
+
+    .note {
+        margin: 20px;
+        border-left: solid #666666 5px;
+        padding-left: 5px;
+    }
+
+    .code {
+        font-style: italic;
+        color: #222222;
+        background: #f4f4f4;
+    }
+
+    .index {
+        float: left;
+        width: 300px;
+    }

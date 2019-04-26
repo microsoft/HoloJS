@@ -1,0 +1,1 @@
+{"scripts":["threejs/three.js","threejs/loaders/pdbloader.js","appcode/molecule-viewer.js"],"resources":["media/models/caffeine.pdb"],"name":"","HtmlAppName":"molecule-viewer.html","XsrFileName":"molecule-viewer.xrs"}

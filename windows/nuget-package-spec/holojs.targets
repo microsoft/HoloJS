@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <HoloJs-Platform Condition="'$(Platform)' == 'Win32'">x86</HoloJs-Platform>
+    <HoloJs-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</HoloJs-Platform>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'Windows'">
+    <NativeLibs Include="$(MSBuildThisFileDirectory)\$(Platform)\*.dll" />
+    <None Include="@(NativeLibs)">
+      <Link>%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'UAP'">
+    <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\HoloJs.UWP.winmd">
+      <Implementation>libholojs-uwp.dll</Implementation>
+    </Reference>
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(HoloJs-Platform)\native\libholojs-uwp.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(HoloJs-Platform)\native\libEGL.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(HoloJs-Platform)\native\libGLESv2.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\uap10.0\holoJsLib\*.js" >
+      <DestinationSubDirectory>HoloJs.UWP\</DestinationSubDirectory>
+    </ReferenceCopyLocalPaths>
+  </ItemGroup>
+</Project>

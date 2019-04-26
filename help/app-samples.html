@@ -1,0 +1,145 @@
+<html>
+<header>
+    <meta charset="utf-8">
+    <title>HoloJs VR experiences</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>Sample HoloJs experiences for VR and AR</h1>
+        To run the following samples on your desktop, Mixed Reality headset or HoloLens, install the Spin View app from
+        the <a href="https://www.microsoft.com/store/apps/9NXBC7673V0S">Microsoft App Store</a>.<br><br>
+        On the HoloLens, you can open the samples by running the <a
+            href="https://www.microsoft.com/store/apps/9NXBC7673V0S">Spin View</a> app, gaze towards the QR codes and
+        say scan.
+        <div class="note">Most of the samples in this section are based on <a
+                href="https://threejs.org/examples/">ThreeJs examples</a></div>
+        <h3>Ballshooter VR</h3>
+        Shoot balls with you VR controller (or hands on HoloLens) and see them bouncing around a virtual room.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_ballshooter">https://threejs.org/examples/#webvr_ballshooter</a><br>
+        <img src="img/ballshooter.png" height="210px"><div id="ballshooter-qr" style="margin-left:50px;display: inline-block"></div><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/ballshooter.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/ballshooter.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/ballshooter.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/ballshooter.json">View JSON</a>
+        </div>
+        <h3>VR paint</h3>
+        Demo for Gamepad input. Draw in 3D using your VR controller (or hands on HoloLens). VR headset and controller
+        required.
+        Uses Three's OBJ loader for the controller model.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_vive_paint">https://threejs.org/examples/#webvr_vive_paint</a><br>
+        <video src="img/vr-paint.mp4" poster="img/vr-paint.jpg" controls="controls" height="200px"></video><div id="vr-paint-qr" style="margin-left:50px;display: inline-block"></div><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/vr-paint.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/vr-paint.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/vr-paint.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/vr-paint.json">View JSON</a>
+        </div>
+        <h3>Spatial mapping (HoloLens only)</h3>
+        Demo for spatial mapping on HoloLens. Gets live updates from HoloLens's SurfaceObserver and renders meshes in
+        ThreeJS with BufferGeometry.<br>
+        <img src="img/surface-mapping.jpg" height="210px"><div id="sr-qr" style="margin-left:50px;display: inline-block"></div><br>
+        <div class="note">
+            <span class="bold">Note: </span>Does not run in browser. When surface mapping is not available (desktop,
+            VR), only the floor grid is rendered.<br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/hololens-surface-mapping.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/hololens-surface-mapping.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/hololens-surface-mapping.json">View JSON</a><br>
+        </div>
+        <h3>Directional sound</h3>
+        Demo for spatial sound. Move around the boombox to experience directional sound, audio dampening by the wall,
+        audio falloff. Uses Three's GLTF loader and WebAudio.
+        Adapted to run in VR from <a
+            href="https://threejs.org/examples/#webaudio_orientation">https://threejs.org/examples/#webaudio_orientation</a><br>
+        <img src="img/directional-sound.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/directional-sound.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/directional-sound.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/directional-sound.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/directional-sound.json">View JSON</a><br>
+        </div>
+        <h3>Physics</h3>
+        Physics demo using ammo.js and ThreeJs. Use left/right controller triggers (or 'a' and 'q' keys) to move the
+        flag and demolish the wall.
+        Adapted to run in VR from <a
+            href="https://threejs.org/examples/webgl_physics_cloth">https://threejs.org/examples/#webgl_physics_cloth</a><br>
+        <img src="img/cloth-physics.png" width="300px"><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/cloth-physics.html">Run in browser (VR mode only)</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/cloth-physics.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/cloth-physics.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/cloth-physics.json">View JSON</a><br>
+        </div>
+        <h3>VR cubes</h3>
+        Cubes floating around in space.
+        Adapted from <a
+            href="https://threejs.org/examples/#webvr_cubes">https://threejs.org/examples/#webvr_cubes</a><br>
+        <img src="img/vr-cubes.png" height="210px"><div id="cubes-qr" style="margin-left:50px;display: inline-block"></div><br>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/vr-cubes.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/vr-cubes.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/vr-cubes.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/vr-cubes.json">View JSON</a><br>
+        </div>
+        <h3>Molecule viewer</h3>
+        View the 3D model of the caffeine molecule. Uses Three's PDB loader.
+        Simplified sample based on <a
+            href="https://threejs.org/examples/#webgl_loader_pdb">https://threejs.org/examples/#webgl_loader_pdb</a><br>
+        <img src="img/molecule-viewer.png" height="210px">
+        <div id="molecule-qr" style="margin-left:50px;display: inline-block"></div>
+        <div class="note">
+            <a href="http://holojs.azurewebsites.net/v8/molecule-viewer.html">Run in browser</a><br>
+            <a href="xrs:http://holojs.azurewebsites.net/v8/molecule-viewer.json">Run in Spin</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/appcode/molecule-viewer.js">View code</a><br>
+            <a href="http://holojs.azurewebsites.net/v8/molecule-viewer.json">View JSON</a><br>
+        </div>
+    </div>
+    <script type="module">
+        import QrCode from './qr-code.min.js';
+        function renderQrCode(selector, url) {
+            let time = new Date(), container = document.querySelector(selector);
+            let settings = {
+                text: url,
+                radius: 0, // 0.0 to 0.5
+                ecLevel: 'H', // L, M, Q, H
+                fill: '#000000', // foreground color
+                background: null, // color or null for transparent
+                size: 210 // in pixels
+            }
+
+            container.innerHTML = '';
+            QrCode.render(settings, container);
+        }
+
+        let version = "v8";
+        let qrCodes = [
+            { selector: '#molecule-qr', url: "http://holojs.azurewebsites.net/" + version + "/molecule-viewer.json" },
+            { selector: '#cubes-qr', url: "http://holojs.azurewebsites.net/" + version + "/vr-cubes.json" },
+            { selector: '#sr-qr', url: "http://holojs.azurewebsites.net/" + version + "/hololens-surface-mapping.json" },
+            { selector: '#vr-paint-qr', url: "http://holojs.azurewebsites.net/" + version + "/vr-paint.json" },
+            { selector: '#ballshooter-qr', url: "http://holojs.azurewebsites.net/" + version + "/ballshooter.json" }
+        ];
+
+        for (let i = 0; i < qrCodes.length; i++) {
+            renderQrCode(qrCodes[i].selector, qrCodes[i].url);
+        }
+
+    </script>
+</body>
+
+</html>

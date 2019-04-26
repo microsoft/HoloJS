@@ -1,0 +1,416 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{D85EDA8C-E19E-4CF6-80F1-C2F3B9348F31}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>HoloJs.UWP</RootNamespace>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <ProjectName>uwp-component</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <TargetName>libholojs-uwp</TargetName>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <TargetName>libholojs-uwp</TargetName>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>libholojs-uwp</TargetName>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+    <TargetName>libholojs-uwp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <TargetName>libholojs-uwp</TargetName>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\uwp\</OutDir>
+    <TargetName>libholojs-uwp</TargetName>
+    <IntDir>build\$(Platform)\$(Configuration)\uwp\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;_DEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;_DEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;WIN32;_DEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;WIN32;NDEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;NDEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_WINRT_DLL;NDEBUG;HOLOJSLIB_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
+      <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
+copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="file-handle-access.h" />
+    <ClInclude Include="uwp-opengl-context.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="uwp-mixed-reality-context.h" />
+    <ClInclude Include="uwp-spatial-input.h" />
+    <ClInclude Include="uwp\uwp-platform.h" />
+    <ClInclude Include="uwp\winrt-timers-implementation.h" />
+    <ClInclude Include="uwp\winrt-view.h" />
+    <ClInclude Include="uwp\stdafx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="uwp-opengl-context.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="uwp-mixed-reality-context.cpp" />
+    <ClCompile Include="uwp-spatial-input.cpp" />
+    <ClCompile Include="uwp\uwp-platform.cpp" />
+    <ClCompile Include="uwp\winrt-timers-implementation.cpp" />
+    <ClCompile Include="uwp\winrt-view.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\core\scripts\2d-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\canvas-vr.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\canvas.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\console.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\document.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\gamepad.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\image.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\loading-animation.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\spatial-anchors.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\speech-recognizer.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\surface-mapper.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\three.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\timers.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\URL.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\webaudio.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\webgl-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\websocket.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\webvr.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\window.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\core\scripts\xmlhttprequest.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

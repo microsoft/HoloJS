@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{9bbf6572-d3a6-473b-b068-cc2c747334b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\holojs">
+      <UniqueIdentifier>{e7f88b9e-d6f7-4ad5-92c7-bc7a334dd9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\holojs\windows">
+      <UniqueIdentifier>{455f25b3-9754-4c02-a96e-ac00d20fcc6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\holojs\windows\mixed-reality">
+      <UniqueIdentifier>{a2205ff7-8404-41a0-9ee2-31c861f21bc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WebAudio">
+      <UniqueIdentifier>{b6e99fec-8a97-4c9b-b42e-e0ccfd30033f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\mixed-reality\mixed-reality-context.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\mixed-reality\spatial-controller.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\mixed-reality\spatial-input.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\mixed-reality\camera-resources.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\mixed-reality\device-resources.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\IBufferOnMemory.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\performance-tracker.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\xml-http-request.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\windows-platform.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\opengl-context.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\image-element.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-context.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-node.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="gain-node.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-destination-node.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-buffer.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-panner-node.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-listener.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-buffer-source.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="audio-param.h">
+      <Filter>WebAudio</Filter>
+    </ClInclude>
+    <ClInclude Include="package-reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\qr-scanner.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="websocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="surface-mapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="speech-recognizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\holojs\windows\speech-recognizer.h">
+      <Filter>include\holojs\windows\mixed-reality</Filter>
+    </ClInclude>
+    <ClInclude Include="spatial-anchors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="windows-xml-http-request.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="camera-resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="device-resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mixed-reality-context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spatial-controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spatial-input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows-platform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl-context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="windows-image-element.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="audio-context.cpp">
+      <Filter>WebAudio</Filter>
+    </ClCompile>
+    <ClCompile Include="package-reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qr-scanner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="websocket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="surface-mapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="speech-recognizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="spatial-anchors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

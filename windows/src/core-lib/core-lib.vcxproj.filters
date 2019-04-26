@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{859e9a50-dea6-4e49-8bd8-d3ff7aeb56c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource-management">
+      <UniqueIdentifier>{5bfb5309-07e5-44a5-9ccf-d36dab1c137e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{74f94c6d-ae39-49b7-8f66-18c87f6bad9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webgl">
+      <UniqueIdentifier>{0ef2787f-66d9-4f51-9ab1-20a8b39377f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\holojs">
+      <UniqueIdentifier>{6bffa6a2-a274-436c-8719-0378f42b70e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\holojs\private">
+      <UniqueIdentifier>{7660b313-2264-419a-a091-c3ae6231dec8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="webaudio">
+      <UniqueIdentifier>{c157b71b-c07d-40e1-88ca-edda0988757c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\blob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\canvas-2d-projections.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\dom-events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\holojs-script-host.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\host-interfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\image-element-projections.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\script-loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\window-element.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\xml-http-request-projections.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-buffer-source-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-context-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-listener-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-node-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-param-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\webaudio-interfaces.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\xml-http-request.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-projections.h">
+      <Filter>webgl</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-objects.h">
+      <Filter>webgl</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-rendering-context.h">
+      <Filter>webgl</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\chakra.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\error-handling.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\event-target.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\holojs-script-host.h">
+      <Filter>include\holojs</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\platform-interfaces.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\object-lifetime.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\image-interface.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\holojs-view.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\app-model.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\timers.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-window.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-host-utilities.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-host-errors.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\holojs.h">
+      <Filter>include\holojs</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\console.h">
+      <Filter>include\holojs</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\canvas-render-context-2d.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\blob-interface.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\resource-management\resource-manager.h">
+      <Filter>resource-management</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\resource-management\external-object.h">
+      <Filter>resource-management</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\webaudio\panner-node-projection.h">
+      <Filter>webaudio</Filter>
+    </ClInclude>
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\package-reader.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\script-context.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\holojs-script-host-internal.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\websocket.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\websocket-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\surface-mapping.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\surface-mapping-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\async-work-items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\speech-recognizer.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\speech-recognizer-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\spatial-anchors-projection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\holojs\private\spatial-anchors.h">
+      <Filter>include\holojs\private</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include=" ..\..\..\core\blob.cpp" />
+    <ClCompile Include=" ..\..\..\core\canvas-2d-projections.cpp" />
+    <ClCompile Include=" ..\..\..\core\console.cpp" />
+    <ClCompile Include=" ..\..\..\core\dom-events.cpp" />
+    <ClCompile Include=" ..\..\..\core\error-handling.cpp" />
+    <ClCompile Include=" ..\..\..\core\event-target.cpp" />
+    <ClCompile Include=" ..\..\..\core\holojs-script-host.cpp" />
+    <ClCompile Include=" ..\..\..\core\image-element-projections.cpp" />
+    <ClCompile Include=" ..\..\..\core\promise-continuation.cpp" />
+    <ClCompile Include=" ..\..\..\core\script-host-utilities.cpp" />
+    <ClCompile Include=" ..\..\..\core\script-loader.cpp" />
+    <ClCompile Include=" ..\..\..\core\timers.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\panner-node-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\window-element.cpp" />
+    <ClCompile Include=" ..\..\..\core\xml-http-request.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-buffer-source-projection.cpp">
+      <Filter>webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-context-projection.cpp">
+      <Filter>webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-listener-projection.cpp">
+      <Filter>webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-node-projection.cpp">
+      <Filter>webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-param-projection.cpp">
+      <Filter>webaudio</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-objects.cpp">
+      <Filter>webgl</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-projections.cpp">
+      <Filter>webgl</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-rendering-context.cpp">
+      <Filter>webgl</Filter>
+    </ClCompile>
+    <ClCompile Include=" ..\..\..\core\resource-management\resource-manager.cpp">
+      <Filter>resource-management</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\script-context.cpp" />
+    <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
+    <ClCompile Include="..\..\..\core\surface-mapping-projection.cpp" />
+    <ClCompile Include="..\..\..\core\speech-recognizer-projection.cpp" />
+    <ClCompile Include="..\..\..\core\spatial-anchors-projection.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=" ..\..\..\core\scripts\2d-context.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\canvas.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\canvas-vr.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\console.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\document.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\gamepad.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\image.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\timers.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\URL.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\webaudio.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\webgl-context.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\webvr.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\window.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include=" ..\..\..\core\scripts\xmlhttprequest.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\websocket.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\surface-mapper.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\loading-animation.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\three.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\speech-recognizer.js">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\..\..\core\scripts\spatial-anchors.js">
+      <Filter>scripts</Filter>
+    </None>
+  </ItemGroup>
+</Project>

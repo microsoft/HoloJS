@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>holojs</id>
+    <title>HoloJs</title>
+    <version>1.4.0-alpha</version>
+    <authors>Cristian Petruta</authors>
+    <owners>crispet</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Microsoft/HoloJS</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Microsoft/HoloJS/master/holojs.png</iconUrl>
+    <repository type="git" url="https://github.com/Microsoft/HoloJS" />
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>HoloJS is a JavaScript runtime for AR and VR graphics things. It provides unified rendering for AR (HoloLens), VR (Windows Mixed Reality headsets) and 2D desktop using standard WebGL/WebVR scripts. HoloJs can be embedded in Win32 and UWP apps.</description>
+    <summary>JavaScript runtime with WebGL, WebVR and WebXR support for building VR and AR applications.</summary>
+    <releaseNotes>Implement spatial anchors and spatial anchors persistence for HoloLens and Windows Mixed Reality headsets. Refer to HoloJs wiki at https://github.com/Microsoft/HoloJS/wiki for more information.</releaseNotes>
+    <tags>WebVR WebXR WebGL JavaScript HoloLens VR</tags>
+  </metadata>
+  <files>
+    <file src="readme.txt" target="readme.txt"/>
+
+<!-- winmd -->
+    <file src="..\src\out\Release\x64\uwp\HoloJs.UWP.winmd" target="lib\uap10.0"/>
+
+<!-- x64 DLLs -->
+    <file src="..\src\out\Release\x64\uwp\libholojs-uwp.dll" target="runtimes\win10-x64\native"/>
+    <file src="..\src\out\Release\x64\uwp\HoloJs.UWP.pri" target="runtimes\win10-x64\native"/>
+    <file src="..\src\out\Release\x64\uwp\libEGL.dll" target="runtimes\win10-x64\native"/>
+    <file src="..\src\out\Release\x64\uwp\libGLESv2.dll" target="runtimes\win10-x64\native"/>
+
+<!-- x86 DLLs -->
+    <file src="..\src\out\Release\Win32\uwp\libholojs-uwp.dll" target="runtimes\win10-x86\native"/>
+    <file src="..\src\out\Release\Win32\uwp\HoloJs.UWP.pri" target="runtimes\win10-x86\native"/>
+    <file src="..\src\out\Release\Win32\uwp\libEGL.dll" target="runtimes\win10-x86\native"/>
+    <file src="..\src\out\Release\Win32\uwp\libGLESv2.dll" target="runtimes\win10-x86\native"/>
+
+<!-- Internal scripts -->
+    <file src="..\..\core\scripts\*.js" target="lib\uap10.0\holoJsLib\"/>
+
+<!-- Win32 include files -->
+    <file src="..\..\core\include\holojs\console.h" target="lib\native\include\holojs\console.h"/>
+    <file src="..\..\core\include\holojs\holojs.h" target="lib\native\include\holojs\holojs.h"/>
+    <file src="..\..\core\include\holojs\holojs-script-host.h" target="lib\native\include\holojs\holojs-script-host.h"/>
+
+<!-- Win32 X64 DLLs -->
+    <file src="..\src\out\Release\x64\native\libEGL.dll" target="build\native\x64"/>
+    <file src="..\src\out\Release\x64\native\libGLESv2.dll" target="build\native\x64"/>
+    <file src="..\src\out\Release\x64\native\libholojs-native.dll" target="build\native\x64"/>
+    <file src="..\src\out\Release\x64\native\libholojs-native.lib" target="build\native\x64"/>
+    <file src="..\src\out\Release\x64\native\ChakraCore.dll" target="build\native\x64"/>
+
+<!-- Win32 X86 DLLs -->
+    <file src="..\src\out\Release\Win32\native\libEGL.dll" target="build\native\Win32"/>
+    <file src="..\src\out\Release\Win32\native\libGLESv2.dll" target="build\native\Win32"/>
+    <file src="..\src\out\Release\Win32\native\libholojs-native.dll" target="build\native\Win32"/>
+    <file src="..\src\out\Release\Win32\native\libholojs-native.lib" target="build\native\Win32"/>
+    <file src="..\src\out\Release\Win32\native\ChakraCore.dll" target="build\native\Win32"/>
+
+<!-- VS props and targets -->
+    <file src="holojs.targets" target="build\native" />
+    <file src="holojs.props" target="build\native" />
+  </files>
+</package>

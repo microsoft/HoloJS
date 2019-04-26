@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{8300855A-47F0-4D5C-B47F-C463AA4F3E78}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libholojscorewin</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\core\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\core\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\core\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)out\$(Configuration)\$(Platform)\core\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore\lib\Jsrt;..\..\..\deps\angle-google\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore\lib\Jsrt;..\..\..\deps\angle-google\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore\lib\Jsrt;..\..\..\deps\angle-google\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>precomp.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore\lib\Jsrt;..\..\..\deps\angle-google\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include=" ..\..\..\core\blob.h" />
+    <ClInclude Include=" ..\..\..\core\canvas-2d-projections.h" />
+    <ClInclude Include=" ..\..\..\core\dom-events.h" />
+    <ClInclude Include=" ..\..\..\core\holojs-script-host.h" />
+    <ClInclude Include=" ..\..\..\core\host-interfaces.h" />
+    <ClInclude Include=" ..\..\..\core\image-element-projections.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\console.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\holojs-script-host.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\holojs.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\app-model.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\blob-interface.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\canvas-render-context-2d.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\chakra.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\error-handling.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\event-target.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\holojs-view.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\package-reader.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\image-interface.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\object-lifetime.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\platform-interfaces.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-host-errors.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-host-utilities.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\script-window.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\timers.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\webaudio-interfaces.h" />
+    <ClInclude Include=" ..\..\..\core\include\holojs\private\xml-http-request.h" />
+    <ClInclude Include=" ..\..\..\core\resource-management\external-object.h" />
+    <ClInclude Include=" ..\..\..\core\resource-management\resource-manager.h" />
+    <ClInclude Include=" ..\..\..\core\script-loader.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-buffer-source-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-context-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-listener-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-node-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\audio-param-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webaudio\panner-node-projection.h" />
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-objects.h" />
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-projections.h" />
+    <ClInclude Include=" ..\..\..\core\webgl\webgl-rendering-context.h" />
+    <ClInclude Include=" ..\..\..\core\window-element.h" />
+    <ClInclude Include=" ..\..\..\core\xml-http-request-projections.h" />
+    <ClInclude Include="..\..\..\core\async-work-items.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\holojs-script-host-internal.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\spatial-anchors.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\speech-recognizer.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\surface-mapping.h" />
+    <ClInclude Include="..\..\..\core\include\holojs\private\websocket.h" />
+    <ClInclude Include="..\..\..\core\script-context.h" />
+    <ClInclude Include="..\..\..\core\spatial-anchors-projection.h" />
+    <ClInclude Include="..\..\..\core\speech-recognizer-projection.h" />
+    <ClInclude Include="..\..\..\core\surface-mapping-projection.h" />
+    <ClInclude Include="..\..\..\core\websocket-projection.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include=" ..\..\..\core\blob.cpp" />
+    <ClCompile Include=" ..\..\..\core\canvas-2d-projections.cpp" />
+    <ClCompile Include=" ..\..\..\core\console.cpp" />
+    <ClCompile Include=" ..\..\..\core\dom-events.cpp" />
+    <ClCompile Include=" ..\..\..\core\error-handling.cpp" />
+    <ClCompile Include=" ..\..\..\core\event-target.cpp" />
+    <ClCompile Include=" ..\..\..\core\holojs-script-host.cpp" />
+    <ClCompile Include=" ..\..\..\core\image-element-projections.cpp" />
+    <ClCompile Include=" ..\..\..\core\promise-continuation.cpp" />
+    <ClCompile Include=" ..\..\..\core\resource-management\resource-manager.cpp" />
+    <ClCompile Include=" ..\..\..\core\script-host-utilities.cpp" />
+    <ClCompile Include=" ..\..\..\core\script-loader.cpp" />
+    <ClCompile Include=" ..\..\..\core\timers.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-buffer-source-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-context-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-listener-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-node-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\audio-param-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webaudio\panner-node-projection.cpp" />
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-objects.cpp" />
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-projections.cpp" />
+    <ClCompile Include=" ..\..\..\core\webgl\webgl-rendering-context.cpp" />
+    <ClCompile Include=" ..\..\..\core\window-element.cpp" />
+    <ClCompile Include=" ..\..\..\core\xml-http-request.cpp" />
+    <ClCompile Include="..\..\..\core\script-context.cpp" />
+    <ClCompile Include="..\..\..\core\spatial-anchors-projection.cpp" />
+    <ClCompile Include="..\..\..\core\speech-recognizer-projection.cpp" />
+    <ClCompile Include="..\..\..\core\surface-mapping-projection.cpp" />
+    <ClCompile Include="..\..\..\core\websocket-projection.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=" ..\..\..\core\scripts\2d-context.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include=" ..\..\..\core\scripts\canvas-vr.js" />
+    <None Include=" ..\..\..\core\scripts\canvas.js" />
+    <None Include=" ..\..\..\core\scripts\console.js" />
+    <None Include=" ..\..\..\core\scripts\document.js" />
+    <None Include=" ..\..\..\core\scripts\gamepad.js" />
+    <None Include=" ..\..\..\core\scripts\image.js">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include=" ..\..\..\core\scripts\timers.js" />
+    <None Include=" ..\..\..\core\scripts\URL.js" />
+    <None Include=" ..\..\..\core\scripts\webaudio.js" />
+    <None Include=" ..\..\..\core\scripts\webgl-context.js" />
+    <None Include=" ..\..\..\core\scripts\webvr.js" />
+    <None Include=" ..\..\..\core\scripts\window.js" />
+    <None Include=" ..\..\..\core\scripts\xmlhttprequest.js" />
+    <None Include="..\..\..\core\scripts\loading-animation.js" />
+    <None Include="..\..\..\core\scripts\spatial-anchors.js" />
+    <None Include="..\..\..\core\scripts\speech-recognizer.js" />
+    <None Include="..\..\..\core\scripts\surface-mapper.js" />
+    <None Include="..\..\..\core\scripts\three.js" />
+    <None Include="..\..\..\core\scripts\websocket.js" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

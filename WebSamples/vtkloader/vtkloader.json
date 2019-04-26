@@ -1,7 +1,0 @@
-{ "scripts": [
-  "../threejs/three.js",
-  "../threejs/three-patches.js",
-  "../threejs/OrbitControls.js",
-  "../threejs/holographicCamera.js",
-  "../threejs/loaders/VTKLoader.js",
-  "vtkloader.js" ] }

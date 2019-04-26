@@ -1,0 +1,98 @@
+<html>
+<header>
+    <title>HoloJs overview</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1>HoloJs Overview</h1>
+        <h3>What is HoloJs</h3>
+        HoloJS is an execution host for Augmented and Virtual Reality applications written in JavaScript and
+        rendered
+        with WebGL. It provides
+        implementations for WebGL, WebVR, WebAudio, Gamepad APIs, Canvas, XmlHttpRequest, Image such that existing
+        WebGL web apps run in HoloJs with little to no modifications.
+
+        <div class="note">
+            <span class="bold">Note: </span>HoloJs implements a minimal DOM, just enough to fully implement WebGL.
+            Most
+            DOM operations, like creating elements, CSS, etc. will fail. DOM support is restricted to the following
+            elements: window, canvas, image.
+        </div>
+
+        HoloJs extends the web standards with interfaces that abstract the underlying hardware and make it easier to
+        create experiences for various form factors and headsets:
+        <ul>
+            <li><span class="bold">CanvasVR </span>represents the rendering surface of the currently attached
+                device. An
+                attached device can be a HoloLens, Windows Mixed Reality headset, or in the absence of these a 2D
+                desktop window. The script application does not need to manage this canvas element.
+                Obtaining a CanvasVR element is done through the standard document.createElement(...). </li>
+            <li>
+                <span class="bold">Spatial Mapping.</span> HoloLens only. To be documented.
+            </li>
+            <li>
+                <span class="bold">Voice commands.</span> To be documented.
+            </li>
+            <li>
+                <span class="bold">Spatial anchors.</span> Currently HoloLens only. To be documented.
+            </li>
+        </ul>
+
+        <h3>How to use HoloJs</h3>
+        Depending on goals, HoloJs can be used in a variety of ways:
+        <ul>
+            <li><span class="bold">Build from scratch </span>and embedd in your C++ project. This approach is
+                suitable
+                if the existing HoloJs implementation does not meet
+                requirements and modifying the underlying C++ code can achieve your goals. An example would be
+                adding
+                support for additional headsets (Oculus, HTC Vive, etc.), platforms (Android, Linux, etc.) or
+                exposing
+                more platform features to the script app.<br>
+                Clone the code from <a
+                    href="https://github.com/Microsoft/HoloJS">https://github.com/Microsoft/HoloJS</a> and follow
+                the
+                build instructions
+            </li>
+            <li>
+                <span class="bold">Use the <a href="https://www.nuget.org/packages/holojs/"> HoloJs Nuget
+                        package</a></span> in your C++ code. This approach is suitable if you want to create a
+                standalone JavaScript AR/VR that you can publish as a Win32 or UWP app.
+            </li>
+            <li>
+                <span class="bold">Use <a href="spin-make.html">Spin </a></span> to
+                create AR and VR experiences in minutes that others can view using the
+                <a href="https://www.microsoft.com/store/apps/9NXBC7673V0S">Spin View app for Windows and HoloLens.</a> This method is suitable
+                if your experience does not require any additional
+                platform capabilities beyond those already provided by HoloJs. This method does not require C++
+                knowledge; all coding is done in JavaScript/Visual Studio Code and no compilation is required.
+            </li>
+        </ul>
+        <h3>Under the hood</h3>
+        Internally, HoloJs uses a variety of open source components to create the hosting environment:
+        <ul>
+                <li><a class="bold" href="https://github.com/Microsoft/ChakraCore">ChakraCore</a> provides the JavaScript runtime.</li>
+                <li><a class="bold" href="https://github.com/google/angle">ANGLE</a> provides the WebGL implementation for the Win32 platform.</li>
+                <li><a class="bold" href="https://github.com/microsoft/angle">Microsoft ANGLE</a> provides the WebGL implementation for the UWP and HoloLens platform.</li>
+                <li><a class="bold" href="https://github.com/LabSound/LabSound">LabSound</a> provides the WebAudio implementation, including spatial audio rendering.</li>
+                <li><a class="bold" href="https://github.com/Microsoft/ChakraCore-Debugger">ChakraCore debugger</a> provides the debugger protocol implementation that enables editing and debugging HoloJs apps using Visual Studio Code.</li>
+                <li><a class="bold" href="https://github.com/Microsoft/Win2D">Win2D</a> provides the implementation for canvas's 2D context on the Windows platform.</li>
+                <li><a class="bold" href="https://bitbucket.org/wbenny/ziplib">ZipLib</a> provides cross platform archive decompression.</li>
+                
+        </ul>
+    </div>
+</body>
+
+</html>

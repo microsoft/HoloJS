@@ -1,0 +1,161 @@
+<html>
+<header>
+    <title>Create VR and AR things with Spin</title>
+    <link rel="stylesheet" href="default.css">
+</header>
+
+<body>
+    <div class="index">
+        <img src="img/logo.png" height="92px"><br>
+        <div class="note">
+            <a href="index.html">HoloJs overview</a><br>
+            <a href="holojs-app.html">HoloJs apps</a><br>
+            <a href="win32-apps.html">HoloJs in Win32 apps</a><br>
+            <a href="uwp-apps.html">HoloJs in UWP apps</a><br>
+            <a href="spin-make.html">VR and AR experiences with Spin</a>
+            <a href="app-samples.html">Sample script apps</a>
+        </div>
+    </div>
+    <div class="content">
+        <h1><span>Get started with Spin</span></h1>
+        Spin is a development tool for creating VR and AR JavaScript experiences for Windows PCs, Windows Mixed
+        Reality
+        headsets and the HoloLens. You can create VR experiences in minutes using Spin and <a
+            href="https://code.visualstudio.com/">Visual Studio Code</a>.
+        <br><br>
+        <video src="img/spin-globe-720p.mp4" width="800px" controls="controls" onclick="this.play()"></video>
+        <h2>Setup</h2>
+        <ol>
+            <li>
+                <h4>Download spin</h4>
+                Spin is a command line utility. Download it from <a
+                    href="http://holojs.azurewebsites.net/spin-make/spin.zip">http://holojs.azurewebsites.net/spin-make/spin.zip</a>
+                and extract it somewhere on your computer.
+                <br><br>
+                Or from a command line:
+                <div class="code">
+                    powershell Invoke-WebRequest -Uri http://holojs.azurewebsites.net/spin-make/spin.zip -OutFile
+                    spin.zip<br>
+                    powershell Expand-Archive -Path spin.zip -DestinationPath .\
+                </div>
+                <div class="note">
+                    <span class="Bold">Note: </span> While not required, you can add Spin to your PATH environment
+                    variable to make invoking it easier. The following examples assume Spin is in the PATH.
+                </div>
+            </li>
+            <li>
+                <h4><a href="https://code.visualstudio.com/">Install Visual Studio Code</a></h4>
+            </li>
+        </ol>
+        <h2>
+            Create a Spin app from a ThreeJs template
+        </h2>
+        <ol>
+            <li>
+                <h4>"spin new"</h4>
+                Open a command prompt and run:
+                <div class="code">
+                    spin new --path .\first-app --three
+                </div>
+                A new directory is created for the app and a new Visual Studio Code window is opened in the app's
+                directory.
+            </li>
+            <li>
+                <h4>F5 in Visual Studio Code</h4>
+                In Visual Studio Code, press F5 (Debug -> Start Debugging) to run the app. If a VR headset is connected
+                the app will run in immersive mode, otherwise it will run in a 2D window.</li>
+            <div class="note">
+                <span class="bold">Note:</span>
+                In the absence of a VR headset, you can use the Windows Mixed Reality simulator to view the app in
+                immersive mode.
+                Refer to this link for more information: <a
+                    href="https://docs.microsoft.com/en-us/windows/mixed-reality/using-the-windows-mixed-reality-simulator">https://docs.microsoft.com/en-us/windows/mixed-reality/using-the-windows-mixed-reality-simulator</a>
+            </div>
+        </ol>
+        <h2>Edit, test and debug with Visual Studio Code</h2>
+        <ol>
+            <li>
+                <h4>Open the app</h4>
+                'spin new' automatically opens the newly created app in Visual Studio Code. For existing projects, you
+                simply do "File -> Open Folder" in Visual Studio Code.
+            </li>
+            <li>
+                <h4>Run the app</h4>
+                Press F5. The app will start in the VR headset or on the desktop. Spin automatically created a debug
+                configuration (.vscode/launch.json) when the app was created.
+            </li>
+            <li>
+                <h4>Debugger control</h4>
+                Use the standard debugger controll buttons to pause, continue, step, etc:<br>
+                <img src="img/debug-buttons.png" height="64px">
+            </li>
+            <li>
+                <h4>Breakpoints</h4>
+                To set a breakpoint in a running file, you must first open it from the
+                list of loaded scripts. The loaded scripts list is located in the lower side of the debugger panel (Ctrl
+                + Shift + D)<br>
+                <img src="img/loaded-scripts-collapsed.png" height="92px"><br>
+                The list contains all scripts that make the app work, including internal scripts, WebGL framework
+                scripts, etc. Your app's script is app.js<br>
+                <img src="img/loaded-scripts.png" width="300px"><br>
+                The app's render function is a good place to put a breakpoint on if you are debugging the animation:<br>
+                <img src="img/breakpoint-sample.png" width="600px">
+                <div class="note">
+                    <span class="bold">Note: </span>Adding breakpoints in files from the Explorer panel is not supported
+                    yet. As a workaround, insert a temporary "debugger;" instruction above the line you want to break on.
+                </div>
+                <div class="note">
+                    <span class="bold">Note: </span>Sometimes breakpoints cannot be set and the app will appear hung.
+                    There will be error messages in the "Debug console" panel and the "faulty" breakpoints appear grayed
+                    out:
+                    <img src="img/faulty-breakpoints.png" height="128px"><br>
+                    The solution is to remove the faulty breakpoints and restart debugging.
+                </div>
+            </li>
+            <li>
+                <h4>Add and remove content</h4>
+                To add content, copy new files to the app's directory and list their relative paths in the app's JSON
+                file:
+                <ul>
+                    <li>Add to the "scripts" array if adding a script file to be executed. Scripts are executed in the
+                        order stored in the array.</li>
+                    <li>Add to the "resources" array if adding a resource file that will be loaded by scripts at
+                        runtime.</li>
+                </ul>
+                <img src="img/app-json-file.png" width="300px"><br>
+                To remove content, delete files from the directory and remove their entries from the app's JSON file.
+            </li>
+        </ol>
+        <h2>Sharing Spin apps</h2>
+        <ol>
+            <li>
+                Use the <a href="https://www.microsoft.com/store/apps/9NXBC7673V0S">Spin View app from the Microsoft
+                    Store</a> to view Spin apps on other devices or the HoloLens.
+            </li>
+            <li>
+                <h4>Distribute the Spin app</h4>
+                <ol type="a" id="packaged">
+                    <li>
+                        <h5>As a file</h5>
+                        Create a XRSX file for the app using Spin Make and share it with others:
+                        <div class="code">
+                            spin.exe publish --source [path_to_app_json] --destination [path_to_xrsx_file]
+                        </div>
+                        <div class="Note"><span class="bold">Note: </span>The package is just a zip file.</div>
+                        The app will start in Spin View when opened on the desktop or the HoloLens.
+                    </li>
+                    <li>
+                        <h5>Web hosted</h5>
+                        Upload the app's directory to your website. Create a
+                        HTML file with a link to the app's JSON file using the xrs protocol handler, like this: <a
+                            href="xrs:http://holojs.azurewebsites.net/v8/vr-cubes.json">xrs:http://holojs.azurewebsites.net/v8/vr-cubes.json</a>. These links open in Spin View automatically.<br>
+                        <br>To make things easier on the HoloLens, encode the URL (without the xrs: prefix) in a QR code and place it on your web page. Then run Spin View on the HoloLens, gaze to this QR code and say "scan". There are example QR codes on the <a href="app-samples.html">app samples page</a>
+                    </li>
+                </ol>
+            </li>
+        </ol>
+    </div>
+
+</body>
+
+</html>
