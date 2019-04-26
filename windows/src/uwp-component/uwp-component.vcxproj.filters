@@ -136,5 +136,8 @@
     <None Include="..\..\..\core\scripts\speech-recognizer.js">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\..\..\core\scripts\spatial-anchors.js">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

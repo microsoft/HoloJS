@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     configuration.enableVoiceCommands = true;
     scriptHost->initialize(configuration);
 
-	scriptHost->startUri(L"d:\\dev\\voice-demo\\voice-demo.json");
+	scriptHost->startUri(L"e:\\src\\first-app\\first-app.json");
     //scriptHost->startWithEmptyApp();
     return 0;
 }

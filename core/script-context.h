@@ -6,6 +6,7 @@
 #include "image-element-projections.h"
 #include "include/holojs/private/chakra.h"
 #include "resource-management/resource-manager.h"
+#include "spatial-anchors-projection.h"
 #include "speech-recognizer-projection.h"
 #include "surface-mapping-projection.h"
 #include "webaudio/audio-context-projection.h"
@@ -63,6 +64,7 @@ class ScriptContext {
     std::unique_ptr<HoloJs::WebSocketProjection> m_websocketProjection;
     std::unique_ptr<HoloJs::SurfaceMappingProjection> m_surfaceMappingProjection;
     std::unique_ptr<HoloJs::SpeechRecognizerProjection> m_speechRecognizerProjection;
+    std::unique_ptr<HoloJs::SpatialAnchorsProjection> m_spatialAnchorsProjection;
 
     // This pointer is tracked through script ref counting; It gets released automatically when the context is detroyed
     HoloJs::Interfaces::WindowElement* m_windowElement;

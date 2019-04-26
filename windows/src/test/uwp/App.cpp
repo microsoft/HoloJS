@@ -15,7 +15,7 @@
 
     viewConfiguration->setViewMode(HoloJs::UWP::ViewMode::Default);
     if (scriptHost->initialize(viewConfiguration)) {
-        auto uri = ref new Platform::String(L"http://holojs.azurewebsites.net/v7/bouncing-sound.xrs");
+        auto uri = ref new Platform::String(L"e:\\src\\first-app\first-app.json");
         scriptHost->startUri(uri);
         //scriptHost->startWithEmptyApp();
     }

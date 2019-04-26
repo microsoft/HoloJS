@@ -28,7 +28,8 @@ const wchar_t* g_InternalScriptNames[] = {L"window.js",
                                           L"webaudio.js",
                                           L"websocket.js",
                                           L"surface-mapper.js",
-                                          L"speech-recognizer.js"};
+                                          L"speech-recognizer.js",
+                                          L"spatial-anchors.js"};
 
 const wchar_t* g_loadingAnimationScripts[] = {L"three.js", L"loading-animation.js"};
 

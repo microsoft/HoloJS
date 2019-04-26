@@ -36,6 +36,8 @@ enum class ObjectType {
 	IWebSocket,
 	ISurfaceMapper,
     ISpeechRecognizer,
+	ISpatialAnchor,
+    ISpatialAnchorStore,
     None
 };
 

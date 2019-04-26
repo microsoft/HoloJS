@@ -2,6 +2,7 @@
 
 #include "app-model.h"
 #include "holojs-script-host-internal.h"
+#include <array>
 #include <list>
 #include <memory>
 #include <string>
@@ -16,6 +17,8 @@ class IXmlHttpRequest;
 class ICanvasRenderContext2D;
 class IHoloJsView;
 class ISpeechRecognizer;
+class ISpatialAnchorsStore;
+class ISpatialAnchor;
 
 class IPlatform {
    public:
@@ -58,10 +61,19 @@ class IPlatform {
     virtual HoloJs::IPackageReader* getPackageReaderFromHandle(void* platformHandle) = 0;
 
     virtual bool isSurfaceMappingAvailable() = 0;
-	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host) = 0;
 
     virtual bool isSpeechRecognizerAvailable() = 0;
-	virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+
+    virtual bool canPersistAnchors(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual HoloJs::ISpatialAnchorsStore* getSpatialAnchorsStore(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+
+    virtual bool spatialAnchorsSupported(HoloJs::IHoloJsScriptHostInternal* host) = 0;
+    virtual ISpatialAnchor* createAnchor(HoloJs::IHoloJsScriptHostInternal* host,
+                                         ISpatialAnchor* relativeTo,
+                                         const std::array<double, 3>& position,
+                                         const std::array<double, 4>& orientation) = 0;
 };
 
 IPlatform* __cdecl getPlatform();

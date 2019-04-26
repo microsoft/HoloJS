@@ -206,6 +206,7 @@
     <ClInclude Include="include\holojs\windows\windows-platform.h" />
     <ClInclude Include="include\holojs\windows\xml-http-request.h" />
     <ClInclude Include="package-reader.h" />
+    <ClInclude Include="spatial-anchors.h" />
     <ClInclude Include="speech-recognizer.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="surface-mapper.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="opengl-context.cpp" />
     <ClCompile Include="package-reader.cpp" />
     <ClCompile Include="qr-scanner.cpp" />
+    <ClCompile Include="spatial-anchors.cpp" />
     <ClCompile Include="spatial-controller.cpp" />
     <ClCompile Include="spatial-input.cpp" />
     <ClCompile Include="speech-recognizer.cpp" />

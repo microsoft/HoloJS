@@ -56,11 +56,20 @@ class WindowsPlatform : public HoloJs::IPlatform {
 
     static HRESULT readfileBinaryFromHandle(HANDLE handle, std::vector<unsigned char>& data);
 
-	virtual bool isSurfaceMappingAvailable();
-	virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host);
+    virtual bool isSurfaceMappingAvailable();
+    virtual HoloJs::ISurfaceMapper* getSurfaceMapper(HoloJs::IHoloJsScriptHostInternal* host);
 
     virtual bool isSpeechRecognizerAvailable();
-	virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host);
+    virtual HoloJs::ISpeechRecognizer* getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host);
+
+    virtual bool canPersistAnchors(HoloJs::IHoloJsScriptHostInternal* host);
+    virtual HoloJs::ISpatialAnchorsStore* getSpatialAnchorsStore(HoloJs::IHoloJsScriptHostInternal* host);
+
+    virtual bool spatialAnchorsSupported(HoloJs::IHoloJsScriptHostInternal* host);
+    virtual ISpatialAnchor* createAnchor(HoloJs::IHoloJsScriptHostInternal* host,
+                                         ISpatialAnchor* relativeTo,
+                                         const std::array<double, 3>& position,
+                                         const std::array<double, 4>& orientation);
 };
 }  // namespace Platforms
 }  // namespace HoloJs

@@ -3,8 +3,9 @@
 #include "holojs/holojs.h"
 #include "holojs/private/error-handling.h"
 #include "holojs/private/surface-mapping.h"
-#include "include/holojs/windows/windows-platform.h"
 #include "include/holojs/windows/speech-recognizer.h"
+#include "include/holojs/windows/windows-platform.h"
+#include "spatial-anchors.h"
 #include "surface-mapper.h"
 #include "websocket.h"
 #include <experimental/filesystem>
@@ -259,4 +260,28 @@ bool WindowsPlatform::isSpeechRecognizerAvailable() { return true; }
 HoloJs::ISpeechRecognizer* WindowsPlatform::getSpeechRecognizer(HoloJs::IHoloJsScriptHostInternal* host)
 {
     return new HoloJs::Platforms::Win32::SpeechRecognizer(host);
+}
+
+bool WindowsPlatform::canPersistAnchors(HoloJs::IHoloJsScriptHostInternal* host)
+{
+    return spatialAnchorsSupported(host);
+}
+
+HoloJs::ISpatialAnchorsStore* WindowsPlatform::getSpatialAnchorsStore(HoloJs::IHoloJsScriptHostInternal* host)
+{
+    return new HoloJs::Platforms::Win32::SpatialAnchors(host);
+}
+
+bool WindowsPlatform::spatialAnchorsSupported(HoloJs::IHoloJsScriptHostInternal* host)
+{
+    void* coordinateSystem = nullptr;
+    return SUCCEEDED(host->getStationaryCoordinateSystem(&coordinateSystem)) && coordinateSystem != nullptr;
+}
+
+HoloJs::ISpatialAnchor* WindowsPlatform::createAnchor(HoloJs::IHoloJsScriptHostInternal* host,
+                                                      HoloJs::ISpatialAnchor* relativeTo,
+                                                      const std::array<double, 3>& position,
+                                                      const std::array<double, 4>& orientation)
+{
+    return HoloJs::Platforms::Win32::HoloJsSpatialAnchor::create(host, relativeTo, position, orientation);
 }

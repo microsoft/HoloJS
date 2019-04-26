@@ -25,6 +25,7 @@ long ScriptContext::destroy()
     m_blobProjection.reset();
     m_surfaceMappingProjection.reset();
     m_speechRecognizerProjection.reset();
+    m_spatialAnchorsProjection.reset();
     m_view.reset();
 
     if (m_nativeInterfaceRef != JS_INVALID_REFERENCE) {
@@ -106,6 +107,9 @@ long ScriptContext::initialize()
     if (m_host->getViewConfiguration().enableVoiceCommands) {
         m_speechRecognizerProjection->enable();
     }
+
+    m_spatialAnchorsProjection = make_unique<HoloJs::SpatialAnchorsProjection>(m_resourceManager, m_host);
+    RETURN_IF_FAILED(m_spatialAnchorsProjection->initialize());
 
     return HoloJs::Success;
 }

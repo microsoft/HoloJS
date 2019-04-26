@@ -21,6 +21,7 @@
 #define THREEJS_SCRIPT                  118
 #define LOADING_ANIMATION_SCRIPT        119
 #define SPEECH_RECOGNIZER_SCRIPT        120
+#define SPATIAL_ANCHORS_SCRIPT          121
 
 // Next default values for new objects
 // 
@@ -29,6 +30,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        101
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1001
-#define _APS_NEXT_SYMED_VALUE           119
+#define _APS_NEXT_SYMED_VALUE           120
 #endif
 #endif
