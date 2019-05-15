@@ -1,4 +1,4 @@
-# HoloJs
+﻿# HoloJs
 
 [Documentation](http://holojs.azurewebsites.net/help/) — [Samples](http://holojs.azurewebsites.net/help/app-samples.html)
 
