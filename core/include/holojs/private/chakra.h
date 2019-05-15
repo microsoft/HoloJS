@@ -27,6 +27,19 @@ typedef unsigned char* ChakraBytePtr;
     }                                                                                       \
     JsValueRef _##name(JsValueRef* arguments, unsigned short argumentCount);
 
+#define JS_PROJECTION_WITH_CONTEXT_DEFINE(iface, name)                                      \
+    JsValueRef m_##name = JS_INVALID_REFERENCE;                                             \
+    static JsValueRef CHAKRA_CALLBACK static_##name(JsValueRef callee,                      \
+                                                    bool isConstructCall,                   \
+                                                    JsValueRef* arguments,                  \
+                                                    unsigned short argumentCount,           \
+                                                    PVOID callbackData)                     \
+    {                                                                                       \
+        return reinterpret_cast<##iface*>(callbackData)->_##name(arguments, argumentCount, callee); \
+    }                                                                                       \
+    JsValueRef _##name(JsValueRef* arguments, unsigned short argumentCount, JsValueRef callee);
+
+
 #define JS_PROJECTION_REGISTER(namespaceName, scriptName, nativeName) \
     RETURN_IF_FAILED(                                                 \
         ScriptHostUtilities::ProjectFunction(scriptName, namespaceName, static_##nativeName, this, &m_##nativeName));

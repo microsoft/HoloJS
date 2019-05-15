@@ -55,15 +55,10 @@ long Image::setSource(const std::wstring& source, JsValueRef imageRef)
         }
 
         if (imageData) {
-            m_host->runInBackground([this, imageData]() ->long {
-                loadImageFromBuffer(imageData);
-                m_host->runInScriptContext(std::bind(&Image::finalizeLoad, this));
-                return S_OK;
-            });
-        } else {
-            // We're already on the script thread; finalize load in error now
-            finalizeLoad();
+            loadImageFromBuffer(imageData);   
         }
+
+        finalizeLoad();
     } else if (isAbsoluteWebUri(source) || (configuration.source == AppModel::AppSource::Web)) {
         m_host->runInBackground([this, source, configuration]() -> long {
             IBuffer ^ data = download(source, configuration);

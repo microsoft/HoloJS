@@ -1,7 +1,7 @@
 #pragma once
 
 #include "holojs/private/chakra.h"
-#include <map>
+#include <vector>
 #include <memory>
 
 namespace HoloJs {
@@ -10,7 +10,7 @@ namespace Input {
 
 class SpatialController {
    public:
-    SpatialController(Windows::UI::Input::Spatial::SpatialInteractionSource ^ source);
+    SpatialController(Windows::UI::Input::Spatial::SpatialInteractionSource ^ source, unsigned int index);
     ~SpatialController();
 
     HRESULT projectToScript();
@@ -24,9 +24,14 @@ class SpatialController {
     Windows::UI::Input::Spatial::SpatialInteractionController ^ m_controller;
     Windows::UI::Input::Spatial::SpatialInteractionSource ^ m_source;
 
+    unsigned short m_productId;
+    std::wstring m_handedness;
+    unsigned int m_index;
+
     JsValueRef m_scriptController = JS_INVALID_REFERENCE;
     JsValueRef m_scriptPose = JS_INVALID_REFERENCE;
-    JsValueRef m_scriptButtons[2];
+    std::vector<JsValueRef> m_scriptButtons;
+    double* m_axisBuffer;
 
     HRESULT createPoseProperty();
 

@@ -17,28 +17,9 @@ class DOMEventRegistration {
     long initialize();
 
    private:
-    JsValueRef m_addEventListenerFunction;
-    static JsValueRef CHAKRA_CALLBACK staticAddEventListener(_In_ JsValueRef callee,
-                                                             _In_ bool isConstructCall,
-                                                             _In_ JsValueRef *arguments,
-                                                             _In_ unsigned short argumentCount,
-                                                             _In_ PVOID callbackData)
-    {
-        return reinterpret_cast<DOMEventRegistration *>(callbackData)
-            ->addEventListener(callee, arguments, argumentCount);
-    }
-    JsValueRef addEventListener(_In_ JsValueRef callee, _In_ JsValueRef *arguments, _In_ unsigned short argumentCount);
-
-    JsValueRef m_removeEventListenerFunction;
-    static JsValueRef CHAKRA_CALLBACK staticRemoveEventListener(_In_ JsValueRef callee,
-                                                                _In_ bool isConstructCall,
-                                                                _In_ JsValueRef *arguments,
-                                                                _In_ unsigned short argumentCount,
-                                                                _In_ PVOID callbackData)
-    {
-        return reinterpret_cast<DOMEventRegistration *>(callbackData)->removeEventListener(arguments, argumentCount);
-    }
-    JsValueRef removeEventListener(_In_ JsValueRef *arguments, _In_ unsigned short argumentCount);
+    JS_PROJECTION_WITH_CONTEXT_DEFINE(DOMEventRegistration, addEventListener)
+    JS_PROJECTION_WITH_CONTEXT_DEFINE(DOMEventRegistration, removeEventListener)
+    JS_PROJECTION_DEFINE(DOMEventRegistration, dispatchEvent)
 };
 
 }  // namespace Interfaces

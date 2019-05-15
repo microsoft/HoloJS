@@ -18,8 +18,8 @@ SpatialInput::~SpatialInput()
         m_spatialInteractionManager->SourceLost -= m_sourceLostToken;
         m_spatialInteractionManager->SourceUpdated -= m_sourceUpdatedToken;
 
-		m_spatialInteractionManager->SourcePressed -= m_sourcePressed;
-		m_spatialInteractionManager->SourceReleased -= m_sourceReleased;
+        m_spatialInteractionManager->SourcePressed -= m_sourcePressed;
+        m_spatialInteractionManager->SourceReleased -= m_sourceReleased;
     }
 }
 
@@ -34,13 +34,13 @@ HRESULT SpatialInput::initialize()
 void SpatialInput::setupEventHandlers()
 {
     m_sourcePressed = m_spatialInteractionManager->SourcePressed += ref new Windows::Foundation::TypedEventHandler<
-         SpatialInteractionManager ^
-         , Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs ^>(
+        SpatialInteractionManager ^
+        , Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs ^>(
         std::bind(&SpatialInput::OnSourceUpdated, this, _1, _2));
 
     m_sourceReleased = m_spatialInteractionManager->SourceReleased += ref new Windows::Foundation::TypedEventHandler<
-         SpatialInteractionManager ^
-         , Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs ^>(
+        SpatialInteractionManager ^
+        , Windows::UI::Input::Spatial::SpatialInteractionSourceEventArgs ^>(
         std::bind(&SpatialInput::OnSourceUpdated, this, _1, _2));
 
     m_sourceDetectedToken = m_spatialInteractionManager->SourceDetected +=
@@ -63,11 +63,23 @@ void SpatialInput::OnSourceDetected(SpatialInteractionManager ^ sender, SpatialI
     SpatialInteractionSourceState ^ state = args->State;
     SpatialInteractionSource ^ source = state->Source;
 
+    // Find or assign a 0 based index to the input source; this index must be stable for the duration of the app session
+    const auto indexEntry = m_controllersIndexMap.find(source->Id);
+    unsigned int index;
+    if (indexEntry == m_controllersIndexMap.end()) {
+        m_controllersIndexMap.emplace(source->Id, m_currentIndex);
+        index = m_currentIndex;
+
+        m_currentIndex++;
+    } else {
+        index = indexEntry->second;
+    }
+
     if ((source->Kind == SpatialInteractionSourceKind::Hand) ||
         ((source->Kind == SpatialInteractionSourceKind::Controller) && source->IsPointingSupported)) {
         auto it = m_controllersMap.find(source->Id);
         if (it == m_controllersMap.end()) {
-            auto spatialController = make_shared<SpatialController>(source);
+            auto spatialController = make_shared<SpatialController>(source, index);
             EXIT_IF_FAILED(spatialController->projectToScript());
             m_scriptWindow->gamepadConnected(spatialController->getScriptControllerObject());
             m_controllersMap.emplace(source->Id, spatialController);

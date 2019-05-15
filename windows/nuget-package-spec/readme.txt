@@ -54,3 +54,5 @@ https://github.com/Microsoft/HoloJS/wiki/SpeechRecognizer
 1.4.0: Implement spatial anchors for Windows Mixed Reality and HoloLens. Refer to the spatial anchors wiki entries for more information:
 https://github.com/Microsoft/HoloJS/wiki/SpatialAnchor
 https://github.com/Microsoft/HoloJS/wiki/SpatialAnchorStore
+
+1.4.4: Implement more Gamepad properties; all buttons and axes supported by Mixed Reality Input Controllers are now working. Haptics is not implemented yet.

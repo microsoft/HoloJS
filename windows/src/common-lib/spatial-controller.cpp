@@ -8,14 +8,38 @@ using namespace Windows::UI::Input::Spatial;
 using namespace HoloJs::MixedReality::Input;
 using namespace HoloJs::Interfaces;
 
-static const std::wstring PressedPropertyName = L"pressed";
+static const std::wstring ButtonPressedPropertyName = L"pressed";
+static const std::wstring ButtonValuePropertyName = L"value";
+static const std::wstring ButtonTouchedPropertyName = L"touched";
+static const std::wstring AxesPropertyName = L"axes";
+static const std::wstring HandednessPropertyName = L"hand";
+static const std::wstring IndexPropertyName = L"index";
+
 static const std::wstring HasPositionPropertyName = L"hasPosition";
 static const std::wstring HasOrientationPropertyName = L"hasOrientation";
 
-SpatialController::SpatialController(SpatialInteractionSource ^ source)
+#define AXIS_COUNT 2
+
+SpatialController::SpatialController(SpatialInteractionSource ^ source, unsigned int index)
 {
     m_controller = source->Controller;
     m_source = source;
+
+    if (m_controller != nullptr) {
+        m_productId = source->Controller->ProductId;
+    } else {
+        m_productId = 0;
+    }
+    
+    if (source->Handedness == SpatialInteractionSourceHandedness::Left) {
+        m_handedness = L"left";
+    } else if (source->Handedness == SpatialInteractionSourceHandedness::Right) {
+        m_handedness = L"right";
+    } else {
+        m_handedness = L"";
+    }
+
+    m_index = index;
 }
 
 SpatialController::~SpatialController()
@@ -30,7 +54,7 @@ SpatialController::~SpatialController()
         m_scriptController = JS_INVALID_REFERENCE;
     }
 
-    for (int i = 0; i < ARRAYSIZE(m_scriptButtons); i++) {
+    for (unsigned int i = 0; i < m_scriptButtons.size(); i++) {
         if (m_scriptButtons[i] != JS_INVALID_REFERENCE) {
             JsRelease(m_scriptButtons[i], nullptr);
             m_scriptButtons[i] = JS_INVALID_REFERENCE;
@@ -40,8 +64,10 @@ SpatialController::~SpatialController()
 
 HRESULT SpatialController::projectToScript()
 {
-    static const std::wstring spatialControllerId = L"Spatial Controller";
+    static const std::wstring spatialControllerId = L"Spatial Controller (Spatial Interaction Source)";
+    static const std::wstring handsControllerId = L"Microsoft HoloLens Hands Input";
     static const std::wstring controllerIdPropName = L"id";
+    static const std::wstring controllerProductIdPropName = L"productId";
 
     RETURN_IF_JS_ERROR(JsCreateObject(&m_scriptController));
     unsigned int refCount;
@@ -54,10 +80,20 @@ HRESULT SpatialController::projectToScript()
     RETURN_IF_JS_ERROR(
         ScriptHostUtilities::SetFloat64ArrayProperty(0, &axesRef, &m_axesStoragePointer, m_scriptController, L"axes"));
 
-    JsValueRef controllerId;
+    RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptController, controllerIdPropName, m_controller == nullptr ? handsControllerId : spatialControllerId));
 
-    RETURN_IF_JS_ERROR(JsPointerToString(spatialControllerId.c_str(), spatialControllerId.length(), &controllerId));
-    RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptController, controllerIdPropName, controllerId));
+    RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(
+        m_scriptController, controllerProductIdPropName, static_cast<int>(m_productId)));
+
+    if (m_controller != nullptr) {
+        JsValueRef axisArrayRef;
+        RETURN_IF_JS_ERROR(ScriptHostUtilities::SetFloat64ArrayProperty(
+            AXIS_COUNT * 2, &axisArrayRef, &m_axisBuffer, m_scriptController, AxesPropertyName.c_str()));
+    }
+
+    RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptController, IndexPropertyName, static_cast<int>(m_index)));
+
+    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptController, HandednessPropertyName, m_handedness));
 
     return S_OK;
 }
@@ -77,9 +113,13 @@ HRESULT SpatialController::createPoseProperty()
     RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, HasPositionPropertyName, hasPosition));
     RETURN_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_scriptPose, HasOrientationPropertyName, hasOrientation));
 
-    // Controllers don't always have orientation; create an orientation array, but don't attach it to the pose object yet
-    RETURN_IF_FAILED(ScriptHostUtilities::CreateTypedArray(
-        JsArrayTypeFloat32, &m_orientationRef, 4, reinterpret_cast<unsigned char**>(&m_orientationVectorStoragePointer)));
+    // Controllers don't always have orientation; create an orientation array, but don't attach it to the pose object
+    // yet
+    RETURN_IF_FAILED(
+        ScriptHostUtilities::CreateTypedArray(JsArrayTypeFloat32,
+                                              &m_orientationRef,
+                                              4,
+                                              reinterpret_cast<unsigned char**>(&m_orientationVectorStoragePointer)));
     RETURN_IF_JS_ERROR(JsAddRef(m_orientationRef, nullptr));
 
     JsValueRef nullRef;
@@ -105,15 +145,19 @@ HRESULT SpatialController::createButtonsArray()
 {
     static const std::wstring buttonsPropertyName = L"buttons";
 
+    m_scriptButtons.resize(m_controller != nullptr ? 5 : 1);
+
     JsValueRef buttonsArray;
-    RETURN_IF_JS_ERROR(JsCreateArray(2, &buttonsArray));
+    RETURN_IF_JS_ERROR(JsCreateArray(static_cast<unsigned int>(m_scriptButtons.size()), &buttonsArray));
 
     JsValueRef falseRef;
     RETURN_IF_JS_ERROR(JsGetFalseValue(&falseRef));
 
-    for (int i = 0; i < ARRAYSIZE(m_scriptButtons); i++) {
+    for (unsigned int i = 0; i < m_scriptButtons.size(); i++) {
         RETURN_IF_JS_ERROR(JsCreateObject(&m_scriptButtons[i]));
-        RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptButtons[i], PressedPropertyName, falseRef));
+        RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptButtons[i], ButtonPressedPropertyName, falseRef));
+        RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptButtons[i], ButtonTouchedPropertyName, falseRef));
+        RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptButtons[i], ButtonValuePropertyName, 0));
 
         JsValueRef indexRef;
         RETURN_IF_JS_ERROR(JsIntToNumber(i, &indexRef));
@@ -175,15 +219,62 @@ HRESULT SpatialController::update(SpatialInteractionSourceState ^ state, Spatial
         CopyMemory(m_linearVelocityStoragePointer, &linearVelocityFloat3.x, 3 * sizeof(float));
     }
 
-    JsValueRef buttonPressedRef;
-    RETURN_IF_JS_ERROR(JsBoolToBoolean(state->IsPressed, &buttonPressedRef));
+    struct ButtonData {
+        bool pressed;
+        bool touched;
+        double value;
+    };
 
-    JsValueRef buttonSelectPressedRef;
-    RETURN_IF_JS_ERROR(JsBoolToBoolean(state->IsSelectPressed, &buttonSelectPressedRef));
+    const auto& controller = state->ControllerProperties;
 
-    RETURN_IF_JS_ERROR(ScriptHostUtilities::SetJsProperty(m_scriptButtons[0], PressedPropertyName, buttonPressedRef));
-    RETURN_IF_JS_ERROR(
-        ScriptHostUtilities::SetJsProperty(m_scriptButtons[1], PressedPropertyName, buttonSelectPressedRef));
+    if (controller != nullptr) {
+        ButtonData buttonData[] = {
+            {controller->IsThumbstickPressed,
+             controller->IsThumbstickPressed,
+             controller->IsThumbstickPressed ? 1.0 : 0.0 ? 1.0 : 0.0},
+            {state->IsSelectPressed, state->IsSelectPressed, state->SelectPressedValue},
+            {state->IsGrasped, state->IsGrasped, state->IsGrasped ? 1.0 : 0.0},
+            {state->IsMenuPressed, state->IsMenuPressed, state->IsMenuPressed ? 1.0 : 0.0},
+            {controller->IsTouchpadPressed, controller->IsTouchpadTouched, controller->IsTouchpadPressed ? 1.0 : 0.0}};
+
+        int index = 0;
+        for (const auto& button : buttonData) {
+            JsValueRef pressedRef;
+            RETURN_IF_JS_ERROR(JsBoolToBoolean(button.pressed, &pressedRef));
+            RETURN_IF_JS_ERROR(
+                ScriptHostUtilities::SetJsProperty(m_scriptButtons[index], ButtonPressedPropertyName, pressedRef));
+
+            JsValueRef touchedRef;
+            RETURN_IF_JS_ERROR(JsBoolToBoolean(button.touched, &touchedRef));
+            RETURN_IF_JS_ERROR(
+                ScriptHostUtilities::SetJsProperty(m_scriptButtons[index], ButtonTouchedPropertyName, touchedRef));
+
+            RETURN_IF_JS_ERROR(
+                ScriptHostUtilities::SetJsProperty(m_scriptButtons[index], ButtonValuePropertyName, button.value));
+
+            index++;
+        }
+
+        m_axisBuffer[0] = controller->ThumbstickX;
+        m_axisBuffer[1] = controller->ThumbstickY;
+
+        m_axisBuffer[2] = controller->TouchpadX;
+        m_axisBuffer[3] = controller->TouchpadY;
+    } else {
+        ButtonData buttonData[] = {
+            {state->IsPressed, state->IsPressed, state->SelectPressedValue}};
+
+        JsValueRef pressedRef;
+        RETURN_IF_JS_ERROR(JsBoolToBoolean(state->IsPressed, &pressedRef));
+        RETURN_IF_JS_ERROR(
+            ScriptHostUtilities::SetJsProperty(m_scriptButtons[0], ButtonPressedPropertyName, pressedRef));
+
+        RETURN_IF_JS_ERROR(
+            ScriptHostUtilities::SetJsProperty(m_scriptButtons[0], ButtonTouchedPropertyName, pressedRef));
+
+        RETURN_IF_JS_ERROR(
+            ScriptHostUtilities::SetJsProperty(m_scriptButtons[0], ButtonValuePropertyName, state->IsPressed ? 1.0 : 0.0));
+    }
 
     return S_OK;
 }

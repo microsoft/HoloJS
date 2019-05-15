@@ -52,6 +52,8 @@ class SpatialInput {
     void setupEventHandlers();
 
     std::map<unsigned int, std::shared_ptr<SpatialController>> m_controllersMap;
+    std::map<unsigned int, unsigned int> m_controllersIndexMap;
+    unsigned int m_currentIndex;
 
     Windows::Perception::Spatial::SpatialStationaryFrameOfReference ^ m_stationaryFrameOfReference;
 };

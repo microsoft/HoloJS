@@ -1,5 +1,5 @@
-#include "include/holojs/private/chakra.h"
 #include "include/holojs/private/event-target.h"
+#include "include/holojs/private/chakra.h"
 #include "include/holojs/private/error-handling.h"
 #include <array>
 
@@ -68,7 +68,8 @@ long EventTarget::invokeEventListeners(const wstring& eventName)
     return S_OK;
 }
 
-long EventTarget::invokeEventListeners(const std::wstring& eventName, JsValueRef argument) {
+long EventTarget::invokeEventListeners(const std::wstring& eventName, JsValueRef argument)
+{
     JsValueRef result;
 
     auto handlersForEventName = m_handlerMap.find(eventName);
@@ -77,15 +78,15 @@ long EventTarget::invokeEventListeners(const std::wstring& eventName, JsValueRef
             array<JsValueRef, 2> allArguments;
             allArguments[0] = handler.second;
             allArguments[1] = argument;
-            HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(handler.first, allArguments.data(), static_cast<unsigned short>(allArguments.size()), &result));
+            HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+                handler.first, allArguments.data(), static_cast<unsigned short>(allArguments.size()), &result));
         }
     }
 
     return S_OK;
 }
 
-long EventTarget::invokeEventListeners(const std::wstring& eventName,
-                                          const vector<JsValueRef>& arguments)
+long EventTarget::invokeEventListeners(const std::wstring& eventName, const vector<JsValueRef>& arguments)
 {
     JsValueRef result;
 
@@ -95,8 +96,8 @@ long EventTarget::invokeEventListeners(const std::wstring& eventName,
             vector<JsValueRef> allArguments;
             allArguments.push_back(handler.second);
             allArguments.insert(allArguments.end(), arguments.begin(), arguments.end());
-            HANDLE_EXCEPTION_IF_JS_ERROR(
-                JsCallFunction(handler.first, allArguments.data(), static_cast<unsigned short>(allArguments.size()), &result));
+            HANDLE_EXCEPTION_IF_JS_ERROR(JsCallFunction(
+                handler.first, allArguments.data(), static_cast<unsigned short>(allArguments.size()), &result));
         }
     }
 
