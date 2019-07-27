@@ -62,7 +62,7 @@ function init() {
             });
     }
 
-    loadMolecule('media/models/caffeine.pdb');
+    loadMolecule('http://holojs.azurewebsites.net/samples/media/models/caffeine.pdbmedia/models/caffeine.pdb');
 }
 
 function loadMolecule(url) {
