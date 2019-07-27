@@ -1,1 +1,6 @@
-{"scripts":["threejs/three.js","threejs/control/orbitcontrols.js","threejs/geometries/boxlinegeometry.js","appcode/vr-cubes.js"],"resources":[],"name":"","HtmlAppName":"vr-cubes.html"}
+{
+  "scripts": [ "threejs/three.js", "threejs/control/OrbitControls.js", "threejs/geometries/BoxLineGeometry.js", "appcode/vr-cubes.js" ],
+  "resources": [],
+  "name": "VR cubes",
+  "HtmlAppName": "vr-cubes.html"
+}
