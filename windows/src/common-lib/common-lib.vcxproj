@@ -193,6 +193,7 @@
     <ClInclude Include="audio-param.h" />
     <ClInclude Include="gain-node.h" />
     <ClInclude Include="include\holojs\windows\IBufferOnMemory.h" />
+    <ClInclude Include="include\holojs\windows\image-data.h" />
     <ClInclude Include="include\holojs\windows\image-element.h" />
     <ClInclude Include="include\holojs\windows\mixed-reality\camera-resources.h" />
     <ClInclude Include="include\holojs\windows\mixed-reality\device-resources.h" />

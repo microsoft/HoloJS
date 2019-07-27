@@ -988,28 +988,29 @@ JsValueRef RenderContext2D::drawImage(HoloJs::IIMage* image, JsValueRef* argumen
     Rect destRect;
     RETURN_INVALID_REF_IF_FAILED(parseRect(arguments[4], destRect));
 
-    unsigned int imageBufferSize = 0;
-    WICInProcPointer imageMemory = nullptr;
-    unsigned int stride;
-
     HoloJs::IMAGE_FORMAT_GUID imageFormat;
     RETURN_INVALID_REF_IF_FALSE(sizeof(GUID) == sizeof(HoloJs::IMAGE_FORMAT_GUID));
     memcpy(&imageFormat, &GUID_WICPixelFormat32bppRGBA, sizeof(imageFormat));
 
+	IImageData* imageData;
     RETURN_INVALID_REF_IF_FAILED(
-        image->getImageData(imageFormat, &imageMemory, imageBufferSize, stride, HoloJs::ImageFlipRotation::None));
+        image->getImageData(imageFormat, &imageData, HoloJs::ImageFlipRotation::None));
+
+	unique_ptr<IImageData> imageDataPtr;
+    imageDataPtr.reset(imageData);
 
     void* canvasBitmapPtr;
     RETURN_INVALID_REF_IF_FAILED(createCanvasBitmapFromBytes(m_rendererPtr,
-                                                             imageBufferSize,
-                                                             reinterpret_cast<unsigned char*>(imageMemory),
+                                                             imageData->m_pixelsSize,
+                                                             reinterpret_cast<unsigned char*>(imageData->m_pixels),
                                                              static_cast<int>(image->getWidth()),
                                                              static_cast<int>(image->getHeight()),
                                                              m_nativePixelFormat,
                                                              &canvasBitmapPtr));
     auto canvasBitmap = safe_cast<CanvasBitmap ^>(reinterpret_cast<Platform::Object ^>(canvasBitmapPtr));
-
     m_session->DrawImage(canvasBitmap, destRect, srcRect, m_globalOpacity);
+	delete canvasBitmap;
+
 
     return JS_INVALID_REFERENCE;
 }

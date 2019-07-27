@@ -39,19 +39,19 @@ void WebGLRenderingContext::texImage2D(GLenum target,
     EXIT_IF_TRUE(type != UNSIGNED_BYTE);
     static_assert(sizeof(WICPixelFormatGUID) == sizeof(IMAGE_FORMAT_GUID), "image format type mismatch");
 
-    unsigned int imageBufferSize = 0;
-    unsigned char* imageBuffer = nullptr;
-    unsigned int stride;
-
     GUID imageDecodeFormat = (internalformat == GL_RGB ? GUID_WICPixelFormat24bppRGB : GUID_WICPixelFormat32bppRGBA);
     IMAGE_FORMAT_GUID holoJsImageFormat;
     memcpy(&holoJsImageFormat, &imageDecodeFormat, sizeof(imageDecodeFormat));
 
     HoloJs::ImageFlipRotation imageFlip =
         FlipYEnabled ? HoloJs::ImageFlipRotation::FlipY : HoloJs::ImageFlipRotation::None;
-    EXIT_IF_FAILED(image->getImageData(holoJsImageFormat, &imageBuffer, imageBufferSize, stride, imageFlip));
 
-    glTexImage2D(target, level, internalformat, width, height, border, format, type, imageBuffer);
+	IImageData* imageData;
+    EXIT_IF_FAILED(image->getImageData(holoJsImageFormat, &imageData, imageFlip));
+    unique_ptr<IImageData> imageDataPtr;
+    imageDataPtr.reset(imageData);
+ 
+    glTexImage2D(target, level, internalformat, width, height, border, format, type, imageData->m_pixels);
 }
 
 void WebGLRenderingContext::texImage2D(GLenum target,

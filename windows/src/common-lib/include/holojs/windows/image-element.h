@@ -26,9 +26,7 @@ class Image : public HoloJs::IIMage {
     virtual long setSourceFromBlob(JsValueRef blobRef, HoloJs::IBlob* blob, JsValueRef imageRef);
 
     virtual long getImageData(const IMAGE_FORMAT_GUID& imageFormat,
-                              unsigned char** pixels,
-                              unsigned int& pixelBufferSize,
-                              unsigned int& pixelStride,
+                              IImageData** imageData,
                               ImageFlipRotation flipOperation);
 
     virtual unsigned int getWidth() { return m_width; }
@@ -66,8 +64,11 @@ class Image : public HoloJs::IIMage {
     HRESULT decodeImage(IWICImagingFactory* imagingFactory);
     void finalizeLoad();
 
-    Windows::Storage::Streams::IBuffer ^ download(const std::wstring& source,
-                                                  HoloJs::AppModel::AppConfiguration configuration);
+    Windows::Storage::Streams::IBuffer ^
+        download(const std::wstring& source, HoloJs::AppModel::AppConfiguration configuration);
+
+    Windows::Storage::Streams::IBuffer ^ getFromCamera();
+
     HRESULT read(const std::wstring& source,
                  std::vector<unsigned char>& data,
                  HoloJs::AppModel::AppConfiguration configuration);
@@ -92,13 +93,7 @@ class Image : public HoloJs::IIMage {
     Microsoft::WRL::ComPtr<IWICBitmapSource> m_bitmapSource;
     Microsoft::WRL::ComPtr<IWICBitmapDecoder> m_decoder;
     Microsoft::WRL::ComPtr<IWICBitmap> m_bitmap;
-    Microsoft::WRL::ComPtr<IWICBitmapLock> m_bitmapLock;
     WICPixelFormatGUID m_sourceFormat;
-    WICPixelFormatGUID m_decodedFormat;
-
-    WICInProcPointer m_pixels;
-    unsigned int m_pixelsSize;
-    unsigned int m_stride;
 };
 }  // namespace Win32
 }  // namespace HoloJs

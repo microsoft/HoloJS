@@ -3,7 +3,7 @@
   <metadata>
     <id>holojs</id>
     <title>HoloJs</title>
-    <version>1.4.4-alpha</version>
+    <version>1.5.0-alpha</version>
     <authors>Cristian Petruta</authors>
     <owners>crispet</owners>
     <license type="expression">MIT</license>
@@ -13,7 +13,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>HoloJS is a JavaScript runtime for AR and VR graphics things. It provides unified rendering for AR (HoloLens), VR (Windows Mixed Reality headsets) and 2D desktop using standard WebGL/WebVR scripts. HoloJs can be embedded in Win32 and UWP apps.</description>
     <summary>JavaScript runtime with WebGL, WebVR and WebXR support for building VR and AR applications.</summary>
-    <releaseNotes>Implement all Gamepad axes and buttons for Mixed Reality Controllers. See sample app at http://holojs.azurewebsites.net/v8/controller-view.json. Haptics is not implemented yet.</releaseNotes>
+    <releaseNotes>Implement WebCam as source for an Image element.</releaseNotes>
     <tags>WebVR WebXR WebGL JavaScript HoloLens VR</tags>
   </metadata>
   <files>

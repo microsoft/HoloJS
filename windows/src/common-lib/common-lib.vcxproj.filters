@@ -117,6 +117,9 @@
     <ClInclude Include="spatial-anchors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\holojs\windows\image-data.h">
+      <Filter>include\holojs\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="windows-xml-http-request.cpp" />

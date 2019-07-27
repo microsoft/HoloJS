@@ -1,10 +1,10 @@
 #pragma once
 
+#include "blob-interface.h"
 #include "chakra.h"
 #include "event-target.h"
 #include "holojs-view.h"
 #include "object-lifetime.h"
-#include "blob-interface.h"
 
 namespace HoloJs {
 
@@ -17,6 +17,17 @@ typedef struct _IMAGE_FORMAT_GUID {
 
 enum class ImageFlipRotation { None, FlipY };
 
+class IImageData {
+   public:
+    IMAGE_FORMAT_GUID m_decodedFormat;
+
+    byte* m_pixels;
+    unsigned int m_pixelsSize;
+    unsigned int m_stride;
+
+	virtual ~IImageData() {};
+};
+
 class IIMage : public HoloJs::EventTarget, public HoloJs::ResourceManagement::IRelease {
    public:
     virtual ~IIMage() {}
@@ -25,9 +36,7 @@ class IIMage : public HoloJs::EventTarget, public HoloJs::ResourceManagement::IR
     virtual long setSourceFromBlob(JsValueRef blobRef, IBlob* blob, JsValueRef imageRef) = 0;
 
     virtual long getImageData(const IMAGE_FORMAT_GUID& imageFormat,
-                              unsigned char** pixels,
-                              unsigned int& pixelBufferSize,
-                              unsigned int& pixelStride,
+                              IImageData** imageData,
                               ImageFlipRotation flipOperation) = 0;
 
     virtual unsigned int getWidth() = 0;

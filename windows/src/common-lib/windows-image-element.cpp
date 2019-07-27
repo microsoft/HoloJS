@@ -4,6 +4,7 @@
 #include "holojs/private/error-handling.h"
 #include "holojs/private/platform-interfaces.h"
 #include "holojs/private/script-host-utilities.h"
+#include "include/holojs/windows/image-data.h"
 #include "include/holojs/windows/image-element.h"
 #include <experimental/filesystem>
 #include <functional>
@@ -17,6 +18,8 @@ using namespace Windows::Web::Http;
 using namespace Windows::Storage::Streams;
 using namespace concurrency;
 using namespace Windows::Security::Cryptography;
+using namespace Windows::Media::Capture;
+using namespace Windows::Media::MediaProperties;
 
 Image::~Image() {}
 
@@ -55,10 +58,21 @@ long Image::setSource(const std::wstring& source, JsValueRef imageRef)
         }
 
         if (imageData) {
-            loadImageFromBuffer(imageData);   
+            loadImageFromBuffer(imageData);
         }
 
         finalizeLoad();
+    } else if (_wcsicmp(source.c_str(), L"camera://local/default") == 0) {
+        m_host->runInBackground([this]() -> long {
+            IBuffer ^ data = getFromCamera();
+
+            if (data) {
+                loadImageFromBuffer(data);
+            }
+
+            m_host->runInScriptContext(std::bind(&Image::finalizeLoad, this));
+            return S_OK;
+        });
     } else if (isAbsoluteWebUri(source) || (configuration.source == AppModel::AppSource::Web)) {
         m_host->runInBackground([this, source, configuration]() -> long {
             IBuffer ^ data = download(source, configuration);
@@ -82,7 +96,7 @@ long Image::setSource(const std::wstring& source, JsValueRef imageRef)
             return S_OK;
         });
     } else if (configuration.source == AppModel::AppSource::Package) {
-        m_host->runInBackground([this, source, configuration]() ->long {
+        m_host->runInBackground([this, source, configuration]() -> long {
             vector<unsigned char> imageArray;
             if (SUCCEEDED(readFromPackage(source, imageArray, configuration))) {
                 m_imageArray = make_shared<vector<unsigned char>>(std::move(imageArray));
@@ -97,6 +111,7 @@ long Image::setSource(const std::wstring& source, JsValueRef imageRef)
 
     return S_OK;
 }
+
 long Image::setSourceFromBlob(JsValueRef blobRef, IBlob* blob, JsValueRef imageRef)
 {
     // Just one load operation at a time
@@ -116,72 +131,44 @@ long Image::setSourceFromBlob(JsValueRef blobRef, IBlob* blob, JsValueRef imageR
     return S_OK;
 }
 
-long Image::getImageData(const IMAGE_FORMAT_GUID& imageFormat,
-                         unsigned char** pixels,
-                         unsigned int& pixelBufferSize,
-                         unsigned int& pixelStride,
-                         ImageFlipRotation flipOperation)
+long Image::getImageData(const IMAGE_FORMAT_GUID& imageFormat, IImageData** imageData, ImageFlipRotation flipOperation)
 {
     static_assert(sizeof(WICPixelFormatGUID) == sizeof(IMAGE_FORMAT_GUID), "image format type mismatch");
     WICPixelFormatGUID format;
     memcpy(&format, &imageFormat, sizeof(WICPixelFormatGUID));
 
-    if (!m_bitmapLock) {
-        // Do format conversion if required
-        if (!IsEqualGUID(m_sourceFormat, format)) {
-            Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
-            RETURN_IF_FAILED(WICConvertBitmapSource(format, m_bitmapSource.Get(), &converter));
-            RETURN_IF_FAILED(converter.As(&m_bitmapSource));
-        }
-
-        Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory;
-        RETURN_IF_FAILED(CoCreateInstance(
-            CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &imagingFactory));
-
-        // Flip image if needed
-        Microsoft::WRL::ComPtr<IWICBitmapFlipRotator> flipRotator;
-        if (flipOperation == ImageFlipRotation::FlipY) {
-            RETURN_IF_FAILED(imagingFactory->CreateBitmapFlipRotator(&flipRotator));
-
-            RETURN_IF_FAILED(flipRotator->Initialize(m_bitmapSource.Get(), WICBitmapTransformFlipVertical));
-            RETURN_IF_FAILED(flipRotator.As(&m_bitmapSource));
-        }
-
-        RETURN_IF_FAILED(
-            imagingFactory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapCacheOnDemand, &m_bitmap));
-
-        // Lock the pixels
-        WICRect allBitmapRect;
-        allBitmapRect.X = 0;
-        allBitmapRect.Y = 0;
-        allBitmapRect.Width = m_width;
-        allBitmapRect.Height = m_height;
-        RETURN_IF_FAILED(m_bitmap->Lock(&allBitmapRect, WICBitmapLockRead, &m_bitmapLock));
-
-        WICInProcPointer localPixels;
-        unsigned int localPixelsSize;
-        unsigned int localStride;
-
-        RETURN_IF_FAILED(m_bitmapLock->GetStride(&localStride));
-
-        RETURN_IF_FAILED(m_bitmapLock->GetDataPointer(&localPixelsSize, &localPixels));
-
-        m_decodedFormat = format;
-        m_pixels = localPixels;
-        m_pixelsSize = localPixelsSize;
-        m_stride = localStride;
-
-    } else {
-        // The already decoded format does not match the requested format
-        // TODO: re-decoding the image would be possible if we create a 'release pixels pointer' method
-        if (!IsEqualGUID(format, m_decodedFormat)) {
-            return E_FAIL;
-        }
+    // Do format conversion if required
+    if (!IsEqualGUID(m_sourceFormat, format)) {
+        Microsoft::WRL::ComPtr<IWICBitmapSource> converter;
+        RETURN_IF_FAILED(WICConvertBitmapSource(format, m_bitmapSource.Get(), &converter));
+        RETURN_IF_FAILED(converter.As(&m_bitmapSource));
     }
 
-    *pixels = m_pixels;
-    pixelBufferSize = m_pixelsSize;
-    pixelStride = m_stride;
+    Microsoft::WRL::ComPtr<IWICImagingFactory> imagingFactory;
+    RETURN_IF_FAILED(
+        CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &imagingFactory));
+
+    // Flip image if needed
+    Microsoft::WRL::ComPtr<IWICBitmapFlipRotator> flipRotator;
+    if (flipOperation == ImageFlipRotation::FlipY) {
+        RETURN_IF_FAILED(imagingFactory->CreateBitmapFlipRotator(&flipRotator));
+
+        RETURN_IF_FAILED(flipRotator->Initialize(m_bitmapSource.Get(), WICBitmapTransformFlipVertical));
+        RETURN_IF_FAILED(flipRotator.As(&m_bitmapSource));
+    }
+
+    RETURN_IF_FAILED(imagingFactory->CreateBitmapFromSource(m_bitmapSource.Get(), WICBitmapCacheOnLoad, &m_bitmap));
+
+    // Lock the pixels
+    WICRect allBitmapRect;
+    allBitmapRect.X = 0;
+    allBitmapRect.Y = 0;
+    allBitmapRect.Width = m_width;
+    allBitmapRect.Height = m_height;
+
+    Microsoft::WRL::ComPtr<IWICBitmapLock> bitmapLock;
+    RETURN_IF_FAILED(m_bitmap->Lock(&allBitmapRect, WICBitmapLockRead, &bitmapLock));
+    *imageData = new WindowsImageData(bitmapLock.Detach(), imageFormat);
 
     return S_OK;
 }
@@ -199,14 +186,48 @@ void Image::finalizeLoad()
     EXIT_IF_JS_ERROR(JsIntToNumber(static_cast<int>(m_height), &heightRef));
     EXIT_IF_FAILED(ScriptHostUtilities::SetJsProperty(m_imageScriptReference, heightId, heightRef));
 
+	JsRelease(m_imageScriptReference, nullptr);
+    m_imageScriptReference = JS_INVALID_REFERENCE;
+
     if (m_isLoaded) {
         m_eventTargetImplementation.invokeEventListeners(L"load");
     } else {
         m_eventTargetImplementation.invokeEventListeners(L"error");
     }
+}
 
-    JsRelease(m_imageScriptReference, nullptr);
-    m_imageScriptReference = JS_INVALID_REFERENCE;
+IBuffer ^ Image::getFromCamera()
+{
+    auto mediaCapture = ref new MediaCapture();
+
+    auto initializeTask = create_task(mediaCapture->InitializeAsync());
+
+    try {
+        initializeTask.get();
+    } catch (...) {
+        return nullptr;
+    }
+
+    auto captureFormat = ImageEncodingProperties::CreateJpeg();
+    auto captureStream = ref new InMemoryRandomAccessStream();
+
+    // take photo
+    auto captureTask = create_task(mediaCapture->CapturePhotoToStreamAsync(captureFormat, captureStream));
+    try {
+        captureTask.wait();
+    } catch (...) {
+        return nullptr;
+    }
+
+    // Copy the photo stream to a new IBuffer
+    captureStream->Seek(0);
+    RETURN_NULL_IF_TRUE(captureStream->Size > MAXINT32);
+    IBuffer ^ imageBuffer = ref new Buffer(static_cast<int>(captureStream->Size));
+    create_task(
+        captureStream->ReadAsync(imageBuffer, static_cast<unsigned int>(captureStream->Size), InputStreamOptions::None))
+        .wait();
+
+    return imageBuffer;
 }
 
 HRESULT Image::loadImageFromArray()
@@ -218,7 +239,8 @@ HRESULT Image::loadImageFromArray()
     RETURN_IF_FAILED(imagingFactory->CreateStream(&m_imageStream));
 
     RETURN_IF_TRUE(m_imageArray->size() > UINT_MAX);
-    RETURN_IF_FAILED(m_imageStream->InitializeFromMemory(m_imageArray->data(), static_cast<unsigned int>(m_imageArray->size())));
+    RETURN_IF_FAILED(
+        m_imageStream->InitializeFromMemory(m_imageArray->data(), static_cast<unsigned int>(m_imageArray->size())));
 
     return decodeImage(imagingFactory.Get());
 }
@@ -235,10 +257,11 @@ HRESULT Image::loadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imageBuf
     RETURN_IF_FAILED(
         CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, &imagingFactory));
 
-    RETURN_IF_FAILED(imagingFactory->CreateStream(&m_imageStream));
+    RETURN_IF_FAILED(imagingFactory->CreateStream(m_imageStream.ReleaseAndGetAddressOf()));
 
     RETURN_IF_FAILED(m_imageStream->InitializeFromMemory(imageNativeBuffer, imageBuffer->Length));
     // Now that we initialized the image stream, keep a reference to the image buffer underneath it
+
     m_imageBuffer = imageBuffer;
 
     return decodeImage(imagingFactory.Get());
@@ -247,7 +270,7 @@ HRESULT Image::loadImageFromBuffer(Windows::Storage::Streams::IBuffer ^ imageBuf
 HRESULT Image::decodeImage(IWICImagingFactory* imagingFactory)
 {
     RETURN_IF_FAILED(imagingFactory->CreateDecoderFromStream(
-        m_imageStream.Get(), nullptr, WICDecodeMetadataCacheOnDemand, &m_decoder));
+        m_imageStream.Get(), nullptr, WICDecodeMetadataCacheOnDemand, m_decoder.ReleaseAndGetAddressOf()));
 
     unsigned int frameCount;
     RETURN_IF_FAILED(m_decoder->GetFrameCount(&frameCount));
@@ -255,7 +278,7 @@ HRESULT Image::decodeImage(IWICImagingFactory* imagingFactory)
 
     Microsoft::WRL::ComPtr<IWICBitmapFrameDecode> bitmapFrameDecode;
 
-    RETURN_IF_FAILED(m_decoder->GetFrame(0, &bitmapFrameDecode));
+    RETURN_IF_FAILED(m_decoder->GetFrame(0, bitmapFrameDecode.ReleaseAndGetAddressOf()));
 
     RETURN_IF_FAILED(bitmapFrameDecode.As(&m_bitmapSource));
 
