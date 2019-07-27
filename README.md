@@ -1,15 +1,15 @@
 ﻿# HoloJs
 
-[Documentation](http://holojs.azurewebsites.net/help/) — [Samples](http://holojs.azurewebsites.net/help/app-samples.html)
+[Documentation](https://microsoft.github.io/HoloJS) — [Samples](https://microsoft.github.io/HoloJS/app-samples.html)
 
 HoloJs is an execution host for JavaScript Augmented and Virtual Reality applications.
 
 HoloJs enables JavaScript rendering to Win32 windows and controls, UWP views, Windows Mixed Reality headsets and the HoloLens through web standard interfaces such as WebGL, WebVR, WebAudio, Gamepad APIs, Canvas, XmlHttpRequest, Image.
 
 ## Usage
-The fastest way to create VR and AR experiences with HoloJs is to use the [Spin](https://github.com/microsoft/HoloJS/releases) tool and Visual Studio Code. Spin is a HoloJs execution host that integrates with Visual Studio Code for a seamless run and debug experience. Please refer to [VR and AR experiences with Spin](http://holojs.azurewebsites.net/help/spin-make.html) for more details.
+The fastest way to create VR and AR experiences with HoloJs is to use the [Spin](https://github.com/microsoft/HoloJS/releases) tool and Visual Studio Code. Spin is a HoloJs execution host that integrates with Visual Studio Code for a seamless run and debug experience. Please refer to [VR and AR experiences with Spin](https://microsoft.github.io/HoloJS/spin-make.html) for more details.
 
-Alternatively, use the [HoloJs Nuget package](https://www.nuget.org/packages/holojs) for embedding it into Win32 and UWP apps. Please refer to [HoloJs in Win32 apps](http://holojs.azurewebsites.net/help/win32-apps.html) and [HoloJs in UWP apps](http://holojs.azurewebsites.net/help/uwp-apps.html) for detailed instructions.
+Alternatively, use the [HoloJs Nuget package](https://www.nuget.org/packages/holojs) for embedding it into Win32 and UWP apps. Please refer to [HoloJs in Win32 apps](https://microsoft.github.io/HoloJS/win32-apps.html) and [HoloJs in UWP apps](https://microsoft.github.io/HoloJS/uwp-apps.html) for detailed instructions.
 
 Lastly, HoloJs can be built from scratch and customized as needed.
 
