@@ -1,9 +1,10 @@
 ﻿#include "stdafx.h"
 #include "holojs/holojs.h"
+#include "holojs/private/error-handling.h"
+#include "holojs/windows/image-element.h"
 #include "holojs/windows/render-context-2d.h"
 #include "holojs/windows/xml-http-request.h"
-#include "holojs/windows/image-element.h"
-#include "holojs/private/error-handling.h"
+#include "offscreen-view.h"
 #include "uwp-platform.h"
 #include "winrt-view.h"
 #include <map>
@@ -23,11 +24,16 @@ using namespace Windows::Web;
 using namespace std;
 using namespace concurrency;
 
-HoloJs::IHoloJsView* UWPPlatform::makeView(HoloJs::ViewConfiguration viewConfig) { return new WinRTHoloJsView(viewConfig); }
-
-void UWPPlatform::enableDebugger(HoloJs::IHoloJsScriptHost* host, JsRuntimeHandle runtime) {
-	JsStartDebugging();
+HoloJs::IHoloJsView* UWPPlatform::makeView(HoloJs::ViewConfiguration viewConfig)
+{
+    if (viewConfig.viewMode == HoloJs::ViewMode::Offscreen) {
+        return new UWPOffscreenView(viewConfig);
+    } else {
+        return new WinRTHoloJsView(viewConfig);
+    }
 }
+
+void UWPPlatform::enableDebugger(HoloJs::IHoloJsScriptHost* host, JsRuntimeHandle runtime) { JsStartDebugging(); }
 
 HRESULT UWPPlatform::readResourceScript(const wchar_t* name, std::wstring& scriptText)
 {

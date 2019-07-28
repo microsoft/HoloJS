@@ -51,6 +51,9 @@
     <ClInclude Include="file-handle-access.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="uwp\offscreen-view.h">
+      <Filter>uwp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -76,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="uwp-opengl-context.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="uwp\offscreen-view.cpp">
+      <Filter>uwp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

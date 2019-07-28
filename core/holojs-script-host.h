@@ -61,13 +61,20 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
     virtual long createExecutionContext();
     virtual long executeLoadedApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
-	virtual long showHostRenderedElement(HoloJs::HostRenderedElements element);
+    virtual long showHostRenderedElement(HoloJs::HostRenderedElements element);
 
     const ViewConfiguration& getViewConfiguration() const { return m_viewConfiguration; }
+
+    virtual void enableLoadingAnimation() { m_loadingAnimationEnabled = true; }
+    virtual void disableLoadingAnimation() { m_loadingAnimationEnabled = false; }
+
+    virtual long draw();
 
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;
     bool m_debugRequested;
+
+    bool m_loadingAnimationEnabled = true;
 
     ViewConfiguration m_viewConfiguration;
 

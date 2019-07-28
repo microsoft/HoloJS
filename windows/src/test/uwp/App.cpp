@@ -13,9 +13,9 @@
         viewConfiguration->enableQrCodeNavigation();
     //}
 
-    viewConfiguration->setViewMode(HoloJs::UWP::ViewMode::Default);
+    viewConfiguration->setViewMode(HoloJs::UWP::ViewMode::Offscreen);
     if (scriptHost->initialize(viewConfiguration)) {
-        auto uri = ref new Platform::String(L"e:\\src\\first-app\first-app.json");
+        auto uri = ref new Platform::String(L"https://microsoft.github.io/HoloJS/samples/ballshooter.json");
         scriptHost->startUri(uri);
         //scriptHost->startWithEmptyApp();
     }

@@ -68,6 +68,9 @@ class Win32HoloJsView : public IHoloJsView, public Win32HoloJsBaseView {
 
     virtual void runApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
 
+	// Not implemented for Win32 HWND view; draw cadence is managed internally
+    virtual long draw() { return E_FAIL; }
+
    private:
     HRESULT createWindow();
 

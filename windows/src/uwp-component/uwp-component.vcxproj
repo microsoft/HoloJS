@@ -327,6 +327,7 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     <ClInclude Include="targetver.h" />
     <ClInclude Include="uwp-mixed-reality-context.h" />
     <ClInclude Include="uwp-spatial-input.h" />
+    <ClInclude Include="uwp\offscreen-view.h" />
     <ClInclude Include="uwp\uwp-platform.h" />
     <ClInclude Include="uwp\winrt-timers-implementation.h" />
     <ClInclude Include="uwp\winrt-view.h" />
@@ -345,6 +346,7 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     </ClCompile>
     <ClCompile Include="uwp-mixed-reality-context.cpp" />
     <ClCompile Include="uwp-spatial-input.cpp" />
+    <ClCompile Include="uwp\offscreen-view.cpp" />
     <ClCompile Include="uwp\uwp-platform.cpp" />
     <ClCompile Include="uwp\winrt-timers-implementation.cpp" />
     <ClCompile Include="uwp\winrt-view.cpp" />

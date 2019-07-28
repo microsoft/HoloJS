@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     configuration.enableVoiceCommands = true;
     scriptHost->initialize(configuration);
 
-	scriptHost->startUri(L"e:\\src\\first-app\\first-app.json");
+	scriptHost->startUri(L"https://microsoft.github.io/HoloJS/samples/molecule-viewer.json");
     //scriptHost->startWithEmptyApp();
     return 0;
 }

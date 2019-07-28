@@ -215,6 +215,9 @@ class WinRTHoloJsView : public IHoloJsView {
         return m_app->getStationaryCoordinateSystem(coordinateSystem);
     }
 
+    // Not implemented for UWP view; draw cadence is managed internally
+    virtual long draw() { return E_FAIL; }
+
    private:
     HoloJsViewSource ^ m_viewSource;
 

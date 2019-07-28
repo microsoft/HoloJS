@@ -1,10 +1,11 @@
 #include "stdafx.h"
+#include "holojs/private/error-handling.h"
 #include "include/holojs/windows/mixed-reality/mixed-reality-context.h"
 #include "include/holojs/windows/opengl-context.h"
-#include "holojs/private/error-handling.h"
 
 using namespace HoloJs::OpenGL;
 using namespace std;
+using namespace Microsoft::WRL;
 
 OpenGLContext::~OpenGLContext() { cleanup(); }
 
@@ -109,11 +110,13 @@ HRESULT OpenGLContext::initializeEGLContext()
 
 HRESULT OpenGLContext::initializeEGLSurface()
 {
+    if (m_isOffscreenRendering) {
+        RETURN_IF_FAILED(createPbufferFromSharedTexture(static_cast<UINT>(m_offscreenRenderWidth),
+                                                        static_cast<UINT>(m_offscreenRenderHeight)));
+    }
     if (!m_mixedRealityContext) {
         if (m_EglSurface == EGL_NO_SURFACE) {
             RETURN_IF_FAILED(createEGLWindowSurface());
-
-            //m_EglSurface = eglCreateWindowSurface(m_EglDisplay, m_EglConfig, m_window, nullptr);
         }
     } else {
         RETURN_IF_FAILED(

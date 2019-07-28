@@ -295,7 +295,7 @@ long HoloJsScriptHost::executeImmediate(const wchar_t* script, const wchar_t* sc
 
 void HoloJsScriptHost::showInternalUI(HostRenderedElements type)
 {
-    if (m_debugRequested) {
+    if (m_debugRequested || !m_loadingAnimationEnabled) {
         return;
     }
 
@@ -336,7 +336,7 @@ long HoloJsScriptHost::runInBackgroundNoContext(std::function<long()> background
     m_view->executeInBackground(
         new HostBackgroundWorkItem(m_backgroundExecutionQueue, make_shared<std::function<long()>>(backgroundWork)));
 
-	return HoloJs::Success;
+    return HoloJs::Success;
 }
 
 long HoloJsScriptHost::runInBackground(std::function<long()> backgroundWork)
@@ -350,7 +350,7 @@ long HoloJsScriptHost::runInBackground(std::function<long()> backgroundWork)
             new BackgroundWorkItem(m_activeContext, make_shared<std::function<long()>>(backgroundWork)));
     }
 
-	return HoloJs::Success;
+    return HoloJs::Success;
 }
 
 long HoloJsScriptHost::runInScriptContext(std::function<void()> contextWork)
@@ -360,7 +360,7 @@ long HoloJsScriptHost::runInScriptContext(std::function<void()> contextWork)
     m_view->executeOnViewThread(
         new ForegroundWorkItem(m_activeContext, make_shared<std::function<void()>>(contextWork)));
 
-	return HoloJs::Success;
+    return HoloJs::Success;
 }
 
 long HoloJsScriptHost::loadSupportScripts()
@@ -391,4 +391,10 @@ long HoloJsScriptHost::createLoadingAnimation()
     }
 
     return m_scriptsLoader->createAppFromScripts(L"Loading", loadingAnimationScripts, m_internalApp);
+}
+
+long HoloJsScriptHost::draw()
+{
+    RETURN_IF_TRUE(m_viewConfiguration.viewMode != ViewMode::Offscreen);
+    return m_view->draw();
 }

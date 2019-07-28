@@ -13,6 +13,8 @@
 #include <EGL/eglext.h>
 #include <EGL/eglplatform.h>
 
+#include <d3d11_4.h>
+
 namespace HoloJs {
 namespace MixedReality {
 class MixedRealityContext;
@@ -28,6 +30,18 @@ class OpenGLContext {
 
     void setCoreWindow(Platform::Agile<Windows::UI::Core::CoreWindow> coreWindow) { m_coreWindow = coreWindow; }
 
+    void setOffscreenRendering(ID3D11Texture2D* renderSurface)
+    {
+        m_isOffscreenRendering = true;
+        D3D11_TEXTURE2D_DESC renderSurfaceDesc;
+        renderSurface->GetDesc(&renderSurfaceDesc);
+
+		m_offscreenRenderWidth = renderSurfaceDesc.Width;
+        m_offscreenRenderHeight = renderSurfaceDesc.Height;
+
+        m_webGLSharedTexture = renderSurface;
+    }
+
     void setMixedRealityContext(std::shared_ptr<HoloJs::MixedReality::MixedRealityContext> mixedRealityContext)
     {
         m_mixedRealityContext = mixedRealityContext;
@@ -42,16 +56,24 @@ class OpenGLContext {
 
     int getWidth()
     {
-        EGLint width;
-        eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_WIDTH, &width);
-        return width;
+        if (m_isOffscreenRendering) {
+            return m_offscreenRenderWidth;
+        } else {
+            EGLint width;
+            eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_WIDTH, &width);
+            return width;
+        }
     }
 
     int getHeight()
     {
-        EGLint height;
-        eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_HEIGHT, &height);
-        return height;
+        if (m_isOffscreenRendering) {
+            return m_offscreenRenderHeight;
+        } else {
+            EGLint height;
+            eglQuerySurface(m_EglDisplay, m_EglSurface, EGL_HEIGHT, &height);
+            return height;
+        }
     }
 
    protected:
@@ -69,7 +91,6 @@ class OpenGLContext {
     EGLContext m_EglContext;
 
     std::shared_ptr<HoloJs::MixedReality::MixedRealityContext> m_mixedRealityContext;
-    
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> m_webGLSharedTexture;
 
@@ -82,6 +103,10 @@ class OpenGLContext {
     HRESULT initializeEGLSurface();
 
     HRESULT createPbufferFromSharedTexture(unsigned int width, unsigned int height);
+
+    bool m_isOffscreenRendering = false;
+    unsigned int m_offscreenRenderWidth;
+    unsigned int m_offscreenRenderHeight;
 };
 
 }  // namespace OpenGL
