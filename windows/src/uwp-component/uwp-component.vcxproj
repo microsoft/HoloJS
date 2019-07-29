@@ -321,6 +321,7 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="corewindow-input.h" />
     <ClInclude Include="file-handle-access.h" />
     <ClInclude Include="uwp-opengl-context.h" />
     <ClInclude Include="stdafx.h" />
@@ -334,6 +335,7 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
     <ClInclude Include="uwp\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="corewindow-input.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="uwp-opengl-context.cpp" />
     <ClCompile Include="stdafx.cpp">

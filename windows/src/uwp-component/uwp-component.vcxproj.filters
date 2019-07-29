@@ -54,6 +54,9 @@
     <ClInclude Include="uwp\offscreen-view.h">
       <Filter>uwp</Filter>
     </ClInclude>
+    <ClInclude Include="corewindow-input.h">
+      <Filter>uwp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="uwp\offscreen-view.cpp">
+      <Filter>uwp</Filter>
+    </ClCompile>
+    <ClCompile Include="corewindow-input.cpp">
       <Filter>uwp</Filter>
     </ClCompile>
   </ItemGroup>

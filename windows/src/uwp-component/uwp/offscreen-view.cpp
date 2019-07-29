@@ -24,7 +24,16 @@ using namespace HoloJs::AppModel;
 
 UWPOffscreenView::~UWPOffscreenView() {}
 
-long UWPOffscreenView::executeOnViewThread(HoloJs::IForegroundWorkItem* workItem) { return E_FAIL; }
+long UWPOffscreenView::executeOnViewThread(HoloJs::IForegroundWorkItem* workItem)
+{
+    CoreApplication::MainView->Dispatcher->RunAsync(CoreDispatcherPriority::Normal,
+                                                    ref new DispatchedHandler([workItem]() {
+                                                        workItem->execute();
+                                                        delete workItem;
+                                                    }));
+
+    return S_OK;
+}
 
 long UWPOffscreenView::executeInBackground(HoloJs::IBackgroundWorkItem* workItem)
 {
@@ -40,7 +49,6 @@ long UWPOffscreenView::executeInBackground(HoloJs::IBackgroundWorkItem* workItem
 HRESULT UWPOffscreenView::executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app)
 {
     m_app = app;
-
     return S_OK;
 }
 
@@ -60,8 +68,9 @@ HRESULT UWPOffscreenView::initializeScriptResources()
 {
     m_windowElement = m_host->getWindowElement();
 
-    // TODO fix
-    
+    m_coreWindowInputHandler = ref new CoreWindowInput();
+    m_coreWindowInputHandler->setWindowElement(m_windowElement);
+    m_coreWindowInputHandler->registerEventHandlers();
 
     RETURN_IF_FAILED(reinterpret_cast<IDXGISurface*>(m_viewConfiguration.offscreenRenderSurface)
                          ->QueryInterface(IID_PPV_ARGS(&m_renderSurface)));
@@ -70,7 +79,7 @@ HRESULT UWPOffscreenView::initializeScriptResources()
     m_openGLContext->setOffscreenRendering(m_renderSurface.Get());
     m_openGLContext->initialize();
 
-	m_windowElement->resize(m_openGLContext->getWidth(), m_openGLContext->getHeight());
+    m_windowElement->resize(m_openGLContext->getWidth(), m_openGLContext->getHeight());
 
     m_windowElement->setHeadsetAvailable(MixedReality::MixedRealityContext::headsetAvailable());
 

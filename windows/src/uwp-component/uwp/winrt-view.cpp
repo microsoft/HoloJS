@@ -175,6 +175,8 @@ HRESULT HoloJsUWPApp::initializeScriptResources()
 
     m_windowElement->setHeadsetAvailable(MixedReality::MixedRealityContext::headsetAvailable());
 
+	m_coreWindowInputHandler->setWindowElement(m_windowElement);
+
     if (m_mixedRealityContext) {
         m_mixedRealityContext->initializeScriptHost();
 
@@ -200,34 +202,6 @@ HRESULT HoloJsUWPApp::initializeScriptResources()
     return S_OK;
 }
 
-void HoloJsUWPApp::registerEventHandlers()
-{
-    m_window->KeyUp += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                                      Windows::UI::Core::KeyEventArgs ^>(
-        this, &HoloJs::UWP::HoloJsUWPApp::OnKeyUp);
-
-    m_window->KeyDown += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                                        Windows::UI::Core::KeyEventArgs ^>(
-        this, &HoloJs::UWP::HoloJsUWPApp::OnKeyDown);
-
-    m_window->PointerWheelChanged +=
-        ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                       Windows::UI::Core::PointerEventArgs ^>(
-            this, &HoloJs::UWP::HoloJsUWPApp::OnPointerWheelChanged);
-
-    m_window->PointerPressed += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                                               Windows::UI::Core::PointerEventArgs ^>(
-        this, &HoloJs::UWP::HoloJsUWPApp::OnPointerPressed);
-
-    m_window->PointerReleased += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                                                Windows::UI::Core::PointerEventArgs ^>(
-        this, &HoloJs::UWP::HoloJsUWPApp::OnPointerReleased);
-
-    m_window->PointerMoved += ref new Windows::Foundation::TypedEventHandler<Windows::UI::Core::CoreWindow ^,
-                                                                             Windows::UI::Core::PointerEventArgs ^>(
-        this, &HoloJs::UWP::HoloJsUWPApp::OnPointerMoved);
-}
-
 // Called when the CoreWindow object is created (or re-created).
 void HoloJsUWPApp::SetWindow(CoreWindow ^ window)
 {
@@ -241,7 +215,8 @@ void HoloJsUWPApp::SetWindow(CoreWindow ^ window)
     window->Closed +=
         ref new TypedEventHandler<CoreWindow ^, CoreWindowEventArgs ^>(this, &HoloJsUWPApp::OnWindowClosed);
 
-    registerEventHandlers();
+    m_coreWindowInputHandler = ref new CoreWindowInput();
+    m_coreWindowInputHandler->registerEventHandlers();
 
     DisplayInformation ^ currentDisplayInformation = DisplayInformation::GetForCurrentView();
 
@@ -472,108 +447,3 @@ HRESULT WinRTHoloJsView::initialize(HoloJs::IHoloJsScriptHostInternal* host)
 }
 
 void WinRTHoloJsView::onError(HoloJs::ScriptHostErrorType errorType) { OutputDebugString(L"Error"); }
-
-void getKeyAndCodeFromVirtualKey(Windows::System::VirtualKey vKeyCode, wstring& key, wstring& code)
-{
-    if ((vKeyCode >= Windows::System::VirtualKey::A && vKeyCode <= Windows::System::VirtualKey::Z) ||
-        (vKeyCode >= Windows::System::VirtualKey::Number0 && vKeyCode <= Windows::System::VirtualKey::Number9)) {
-        key = static_cast<char>(vKeyCode);
-        code = key;
-    }
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnKeyUp(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        wstring key;
-        wstring code;
-        getKeyAndCodeFromVirtualKey(args->VirtualKey, key, code);
-        m_windowElement->keyEvent(HoloJs::KeyEventType::KeyUp, key, code, 0, static_cast<int>(args->VirtualKey));
-    }
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnKeyDown(Windows::UI::Core::CoreWindow ^ sender,
-                                          Windows::UI::Core::KeyEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        wstring key;
-        wstring code;
-        getKeyAndCodeFromVirtualKey(args->VirtualKey, key, code);
-        m_windowElement->keyEvent(HoloJs::KeyEventType::KeyDown, key, code, 0, static_cast<int>(args->VirtualKey));
-    }
-}
-
-unsigned int getMouseButtons(Windows::UI::Core::PointerEventArgs ^ args)
-{
-    unsigned int buttonsMask = 0;
-    if (args->CurrentPoint->Properties->IsLeftButtonPressed) {
-        buttonsMask |= static_cast<int>(HoloJs::MouseButton::Main);
-    } else if (args->CurrentPoint->Properties->IsMiddleButtonPressed) {
-        buttonsMask |= static_cast<int>(HoloJs::MouseButton::Auxiliary);
-    } else if (args->CurrentPoint->Properties->IsRightButtonPressed) {
-        buttonsMask |= static_cast<int>(HoloJs::MouseButton::Second);
-    }
-
-    return buttonsMask;
-}
-
-unsigned int getFirstMouseButtonPressed(Windows::UI::Core::PointerEventArgs ^ args)
-{
-    if (args->CurrentPoint->Properties->IsLeftButtonPressed) {
-        return static_cast<int>(HoloJs::MouseButton::Main);
-    } else if (args->CurrentPoint->Properties->IsMiddleButtonPressed) {
-        return static_cast<int>(HoloJs::MouseButton::Auxiliary);
-    } else if (args->CurrentPoint->Properties->IsRightButtonPressed) {
-        return static_cast<int>(HoloJs::MouseButton::Second);
-    }
-
-    return 0;
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnPointerWheelChanged(Windows::UI::Core::CoreWindow ^ sender,
-                                                      Windows::UI::Core::PointerEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        m_windowElement->mouseEvent(HoloJs::MouseButtonEventType::Wheel,
-                                    static_cast<int>(args->CurrentPoint->Position.X),
-                                    static_cast<int>(args->CurrentPoint->Position.Y),
-                                    args->CurrentPoint->Properties->MouseWheelDelta,
-                                    getMouseButtons(args));
-    }
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnPointerPressed(Windows::UI::Core::CoreWindow ^ sender,
-                                                 Windows::UI::Core::PointerEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        m_windowElement->mouseEvent(HoloJs::MouseButtonEventType::Down,
-                                    static_cast<int>(args->CurrentPoint->Position.X),
-                                    static_cast<int>(args->CurrentPoint->Position.Y),
-                                    getFirstMouseButtonPressed(args),
-                                    getMouseButtons(args));
-    }
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnPointerReleased(Windows::UI::Core::CoreWindow ^ sender,
-                                                  Windows::UI::Core::PointerEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        m_windowElement->mouseEvent(HoloJs::MouseButtonEventType::Up,
-                                    static_cast<int>(args->CurrentPoint->Position.X),
-                                    static_cast<int>(args->CurrentPoint->Position.Y),
-                                    getFirstMouseButtonPressed(args),
-                                    getMouseButtons(args));
-    }
-}
-
-void HoloJs::UWP::HoloJsUWPApp::OnPointerMoved(Windows::UI::Core::CoreWindow ^ sender,
-                                               Windows::UI::Core::PointerEventArgs ^ args)
-{
-    if (m_windowElement != nullptr) {
-        m_windowElement->mouseEvent(HoloJs::MouseButtonEventType::Move,
-                                    static_cast<int>(args->CurrentPoint->Position.X),
-                                    static_cast<int>(args->CurrentPoint->Position.Y),
-                                    getFirstMouseButtonPressed(args),
-                                    getMouseButtons(args));
-    }
-}

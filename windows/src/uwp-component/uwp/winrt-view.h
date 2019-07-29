@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "stdafx.h"
+#include "../corewindow-input.h"
 #include "../uwp-opengl-context.h"
 #include "holojs/private/holojs-script-host-internal.h"
 #include "holojs/private/holojs-view.h"
@@ -117,6 +118,7 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
 
     Platform::Agile<Windows::UI::Core::CoreWindow> m_window;
     Windows::UI::Core::CoreDispatcher ^ m_dispatcher;
+    HoloJs::UWP::CoreWindowInput ^ m_coreWindowInputHandler;
 
     bool m_windowClosed;
     bool m_windowVisible;
@@ -136,14 +138,6 @@ ref class HoloJsUWPApp sealed : public Windows::ApplicationModel::Core::IFramewo
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_activeApp;
 
     HRESULT executeAppInternal(std::shared_ptr<HoloJs::AppModel::HoloJsApp> app);
-
-    void registerEventHandlers();
-    void OnKeyUp(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ args);
-    void OnKeyDown(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ args);
-    void OnPointerWheelChanged(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
-    void OnPointerPressed(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
-    void OnPointerReleased(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
-    void OnPointerMoved(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::PointerEventArgs ^ args);
 
     HoloJs::ViewConfiguration m_viewConfiguration;
 

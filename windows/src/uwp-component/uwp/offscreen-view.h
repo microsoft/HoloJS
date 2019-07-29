@@ -9,6 +9,7 @@
 #include "holojs/windows/mixed-reality/mixed-reality-context.h"
 #include "holojs/windows/speech-recognizer.h"
 #include "winrt-timers-implementation.h"
+#include "../corewindow-input.h"
 #include <exception>
 #include <memory>
 #include <queue>
@@ -46,10 +47,10 @@ class UWPOffscreenView : public IHoloJsView {
     }
 
     virtual void setIcon(void* platformIcon)
-    { /* not available in UWP */
+    { /* not available in offscreen view */
     }
     virtual void setTitle(const std::wstring& title)
-    { /* not available in UWP view */
+    { /* not available in offscreen view */
     }
 
     virtual long getStationaryCoordinateSystem(void** coordinateSystem)
@@ -72,6 +73,8 @@ class UWPOffscreenView : public IHoloJsView {
     std::unique_ptr<HoloJs::Platforms::Win32::SpeechRecognizer> m_voiceInput;
     void onSpeechRecognized(std::wstring command, double confidence);
 
+	HoloJs::UWP::CoreWindowInput ^ m_coreWindowInputHandler;
+
     HoloJs::ViewConfiguration m_viewConfiguration;
 
     std::unique_ptr<OpenGL::OpenGLContext> m_openGLContext;
@@ -87,6 +90,8 @@ class UWPOffscreenView : public IHoloJsView {
 
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_app;
     bool m_appLoaded = false;
+
+	Windows::UI::Core::CoreDispatcher ^ m_dispatcher;
 };
 }  // namespace UWP
 }  // namespace HoloJs
