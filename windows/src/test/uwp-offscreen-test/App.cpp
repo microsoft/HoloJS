@@ -53,6 +53,9 @@ void App::Initialize(CoreApplicationView ^ applicationView)
 // Called when the CoreWindow object is created (or re-created).
 void App::SetWindow(CoreWindow ^ window)
 {
+    if (Windows::Graphics::Holographic::HolographicSpace::IsAvailable) {
+        m_holographicSpace = Windows::Graphics::Holographic::HolographicSpace::CreateForCoreWindow(window);
+    }
     window->SizeChanged +=
         ref new TypedEventHandler<CoreWindow ^, WindowSizeChangedEventArgs ^>(this, &App::OnWindowSizeChanged);
 
@@ -113,12 +116,12 @@ void App::Run()
     auto viewConfiguration = ref new HoloJs::UWP::ViewConfiguration();
 
     scriptHost->disableLoadingAnimation();
-    //scriptHost->enableDebugger();
+    // scriptHost->enableDebugger();
 
     viewConfiguration->setViewMode(HoloJs::UWP::ViewMode::Offscreen);
     viewConfiguration->setOffscreenRenderSurface(scriptRenderSurface);
     if (scriptHost->initialize(viewConfiguration)) {
-        auto uri = ref new Platform::String(L"https://microsoft.github.io/HoloJS/samples/ballshooter.json");
+        auto uri = ref new Platform::String(L"https://microsoft.github.io/HoloJS/samples/molecule-viewer.json");
         scriptHost->startUri(uri);
     }
 
@@ -129,7 +132,7 @@ void App::Run()
             m_main->Update();
 
             if (m_main->Render()) {
-                scriptHost->draw();
+                scriptHost->render(nullptr);
                 m_deviceResources->Present();
             }
         } else {
