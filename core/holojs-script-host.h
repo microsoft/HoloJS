@@ -68,7 +68,7 @@ class HoloJsScriptHost : public IHoloJsScriptHostInternal {
     virtual void enableLoadingAnimation() { m_loadingAnimationEnabled = true; }
     virtual void disableLoadingAnimation() { m_loadingAnimationEnabled = false; }
 
-    virtual long draw();
+    virtual long render(void* renderParameters);
 
    private:
     std::shared_ptr<HoloJs::AppModel::HoloJsApp> m_loadedApp;

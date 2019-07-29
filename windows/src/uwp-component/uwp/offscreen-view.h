@@ -64,7 +64,7 @@ class UWPOffscreenView : public IHoloJsView {
         }
     }
 
-    virtual long draw();
+    virtual long render(void* renderParameters);
 
    private:
     std::shared_ptr<MixedReality::MixedRealityContext> m_mixedRealityContext;

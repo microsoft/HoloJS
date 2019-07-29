@@ -65,7 +65,7 @@ class Win32HoloJsEmbeddedView : public IHoloJsView, public Win32HoloJsBaseView {
     }
 
 	// Not implemented for win32 embedded view; draw cadence is managed internally
-	virtual long draw() { return E_FAIL; }
+	virtual long render(void* renderParameters) { return E_FAIL; }
 
    private:
 

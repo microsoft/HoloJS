@@ -23,6 +23,9 @@ class MixedRealityContext {
 
     Windows::Graphics::Holographic::HolographicFrame ^ createHolographicFrame();
 
+	HRESULT setHolographicFramePrediction(Windows::Graphics::Holographic::HolographicFramePrediction ^
+                                          holographicFramePrediction);
+
     HRESULT render(Windows::Graphics::Holographic::HolographicFrame ^ frame, ID3D11Texture2D* content);
 
     void present(Windows::Graphics::Holographic::HolographicFrame ^ holographicFrame);

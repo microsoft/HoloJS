@@ -393,8 +393,8 @@ long HoloJsScriptHost::createLoadingAnimation()
     return m_scriptsLoader->createAppFromScripts(L"Loading", loadingAnimationScripts, m_internalApp);
 }
 
-long HoloJsScriptHost::draw()
+long HoloJsScriptHost::render(void* renderParameters)
 {
     RETURN_IF_TRUE(m_viewConfiguration.viewMode != ViewMode::Offscreen);
-    return m_view->draw();
+    return m_view->render(renderParameters);
 }

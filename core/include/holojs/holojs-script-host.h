@@ -42,7 +42,7 @@ class IHoloJsScriptHost {
     virtual void enableLoadingAnimation() = 0;
     virtual void disableLoadingAnimation() = 0;
 
-    virtual long draw() = 0;
+    virtual long render(void* renderParameters) = 0;
 };
 
 __declspec(dllexport) HoloJs::IHoloJsScriptHost* __cdecl CreateHoloJsScriptHost();

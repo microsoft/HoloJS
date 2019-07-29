@@ -31,8 +31,8 @@ namespace UWP {
 public
 enum class ViewMode { None = 0, Default = 1, Flat = 2, FlatEmbedded = 3, VR = 4, Offscreen = 5 };
 
-public ref class ViewConfiguration sealed
-{
+public
+ref class ViewConfiguration sealed {
    public:
     void setViewMode(HoloJs::UWP::ViewMode viewMode) { m_viewMode = viewMode; }
 
@@ -47,26 +47,24 @@ public ref class ViewConfiguration sealed
         m_offscreenRenderSurface = offscreenRenderSurface;
     }
 
-internal:
-	HoloJs::UWP::ViewMode m_viewMode;
+    internal : HoloJs::UWP::ViewMode m_viewMode;
     bool m_enableVoiceCommands;
     bool m_enableQrCodeNavigation;
-    Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface^ m_offscreenRenderSurface;
+    Windows::Graphics::DirectX::Direct3D11::IDirect3DSurface ^ m_offscreenRenderSurface;
 };
 
 public
 ref class HoloJsScriptHost sealed {
    public:
     HoloJsScriptHost() { m_scriptHost.reset(HoloJs::PrivateInterface::CreateHoloJsScriptHost()); }
-    bool initialize(HoloJs::UWP::ViewConfiguration^ viewConfig)
+    bool initialize(HoloJs::UWP::ViewConfiguration ^ viewConfig)
     {
         HoloJs::ViewConfiguration nativeConfiguration;
         nativeConfiguration.enableQrCodeNavigation = viewConfig->m_enableQrCodeNavigation;
         nativeConfiguration.enableVoiceCommands = viewConfig->m_enableVoiceCommands;
         nativeConfiguration.viewMode = static_cast<HoloJs::ViewMode>(viewConfig->m_viewMode);
 
-		if (viewConfig->m_offscreenRenderSurface != nullptr)
-		{
+        if (viewConfig->m_offscreenRenderSurface != nullptr) {
             Microsoft::WRL::ComPtr<IDXGISurface> dxgiSurface;
             if (FAILED(Windows::Graphics::DirectX::Direct3D11::GetDXGIInterfaceFromObject(
                     viewConfig->m_offscreenRenderSurface, IID_PPV_ARGS(&dxgiSurface)))) {
@@ -78,8 +76,8 @@ ref class HoloJsScriptHost sealed {
                 return false;
             }
 
-			nativeConfiguration.offscreenRenderSurface = d3dTexture.Detach();
-		}
+            nativeConfiguration.offscreenRenderSurface = d3dTexture.Detach();
+        }
 
         return SUCCEEDED(m_scriptHost->initialize(nativeConfiguration));
     }
@@ -90,7 +88,14 @@ ref class HoloJsScriptHost sealed {
     void enableLoadingAnimation() { m_scriptHost->enableLoadingAnimation(); }
     void disableLoadingAnimation() { m_scriptHost->disableLoadingAnimation(); }
 
-    bool draw() { return SUCCEEDED(m_scriptHost->draw()); }
+    bool render(Windows::Graphics::Holographic::HolographicFramePrediction ^ holographicFramePrediction)
+    {
+        if (holographicFramePrediction != nullptr) {
+            return SUCCEEDED(m_scriptHost->render(reinterpret_cast<IInspectable*>(holographicFramePrediction)));
+        } else {
+            return SUCCEEDED(m_scriptHost->render(nullptr));
+        }
+    }
 
    private:
     std::unique_ptr<HoloJs::IHoloJsScriptHost> m_scriptHost;

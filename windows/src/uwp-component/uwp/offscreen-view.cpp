@@ -55,6 +55,11 @@ HRESULT UWPOffscreenView::executeApp(std::shared_ptr<HoloJs::AppModel::HoloJsApp
 HRESULT UWPOffscreenView::initialize(HoloJs::IHoloJsScriptHostInternal* host)
 {
     m_host = host;
+
+    if (MixedReality::MixedRealityContext::headsetAvailable()) {
+        m_mixedRealityContext = make_shared<HoloJs::UWP::UWPMixedRealityContext>();
+    }
+
     return S_OK;
 }
 
@@ -83,23 +88,16 @@ HRESULT UWPOffscreenView::initializeScriptResources()
 
     m_windowElement->setHeadsetAvailable(MixedReality::MixedRealityContext::headsetAvailable());
 
-    /*if (m_mixedRealityContext) {
+    if (m_mixedRealityContext) {
+        m_mixedRealityContext->setScriptWindow(m_windowElement);
         m_mixedRealityContext->initializeScriptHost();
 
         m_spatialInput = make_unique<HoloJs::UWP::UWPSpatialInput>();
-        m_spatialInput->setCoreWindow(m_window.Get());
+        m_spatialInput->setCoreWindow(CoreApplication::MainView->CoreWindow);
         m_spatialInput->setScriptWindow(m_windowElement);
         m_spatialInput->setFrameOfReference(m_mixedRealityContext->getStationaryFrameOfReference());
         RETURN_IF_FAILED(m_spatialInput->initialize());
-
-        m_openGLContext->setMixedRealityContext(m_mixedRealityContext);
-        m_openGLContext->initialize();
-    } else {
-        m_openGLContext->setCoreWindow(m_window);
-        m_openGLContext->initialize();
-        m_width = static_cast<float>(m_openGLContext->getWidth());
-        m_height = static_cast<float>(m_openGLContext->getHeight());
-    }*/
+    }
 
     m_timers = make_unique<HoloJs::Timers>();
     m_timers->setTimersImplementation(new WinRTTimers());
@@ -108,7 +106,7 @@ HRESULT UWPOffscreenView::initializeScriptResources()
     return S_OK;
 }
 
-long UWPOffscreenView::draw()
+long UWPOffscreenView::render(void* renderParameters)
 {
     if (m_app) {
         RETURN_IF_FAILED(m_host->createExecutionContext());
@@ -118,6 +116,13 @@ long UWPOffscreenView::draw()
 
         m_app.reset();
         m_appLoaded = true;
+    }
+
+    if (renderParameters != nullptr && m_mixedRealityContext != nullptr) {
+        auto framePrediction = safe_cast<Windows::Graphics::Holographic::HolographicFramePrediction ^>(
+            reinterpret_cast<Platform::Object ^>(renderParameters));
+
+		m_mixedRealityContext->setHolographicFramePrediction(framePrediction);
     }
 
     if (m_appLoaded) {

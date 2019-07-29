@@ -181,6 +181,40 @@ DirectX::XMMATRIX MixedRealityContext::XMMatrixRTInverse(DirectX::FXMMATRIX M)
     return result;
 }
 
+HRESULT MixedRealityContext::setHolographicFramePrediction(Windows::Graphics::Holographic::HolographicFramePrediction ^
+                                                           holographicFramePrediction)
+{
+    RETURN_IF_FALSE(holographicFramePrediction->CameraPoses->Size != 0);
+
+    auto pose = holographicFramePrediction->CameraPoses->GetAt(0);
+    updateProjectionMatrices(pose);
+
+    // Get the stationary reference frame's coordinate system
+    auto stationaryCoordinateSystem = m_stationaryFrameOfReference->CoordinateSystem;
+    auto viewTransformBox = pose->TryGetViewTransform(stationaryCoordinateSystem);
+    if (!viewTransformBox) {
+        return E_FAIL;
+    }
+
+    auto viewTransform = viewTransformBox->Value;
+    flipYViewTransform(&viewTransform.Left, m_leftViewMatrixStoragePointer);
+    flipYViewTransform(&viewTransform.Right, m_rightViewMatrixStoragePointer);
+
+    auto predictionTimestamp = holographicFramePrediction->Timestamp;
+    auto stationaryPointerPose = SpatialPointerPose::TryGetAtTimestamp(stationaryCoordinateSystem, predictionTimestamp);
+    RETURN_IF_FALSE(stationaryPointerPose != nullptr);
+    auto stationaryCsToHeadTransform = getHeadTransform(stationaryPointerPose);
+    auto headToStationaryCSTransform = XMMatrixRTInverse(stationaryCsToHeadTransform);
+
+    DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(m_orientationVectorStoragePointer),
+                           XMQuaternionRotationMatrix(headToStationaryCSTransform));
+
+    XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(m_positionVectorStoragePointer),
+                  headToStationaryCSTransform.r[3]);
+
+    return S_OK;
+}
+
 HolographicFrame ^ MixedRealityContext::createHolographicFrame()
 {
     RETURN_NULL_IF_FALSE(m_cameraCount > 0);
@@ -195,31 +229,7 @@ HolographicFrame ^ MixedRealityContext::createHolographicFrame()
     m_deviceResources->ensureCameraResources(holographicFrame, prediction);
     RETURN_NULL_IF_FALSE(prediction->CameraPoses->Size != 0);
 
-    auto pose = prediction->CameraPoses->GetAt(0);
-    updateProjectionMatrices(pose);
-
-    // Get the stationary reference frame's coordinate system
-    auto stationaryCoordinateSystem = m_stationaryFrameOfReference->CoordinateSystem;
-    auto viewTransformBox = pose->TryGetViewTransform(stationaryCoordinateSystem);
-    if (!viewTransformBox) {
-        return nullptr;
-    }
-
-    auto viewTransform = viewTransformBox->Value;
-    flipYViewTransform(&viewTransform.Left, m_leftViewMatrixStoragePointer);
-    flipYViewTransform(&viewTransform.Right, m_rightViewMatrixStoragePointer);
-
-    auto predictionTimestamp = prediction->Timestamp;
-    auto stationaryPointerPose = SpatialPointerPose::TryGetAtTimestamp(stationaryCoordinateSystem, predictionTimestamp);
-    RETURN_NULL_IF_FALSE(stationaryPointerPose != nullptr);
-    auto stationaryCsToHeadTransform = getHeadTransform(stationaryPointerPose);
-    auto headToStationaryCSTransform = XMMatrixRTInverse(stationaryCsToHeadTransform);
-
-    DirectX::XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(m_orientationVectorStoragePointer),
-                           XMQuaternionRotationMatrix(headToStationaryCSTransform));
-
-    XMStoreFloat4(reinterpret_cast<DirectX::XMFLOAT4*>(m_positionVectorStoragePointer),
-                  headToStationaryCSTransform.r[3]);
+    RETURN_NULL_IF_FAILED(setHolographicFramePrediction(prediction));
 
     return holographicFrame;
 }

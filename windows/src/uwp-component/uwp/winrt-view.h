@@ -210,7 +210,7 @@ class WinRTHoloJsView : public IHoloJsView {
     }
 
     // Not implemented for UWP view; draw cadence is managed internally
-    virtual long draw() { return E_FAIL; }
+    virtual long render(void* renderParameters) { return E_FAIL; }
 
    private:
     HoloJsViewSource ^ m_viewSource;

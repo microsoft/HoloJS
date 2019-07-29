@@ -47,7 +47,7 @@ class IHoloJsView {
 
     virtual long getStationaryCoordinateSystem(void** coordinateSystem) = 0;
 
-	virtual long draw() = 0;
+	virtual long render(void* renderParameters) = 0;
 };
 
 }  // namespace HoloJs
