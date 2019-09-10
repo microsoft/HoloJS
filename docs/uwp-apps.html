@@ -18,13 +18,16 @@
     </div>
     <div class="content">
         <h1><span>Hosting HoloJs in a UWP C++ application</span></h1>
+        A UWP app can execute HoloJs script apps loaded from the Web, the local file system or from the UWP package itself.
+        <br><br>
+
         After following the steps outlined bellow, you will have a UWP application that is executing a 3D application
         written in JavaScript and WebGL.
         <h3>Requirements:</h3>
         <ol>
             <li>Visual Studio 2017 with C++ and UWP development components installed</li>
         </ol>
-        <h3>Steps:</h3>
+        <h3>Run a HoloJs app from the web:</h3>
         <ol>
             <li>In Visual Studio, create a new UWP C++ DirectX:<br>
                 <img src="img/new-uwp-application.png" width="600"> </li><br>
@@ -58,6 +61,60 @@
                 <video src="img/win32-cubes-vr.mp4" controls="controls" width="600px"></video>
 
             </li>
+        </ol>
+        <h3>Embed a HoloJs script app inside a UWP package:</h3>
+        <ol>
+            <li>In Visual Studio, create a new UWP C++ DirectX:<br>
+                <img src="img/new-uwp-application.png" width="600"> </li><br>
+            <li>Add the HoloJs Nuget package. Since its a pre-release package, make sure to check the "Include
+                prerelease" checkbox when searching. <br>
+                <img src="img/add-holojs-package.png" width="600">
+            </li>
+            <li>
+                In app.cpp, replace the body of the main function with this code:
+                <div class="code">
+                    // Create a host object<br>
+                    auto scriptHost = ref new HoloJs::UWP::HoloJsScriptHost();<br><br>
+                    // Create a default configuration<br>
+                    auto viewConfiguration = ref new HoloJs::UWP::ViewConfiguration();<br><br>
+                    // Initialize and run<br>
+                    if (scriptHost->initialize(viewConfiguration)) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;auto uri = ref new
+                    Platform::String(L"holojs-app\\holojs-app.json");<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;scriptHost->startUri(uri);<br>
+                    }<br>
+                    return 0;
+                </div>
+            </li>
+            <li>You can remove all other code that was generated for the DirectX template app. With HoloJs, you only
+                need the main function in app.cpp.
+            </li>
+            <li>
+                In your project directory, create a sub-directory named "holojs-app"
+            </li>
+            <li>
+                In Visual Studio, add a new Filter to the project, named "holojs-app":
+                <img src="img/vs-new-filter.png" width="300">
+            </li>
+            <li>
+                Add your HoloJs JSON and code files under the "holojs-app" filter. See <a href="holojs-app.html">HoloJs app</a> for more information on the structure of a HoloJs app.
+                <br>
+                As a sample, download the following files to the "holojs-app" sub-directory created above:
+                <br>
+                <a href="samples/uwp-embeded-sample/holojs-app.json">JSON</a>
+                <br>
+                <a href="samples/uwp-embeded-sample/three.js">ThreeJs</a>
+                <br>
+                <a href="samples/uwp-embeded-sample/holojs-app.js">App Code</a>
+                <br>
+                Then add the downloaded files to the "holojs-app" filter in your project:<br>
+                <img src="img/vs-add-existing-item.png" width="600"></src>
+            </li>
+            <li>
+                Mark the JS code, JSON and any other script resources (images etc.) as "Content = True" to have them included in your package:<br>
+                <img src="img/uwp-package-content.png" width="300">
+            </li>
+            <li>Press F5 to run.</li>
         </ol>
         <h4>Debugging scripts running inside HoloJs</h4>
         When HoloJs is hosted inside a UWP app, you use Visual Studio to debug the scripts.
