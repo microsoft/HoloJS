@@ -21,12 +21,12 @@ pushd zxing-cpp\out\%2
 msbuild Project.sln /t:Build /p:Configuration="%1";PlatformToolset=v142
 popd
 
-pushd LabSound\out\%2
+pushd LabSound\build\%2
 msbuild LabSoundExamples.sln /t:Build /p:Configuration="%1";PlatformToolset=v142
 popd
 
 pushd Win2D
-msbuild Win2D.uap.sln /t:Build /p:Configuration="%1";Platform=%2;WindowsTargetPlatformVersion=10.0.17134.0;PlatformToolset=v142
+msbuild winrt\lib\winrt.lib.uap.vcxproj /t:Build /p:Configuration="%1";Platform=%2;WindowsTargetPlatformVersion=10.0.17134.0;PlatformToolset=v142
 popd
 
 pushd ChakraCore\Build

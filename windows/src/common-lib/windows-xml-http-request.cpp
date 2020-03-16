@@ -5,6 +5,7 @@
 #include "holojs/private/platform-interfaces.h"
 #include "holojs/private/script-host-utilities.h"
 #include "include/holojs/windows/xml-http-request.h"
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 #include <functional>
 #include <ppltasks.h>

@@ -30,26 +30,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -111,12 +111,12 @@
       <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore-Debugger\lib\Debugger.ProtocolHandler;..\..\..\deps\ChakraCore-Debugger\lib\Debugger.Service;..\..\..\deps\angle-google\include;..\context2d-lib\include;..\..\..\core\include;..\common-lib\include;..\..\..\deps\ChakraCore\lib\Jsrt</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uapx86\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;Comctl32.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;Mmdevapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;Comctl32.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll $(OutDir)
@@ -140,12 +140,12 @@ copy ..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuratio
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore-Debugger\lib\Debugger.ProtocolHandler;..\..\..\deps\ChakraCore-Debugger\lib\Debugger.Service;..\..\..\deps\angle-google\include;..\context2d-lib\include;..\..\..\core\include;..\common-lib\include;..\..\..\deps\ChakraCore\lib\Jsrt</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uapx86\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;Comctl32.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;Mmdevapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;Comctl32.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll $(OutDir)
@@ -171,14 +171,14 @@ copy ..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuratio
       <CompileAsWinRT>true</CompileAsWinRT>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uapx86\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;Comctl32.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;Comctl32.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll $(OutDir)
@@ -204,14 +204,14 @@ copy ..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuratio
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>..\..\..\deps\ChakraCore-Debugger\lib\Debugger.ProtocolHandler;..\..\..\deps\ChakraCore-Debugger\lib\Debugger.Service;..\..\..\deps\angle-google\include;..\context2d-lib\include;..\..\..\core\include;..\common-lib\include;..\..\..\deps\ChakraCore\lib\Jsrt</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uapx86\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;Comctl32.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ChakraCore\Build\VcBuild\bin\$(PlatformTarget)_$(Configuration)\ChakraCore.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.ProtocolHandler.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Protocol.lib;..\..\..\deps\ChakraCore-Debugger\build\bin\$(Platform)\$(Configuration)\ChakraCore.Debugger.Service.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;Comctl32.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;mfuuid.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)\libEGL.dll $(OutDir)

@@ -43,8 +43,8 @@ popd
 echo Initializing LabSound build ...
 
 pushd LabSound
-mkdir out\%2
-pushd out\%2
+mkdir build\%2
+pushd build\%2
 cmake ..\.. -G "Visual Studio 16 2019" -A %2
 popd
 popd

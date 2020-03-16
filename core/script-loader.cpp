@@ -3,7 +3,10 @@
 #include "include/holojs/private/app-model.h"
 #include "include/holojs/private/error-handling.h"
 #include "include/holojs/private/platform-interfaces.h"
-#include <filesystem>
+
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
+#include <experimental/filesystem>
+
 #include <string>
 
 using namespace HoloJs::AppModel;
@@ -48,7 +51,7 @@ long ScriptsLoader::loadApp(const std::wstring& appUri, shared_ptr<HoloJsApp>& s
         auto iconFinalUri = appConfig.baseUri + L"/" + appIconUri;
         newScriptApp->setIconUri(iconFinalUri);
     } else if (appConfig.source == AppSource::FileSystem) {
-        experimental::filesystem::path iconFinalPath(appConfig.baseUri);
+        std::experimental::filesystem::path iconFinalPath(appConfig.baseUri);
         iconFinalPath.append(appIconUri);
         wstring iconFinalPathString = iconFinalPath;
         newScriptApp->setIconUri(iconFinalPathString);
@@ -75,7 +78,7 @@ long ScriptsLoader::loadApp(const std::wstring& appUri, shared_ptr<HoloJsApp>& s
                 return HoloJs::Error;
             }
         } else if (appConfig.source == AppSource::FileSystem) {
-            experimental::filesystem::path scriptPath(appConfig.baseUri);
+            std::experimental::filesystem::path scriptPath(appConfig.baseUri);
             scriptPath.append(scriptName);
             scriptUri = scriptPath.c_str();
             RETURN_IF_FAILED(getPlatform()->readFileUTF8(scriptUri, scriptText));

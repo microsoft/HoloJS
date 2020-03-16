@@ -6,6 +6,7 @@
 #include "holojs/private/script-host-utilities.h"
 #include "include/holojs/windows/image-data.h"
 #include "include/holojs/windows/image-element.h"
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 #include <functional>
 #include <ppltasks.h>

@@ -33,7 +33,7 @@
     <RootNamespace>HoloJs.UWP</RootNamespace>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <ProjectName>uwp-component</ProjectName>
@@ -42,39 +42,39 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -153,18 +153,15 @@
       <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -182,18 +179,15 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
       <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -210,18 +204,15 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
       <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist_d.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack_d.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -240,20 +231,17 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
       <CompileAsWinRT>true</CompileAsWinRT>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -272,20 +260,17 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
       <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -304,20 +289,17 @@ copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib
       <AdditionalIncludeDirectories>..\..\..\deps\angle-google\include;..\..\..\core\include;..\common-lib\include;..\context2d-lib\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AdditionalOptions>/Zc:twoPhase- %(AdditionalOptions)</AdditionalOptions>
-      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\debug\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
+      <ForcedUsingFiles>..\..\..\deps\Win2D\bin\uap$(PlatformTarget)\$(Configuration)\MergedWinMD\Microsoft.Graphics.Canvas.winmd;%(ForcedUsingFiles)</ForcedUsingFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libGLESv2.lib;..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\lib\libEGL.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\core\build\$(Platform)-$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)-$(Configuration)\bin\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libGLESv2.dll.lib;..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll.lib;..\..\..\deps\win2d\bin\uap$(PlatformTarget)\$(Configuration)\winrt.lib.uap\winrt.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\ZipLib.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\bzip2.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\lzma.lib;..\..\..\deps\ziplib\bin\$(PlatformTarget)\$(Configuration)\zlib.lib;..\..\..\deps\zxing-cpp\out\$(Platform)\$(Configuration)\ZXingCore.lib;$(OutDir)..\core\context2d-lib.lib;$(OutDir)..\core\core-lib.lib;$(OutDir)..\core\common-lib.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\LabSound.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libnyquist.lib;..\..\..\deps\LabSound\build\$(Platform)\bin\$(Configuration)\libwavpack.lib;dwrite.lib;d2d1.lib;d3d11.lib;dxgi.lib;chakrart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;shcore.lib;d3dcompiler.lib;windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.pdb $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll $(OutDir)
-copy ..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.pdb $(OutDir)</Command>
+      <Command>copy ..\..\..\deps\angle-google\out\$(Configuration)-$(Platform)-uwp\libEGL.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="libholojs-test-uwp_TemporaryKey.pfx" />
-    <None Include="..\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll" />
-    <None Include="..\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll" />
+    <None Include="..\..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libEGL.dll" />
+    <None Include="..\..\..\..\deps\angle-microsoft\winrt\10\src\$(Configuration)_$(Platform)\libGLESv2.dll" />
   </ItemGroup>
 </Project>
