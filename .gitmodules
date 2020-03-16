@@ -5,10 +5,6 @@
 [submodule "angle-google"]
 	path = deps/angle-google
 	url = https://github.com/google/angle.git
-[submodule "angle-microsoft"]
-	path = deps/angle-microsoft
-	url = https://github.com/Almost-Done/angle.git
-	branch = ms-master
 [submodule "Win2D"]
 	path = deps/Win2D
 	url = https://github.com/Almost-Done/Win2D.git
