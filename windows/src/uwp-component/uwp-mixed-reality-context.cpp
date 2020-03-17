@@ -7,9 +7,8 @@ using namespace Windows::Graphics::Holographic;
 using namespace std;
 
 HRESULT UWPMixedRealityContext::createHolographicSpace()
-
 {
-    RETURN_IF_FALSE(m_coreWindow.Get() == nullptr);
+    RETURN_IF_TRUE(m_coreWindow.Get() == nullptr);
 
     m_holographicSpace = HolographicSpace::CreateForCoreWindow(m_coreWindow.Get());
 
