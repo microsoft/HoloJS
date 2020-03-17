@@ -136,7 +136,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\..\sample-apps\threejs\three.js">
+    <Content Include="..\..\..\..\core\scripts\three.js">
       <Link>templates\three.js</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -164,12 +164,12 @@ copy $(ProjectDir)..\..\..\src\out\release\x64\native\LibEgl.dll $(TargetDir)Lib
 copy $(ProjectDir)..\..\..\src\out\release\x64\native\libGLESv2.dll $(TargetDir)libGLESv2.dll
 copy $(ProjectDir)..\..\..\src\out\release\x64\native\libholojs-native.dll $(TargetDir)libholojs-native.dll
 
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\concrt140.dll" $(TargetDir)
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140.dll" $(TargetDir)
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140_1.dll" $(TargetDir)
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\msvcp140_2.dll" $(TargetDir)
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\vccorlib140.dll" $(TargetDir)
-copy "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Redist\MSVC\14.16.27012\x64\Microsoft.VC141.CRT\vcruntime140.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\concrt140.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\msvcp140.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\msvcp140_1.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\msvcp140_2.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\vccorlib140.dll" $(TargetDir)
+copy "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Redist\MSVC\14.24.28127\x64\Microsoft.VC142.CRT\vcruntime140.dll" $(TargetDir)
 
 
 
