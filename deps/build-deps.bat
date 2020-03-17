@@ -18,24 +18,26 @@ msbuild ZipLib.sln /t:Build /p:Configuration="%1";Platform="%2";PlatformToolset=
 popd
 
 pushd zxing-cpp\out\%2
-msbuild Project.sln /t:Build /p:Configuration="%1";PlatformToolset=v142
+msbuild Project.sln /t:Build /p:Configuration="%1";Platform=%2;PlatformToolset=v142
 popd
 
 pushd LabSound\build\%2
-msbuild LabSoundExamples.sln /t:Build /p:Configuration="%1";PlatformToolset=v142
+msbuild LabSoundExamples.sln /t:Build /p:Configuration="%1";Platform=%2;PlatformToolset=v142
 popd
 
 pushd Win2D
 msbuild winrt\lib\winrt.lib.uap.vcxproj /t:Build /p:Configuration="%1";Platform=%2;WindowsTargetPlatformVersion=10.0.17134.0;PlatformToolset=v142
 popd
 
+if %2==Win32 (set alternate_platform=x86) else (set alternate_platform=x64)
+
 pushd ChakraCore\Build
-msbuild Chakra.Core.sln /t:Build /p:Configuration="%1";Platform=%2;PlatformToolset=v142
+msbuild Chakra.Core.sln /t:Build /p:Configuration="%1";Platform=%alternate_platform%;PlatformToolset=v142
 popd
 
 pushd ChakraCore-Debugger
 ..\..\windows\nuget-package-spec\nuget.exe restore
-msbuild ChakraCore.Debugger.sln /t:Build /p:Configuration="%1";Platform=%2;PlatformToolset=v142
+msbuild ChakraCore.Debugger.sln /t:Build /p:Configuration="%1";Platform=%alternate_platform%;PlatformToolset=v142
 popd
 
 exit /B
